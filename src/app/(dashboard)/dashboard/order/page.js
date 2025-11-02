@@ -1,0 +1,116 @@
+"use client";
+import React from 'react';
+import { Table } from 'antd';
+import { IoEyeOutline } from "react-icons/io5";
+import { useGetAllOrdersQuery } from '@/redux/fetures/patient/order';
+
+// Your data
+const data = [
+    {
+        key: '1',
+        orderId: '1231',
+        orderType: 'Product',
+        transactionId: '1234567',
+        paymentMethod: 'Online',
+        totalAmount: '$123',
+        status: 'Delivered',
+        action: 'View',
+    },
+    {
+        key: '2',
+        orderId: '1231',
+        orderType: 'Product',
+        transactionId: '1234567',
+        paymentMethod: 'Online',
+        totalAmount: '$123',
+        status: 'Processing',
+        action: 'View',
+    },
+];
+
+// Your columns configuration
+const columns = [
+    {
+        title: 'Order ID',
+        dataIndex: '_orderId',
+        key: '_orderId',
+    },
+    // {
+    //     title: 'Order Type',
+    //     dataIndex: 'orderType',
+    //     key: 'orderType',
+    // },
+    {
+        title: 'Transaction ID',
+        dataIndex: 'transactionId',
+        key: 'transactionId',
+        render: (text) => <span className='font-semibold'>{text || 'Null'}</span>,
+    },
+    {
+        title: 'Payment Method',
+        dataIndex: 'paymentMethod',
+        key: 'paymentMethod',
+    },
+    {
+        title: 'Total Amount',
+        dataIndex: 'finalAmount',
+        key: 'finalAmount',
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+        render: (text, record) => (
+            <h3
+                className={`${record.status === 'Processing' ? "text-[#e88c31]" : "text-[#009914e8]"
+                    } px-2 py-1 rounded text-center `}
+            >
+                {record.status}
+            </h3>
+        ),
+    },
+    {
+        title: 'Action',
+        dataIndex: 'action',
+        key: 'action',
+        render: (text, record) => (
+            <a href={`/dashboard/order/${text?._orderId}`}>
+                <IoEyeOutline className='text-2xl' />
+            </a>
+        ),
+    },
+];
+
+const CompositionEvent = () => {
+
+    const user = localStorage.getItem("user");
+    const { id } = JSON.parse(user)
+
+
+    const { data } = useGetAllOrdersQuery(id);
+    const fullData = data?.data?.attributes?.results;
+
+    console.log(fullData);
+
+    return (
+        <div>
+            <Table
+                dataSource={fullData}
+                columns={columns}
+                pagination={false}
+                style={{
+                    backgroundColor: '#f4f4f4',
+                    borderRadius: '8px',
+                }}
+                // Custom header style via CSS or inline
+                components={{
+                    header: {
+                        cell: (props) => <th {...props} style={{ backgroundColor: '#dc1111', color: 'white' }} />,
+                    },
+                }}
+            />
+        </div>
+    );
+};
+
+export default CompositionEvent;

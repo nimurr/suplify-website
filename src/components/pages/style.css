@@ -1,0 +1,7 @@
+.ant-dropdown-menu {
+    z-index: 1000; /* Ensure it appears above other elements */
+    position: fixed; /* Fix positioning for mobile */
+    top: 60px; /* Adjust based on your layout */
+    left: 50%;
+    transform: translateX(-50%);
+  }
