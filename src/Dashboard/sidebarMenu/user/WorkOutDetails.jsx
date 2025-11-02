@@ -94,7 +94,7 @@ const ScheduleCard = ({ schedule }) => {
 
 
         {
-          schedule?.latestBookingStatus == null ? (
+          schedule?.latestBookingStatus == null || schedule?.latestPaymentStatus == "unpaid" ? (
             <Button
               type="primary"
               danger
@@ -127,6 +127,8 @@ export default function WorkOutDetails() {
   const { data } = useGetAllScheduleWorkoutClassQuery({ specialistId });
   const schedules = data?.data?.attributes?.result?.results;
   const specialistInfo = data?.data?.attributes?.specialistInfo;
+
+  console.log(schedules);
 
 
   return (
@@ -176,7 +178,7 @@ export default function WorkOutDetails() {
           <div className="w-full md:w-3/4 lg:w-4/5">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold">Available Schedule</h2>
-              <span className="text-sm text-gray-600">Total Schedule: 10</span>
+              <span className="text-sm text-gray-600">Total Schedule: {data?.data?.attributes?.result?.results?.length}</span>
             </div>
 
             {/* Schedule grid */}
