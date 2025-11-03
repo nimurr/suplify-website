@@ -100,7 +100,7 @@ const SpecialistsPage = () => {
           >
             <AntImage
               src={spec.specialistId?.profileImage?.imageUrl}
-              // src={spec?.specialistId?.profileImage?.imageUrl.includes("amazonaws.com") ? spec?.specialistId?.profileImage?.imageUrl : url + spec?.specialistId?.profileImage?.imageUrl}
+              //? src={spec?.specialistId?.profileImage?.imageUrl.includes("amazonaws.com") ? spec?.specialistId?.profileImage?.imageUrl : url + spec?.specialistId?.profileImage?.imageUrl}
               alt={spec.name}
               width="100%"
               style={{ objectFit: "cover", borderRadius: "8px" }}
