@@ -98,7 +98,8 @@ const SpecialistsPage = () => {
             className="bg-white border rounded-lg shadow-sm p-4 max-w-xs w-full"
           >
             <AntImage
-              src={spec.specialistId?.profileImage?.imageUrl}
+              // src={spec.specialistId?.profileImage?.imageUrl}
+              src={spec?.specialistId?.profileImage?.imageUrl.includes("amazonaws.com") ? spec?.specialistId?.profileImage?.imageUrl : url + spec?.specialistId?.profileImage?.imageUrl}
               alt={spec.name}
               width="100%"
               style={{ objectFit: "cover", borderRadius: "8px" }}

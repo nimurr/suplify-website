@@ -36,9 +36,9 @@ export default function AppointmentScheduler({ doctorId }) {
 
             <div className="relative w-full h-60">
               <img
-                src={url + profile?.profileImage?.imageUrl}
+                src={profile?.profileImage?.imageUrl.includes("amazonaws.com") ? profile?.profileImage?.imageUrl : url + profile?.profileImage?.imageUrl}
                 alt="doctor"
-                className="w-full h-full " // optional styling
+                className="w-full" // optional styling
               />
             </div>
 

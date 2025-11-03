@@ -62,7 +62,7 @@ const PatientProfileEdit = () => {
 
     const onFinish = async (values) => {
         // Convert the protocolNames to an array if necessary
-        const protocolNamesArray = values.protocolNames.map((protocol) => protocol.protocolName).filter(Boolean);
+        const protocolNamesArray = values?.protocolNames?.map((protocol) => protocol.protocolName).filter(Boolean);
 
         const formData = new FormData();
         if (values.fullName) {
@@ -80,7 +80,7 @@ const PatientProfileEdit = () => {
         if (values.description) {
             formData.append("description", values.description);
         }
-        if (protocolNamesArray.length > 0) {
+        if (protocolNamesArray?.length > 0) {
             formData.append("protocolNames", protocolNamesArray);  // Send array of protocol names
         }
 
@@ -136,7 +136,7 @@ const PatientProfileEdit = () => {
                         maxCount={1}
                         showUploadList={{ showRemoveIcon: true }}
                     >
-                        {imageFileList.length >= 1 ? null : (
+                        {imageFileList?.length >= 1 ? null : (
                             <div>
                                 <PlusOutlined />
                                 <div style={{ marginTop: 8 }}>Upload</div>
@@ -188,7 +188,7 @@ const PatientProfileEdit = () => {
                             rules={[
                                 {
                                     validator: async (_, names) => {
-                                        if (!names || names.length < 1) {
+                                        if (!names || names?.length < 1) {
                                             return Promise.reject(new Error("At least one protocol name is required"));
                                         }
                                     },
@@ -198,7 +198,7 @@ const PatientProfileEdit = () => {
                         >
                             {(fields, { add, remove }) => (
                                 <>
-                                    {fields.map(({ key, fieldKey, name, field }, index) => (
+                                    {fields?.map(({ key, fieldKey, name, field }, index) => (
                                         <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
                                             <Form.Item
                                                 {...field}
