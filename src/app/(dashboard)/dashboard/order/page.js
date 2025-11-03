@@ -1,32 +1,10 @@
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
 import { IoEyeOutline } from "react-icons/io5";
 import { useGetAllOrdersQuery } from '@/redux/fetures/patient/order';
+import getUser from '@/utils/user';
 
-// Your data
-const data = [
-    {
-        key: '1',
-        orderId: '1231',
-        orderType: 'Product',
-        transactionId: '1234567',
-        paymentMethod: 'Online',
-        totalAmount: '$123',
-        status: 'Delivered',
-        action: 'View',
-    },
-    {
-        key: '2',
-        orderId: '1231',
-        orderType: 'Product',
-        transactionId: '1234567',
-        paymentMethod: 'Online',
-        totalAmount: '$123',
-        status: 'Processing',
-        action: 'View',
-    },
-];
 
 // Your columns configuration
 const columns = [
@@ -83,8 +61,15 @@ const columns = [
 
 const CompositionEvent = () => {
 
-    const user = localStorage.getItem("user");
-    const { id } = JSON.parse(user)
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const currentUser = getUser();  // Call the function here
+        console.log("full user here :-", currentUser);
+        setUser(currentUser);
+    }, []);
+
+    const id = user?._id;
 
 
     const { data } = useGetAllOrdersQuery(id);

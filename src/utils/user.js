@@ -1,10 +1,20 @@
-const user = () => {
-    let user = null;
-    if (typeof window !== 'undefined') {
-        const user = localStorage.getItem("user");
-        user = JSON.parse(user);
-    }
-    return user
-}
+// @/utils/user.js
+const getUser = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
 
-export default user
+  const userJson = localStorage.getItem("user");
+  if (!userJson) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(userJson);
+  } catch (error) {
+    console.error("Failed to parse user from localStorage:", error);
+    return null;
+  }
+};
+
+export default getUser;
