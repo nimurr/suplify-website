@@ -5,6 +5,7 @@ import { LaptopOutlined } from "@ant-design/icons";
 import CustomButton from "@/components/customComponent/CustomButton";
 import { useRouter } from "next/navigation";
 import { useGetAllSpecialistPatientsPaginateOthersQuery, useGetAllSpecialistPatientsPaginateQuery } from "@/redux/fetures/patient/specialist";
+import url from "@/redux/api/baseUrl";
 
 const yourSpecialists = [
   {
@@ -98,8 +99,8 @@ const SpecialistsPage = () => {
             className="bg-white border rounded-lg shadow-sm p-4 max-w-xs w-full"
           >
             <AntImage
-              // src={spec.specialistId?.profileImage?.imageUrl}
-              src={spec?.specialistId?.profileImage?.imageUrl.includes("amazonaws.com") ? spec?.specialistId?.profileImage?.imageUrl : url + spec?.specialistId?.profileImage?.imageUrl}
+              src={spec.specialistId?.profileImage?.imageUrl}
+              // src={spec?.specialistId?.profileImage?.imageUrl.includes("amazonaws.com") ? spec?.specialistId?.profileImage?.imageUrl : url + spec?.specialistId?.profileImage?.imageUrl}
               alt={spec.name}
               width="100%"
               style={{ objectFit: "cover", borderRadius: "8px" }}
