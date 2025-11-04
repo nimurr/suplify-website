@@ -161,7 +161,7 @@ export default function Navbar() {
 
 
   const user = JSON.parse(localStorage.getItem('user'));
- 
+
 
   // Map role → dashboard route
   const dashboardRoutes = {
@@ -201,6 +201,9 @@ export default function Navbar() {
             </Link> */}
             <Link href="/training-program" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
               Training Program
+            </Link>
+            <Link href="/informational-video" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              Informational Video
             </Link>
             <Link href="/pricing" className={`${pathname === '/pricing' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
               Pricing
