@@ -37,7 +37,7 @@ const landing = apiSlice.injectEndpoints({
         }),
 
         increseCartProduct: builder.mutation({
-            query: ({  id, type }) => ({
+            query: ({ id, type }) => ({
                 url: `/cart-items/count-update/${id}?type=${type}`,
                 method: 'PUT',
             }),
@@ -62,6 +62,16 @@ const landing = apiSlice.injectEndpoints({
             }),
             providesTags: ["Landing"]
         }),
+
+        getAllInformationVideo: builder.query({
+            query: () => ({
+                url: `/information-videos/paginate/patient`,
+                method: 'GET',
+            }),
+            providesTags: ["Landing"]
+        }),
+
+
     })
 })
 
@@ -77,5 +87,6 @@ export const {
     useTakeOrderMutation,
 
 
-    useStartVideoQuery
+    useStartVideoQuery,
+    useGetAllInformationVideoQuery
 } = landing
