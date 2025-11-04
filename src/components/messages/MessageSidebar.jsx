@@ -1,13 +1,73 @@
 'use client';
 
+import socketUrl from '@/utils/socket';
 import Link from 'next/link';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CiSearch } from 'react-icons/ci';
+import { io } from 'socket.io-client';
 
+// 🔑 Your JWT token (replace with dynamic token in real app)
+const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGViM2Q5MDIyMDMzODQ2YzNjYjIyZWQiLCJ1c2VyTmFtZSI6InBhdGllbnQgdGhyZWUiLCJlbWFpbCI6InAzQGdtYWlsLmNvbSIsInJvbGUiOiJwYXRpZW50Iiwic3RyaXBlX2N1c3RvbWVyX2lkIjoiY3VzX1RKMlhicTJTQ0Z5RU9RIiwiaWF0IjoxNzYxOTY3ODg4LCJleHAiOjE3NjIzOTk4ODh9.4U2Xgs3F5WHZJlZHh8JhutCjyTUpSB02QL_Uk_1l120';
+
+let socketInstance = null;
+
+const initializeSocket = () => {
+  if (!socketInstance) {
+    socketInstance = io(socketUrl, {
+      auth: { token: AUTH_TOKEN },
+      extraHeaders: { token: AUTH_TOKEN },
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 10000,
+    });
+  }
+  return socketInstance;
+};
 
 const MessageSidebar = () => {
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
- 
+  useEffect(() => {
+    const socket = initializeSocket();
+
+    const fetchConversations = () => {
+      socket.emit(
+        'get-all-conversations-with-pagination',
+        { page: 1, limit: 10, search: '' },
+        (response) => {
+          setLoading(false);
+          console.log('✅ Conversations response:', response);
+
+          if (response && response.success) {
+            // Adjust based on your actual API response structure
+            const data = Array.isArray(response.data)
+              ? response.data
+              : (response.data && response.data.results) || [];
+
+            setConversations(data);
+          } else {
+            console.error('Failed to load conversations:', response?.message || 'Unknown error');
+          }
+        }
+      );
+    };
+
+    // If already connected, fetch immediately
+    if (socket.connected) {
+      fetchConversations();
+    } else {
+      // Otherwise, wait for connection
+      const onConnect = () => fetchConversations();
+      socket.on('connect', onConnect);
+
+      // Cleanup listener on unmount
+      return () => {
+        socket.off('connect', onConnect);
+      };
+    }
+  }, []);
 
   return (
     <div className="p-3">
@@ -22,24 +82,43 @@ const MessageSidebar = () => {
       </div>
 
       <div className="my-5 bg-gray-100 rounded">
-        {[...Array(6)].map((_, index) => (
-          <Link
-            href={`/chat/${index}`}
-            key={index}
-            className="px-2 py-5 rounded-lg flex items-start hover:bg-red-100 cursor-pointer justify-between gap-1"
-          >
-            <img
-              className="w-10"
-              src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-              alt="User"
-            />
-            <div>
-              <h2 className="font-semibold text-sm">Nimur Rahman Nerob</h2>
-              <p className="text-sm">I just said, we may good...</p>
-            </div>
-            <p className="text-xs">Aug-30</p>
-          </Link>
-        ))}
+        {loading ? (
+          <p className="px-4 py-3 text-gray-500">Loading conversations...</p>
+        ) : conversations.length > 0 ? (
+          conversations.map((conv) => {
+            // You may need to adjust these paths based on your actual data structure
+            const participant = conv.participant || conv.otherUser || {};
+            const lastMessage = conv.lastMessage || {};
+            return (
+              <Link
+                href={`/chat/${conv._id || conv.conversationId}`}
+                key={conv._id || conv.conversationId}
+                className="px-2 py-5 rounded-lg flex items-start hover:bg-gray-200 cursor-pointer justify-between gap-3"
+              >
+                <img
+                  className="w-10 h-10 rounded-full object-cover"
+                  src={participant.profileImage || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
+                  alt={participant.name || 'User'}
+                />
+                <div className="flex-1 min-w-0">
+                  <h2 className="font-semibold text-sm truncate">
+                    {participant.name || 'Unknown User'}
+                  </h2>
+                  <p className="text-sm text-gray-600 truncate">
+                    {lastMessage.text || 'No messages yet'}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500">
+                  {conv.updatedAt
+                    ? new Date(conv.updatedAt).toLocaleDateString()
+                    : 'Just now'}
+                </p>
+              </Link>
+            );
+          })
+        ) : (
+          <p className="px-4 py-3 text-gray-500">No conversations found.</p>
+        )}
       </div>
     </div>
   );

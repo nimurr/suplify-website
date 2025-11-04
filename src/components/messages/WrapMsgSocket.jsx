@@ -1,4 +1,5 @@
 'use client';
+import socketUrl from '@/utils/socket';
 import React, { useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 
@@ -9,7 +10,7 @@ let socket = null;
 
 const initializeSocket = () => {
     if (!socket) {
-        socket = io('https://newsheakh6731.sobhoy.com', {
+        socket = io(socketUrl, {
             // ✅ Method 1: Send via auth (most reliable in browsers)
             auth: {
                 token: AUTH_TOKEN,
