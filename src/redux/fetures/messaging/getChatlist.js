@@ -6,10 +6,10 @@ const getChatlist = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getChatlist: builder.query({
             query: () => `/chating/getChatlist`,
-            providesTags: [{type: "Chat"}]
+            providesTags: [{ type: "Chat" }]
         })
 
     })
 })
 
-export const {useGetChatlistQuery} = getChatlist
+export const { useGetChatlistQuery } = getChatlist;

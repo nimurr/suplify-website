@@ -3,6 +3,8 @@ import React from 'react';
 import { CiSearch } from "react-icons/ci";
 
 const MessageSidebar = () => {
+
+
     return (
         <div className='p-3 '>
             <h2 className='text-center text-2xl font-semibold my-5'>Messages</h2>
