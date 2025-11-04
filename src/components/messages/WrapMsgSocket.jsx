@@ -1,0 +1,63 @@
+'use client';
+import React, { useEffect } from 'react';
+import { io, Socket } from 'socket.io-client';
+
+// 🔑 Replace with your actual token (in real app: from localStorage/context)
+const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGViM2Q5MDIyMDMzODQ2YzNjYjIyZWQiLCJ1c2VyTmFtZSI6InBhdGllbnQgdGhyZWUiLCJlbWFpbCI6InAzQGdtYWlsLmNvbSIsInJvbGUiOiJwYXRpZW50Iiwic3RyaXBlX2N1c3RvbWVyX2lkIjoiY3VzX1RKMlhicTJTQ0Z5RU9RIiwiaWF0IjoxNzYxOTY3ODg4LCJleHAiOjE3NjIzOTk4ODh9.4U2Xgs3F5WHZJlZHh8JhutCjyTUpSB02QL_Uk_1l120';
+
+let socket = null;
+
+const initializeSocket = () => {
+    if (!socket) {
+        socket = io('https://newsheakh6731.sobhoy.com', {
+            // ✅ Method 1: Send via auth (most reliable in browsers)
+            auth: {
+                token: AUTH_TOKEN,
+            },
+            // ✅ Method 2: Also send via custom header (for environments that support it)
+            extraHeaders: {
+                token: AUTH_TOKEN, // 👈 matches `socket.handshake.headers.token`
+            },
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            timeout: 10000,
+            // transports: ['websocket'], // optional
+        });
+    }
+    return socket;
+};
+
+const WrapMsgSocket = ({ children }) => {
+    useEffect(() => {
+        const socketInstance = initializeSocket();
+
+        const onConnect = () => {
+            console.log('✅ Socket connected');
+        };
+
+        const onDisconnect = () => {
+            console.log('❌ Socket disconnected:', reason);
+        };
+
+        const onConnectError = () => {
+            console.error('🔴 Socket connection error:', error.message);
+            if (error.message.includes('Authentication')) {
+                alert('Authentication failed. Please log in again.');
+            }
+        };
+
+        socketInstance.on('connect', onConnect);
+        socketInstance.on('disconnect', onDisconnect);
+        socketInstance.on('connect_error', onConnectError);
+
+        return () => {
+            socketInstance.off('connect', onConnect);
+            socketInstance.off('disconnect', onDisconnect);
+            socketInstance.off('connect_error', onConnectError);
+        };
+    }, []);
+    return children;
+}
+
+export default WrapMsgSocket;
