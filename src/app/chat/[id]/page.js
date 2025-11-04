@@ -1,11 +1,9 @@
-"use client";
-import { useState, useRef } from "react";
+'use client';
+import { useState, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { LuImagePlus } from "react-icons/lu"; // Icon for file upload
 import React from "react";
 import { IoIosSend } from "react-icons/io";
-
-
 
 const Page = () => {
     const { id } = useParams(); // Get chat ID from URL
@@ -61,6 +59,11 @@ const Page = () => {
         return `${date.getHours()}:${date.getMinutes()}`;
     };
 
+    // Scroll to the last message when messages change
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]); // Trigger scroll on messages change
+
     return (
         <div className="p-5">
             <div className={`${!showSidebar ? "block" : "hidden"} w-full md:h-[700px] h-[550px] md:mt-10 flex flex-col md:block`}>
@@ -76,11 +79,11 @@ const Page = () => {
                             <div key={msg._id} className={`flex ${msg.sender?.id === "user1" ? "justify-end" : "justify-start"}`}>
                                 <div
                                     className={`px-4 py-2 rounded-lg break-words ${msg.pending
-                                        ? "bg-gray-500 text-white"
+                                        ? "bg-red-100 text-gray-600"
                                         : msg.error
                                             ? "bg-red-500 text-white"
                                             : msg.sender?.id === "user1"
-                                                ? "bg-red-100 text-black"
+                                                ? "bg-red-200 text-black"
                                                 : "bg-gray-200 text-gray-800"
                                         }`}
                                 >
@@ -90,7 +93,7 @@ const Page = () => {
                                             {formatTime(msg?.createdAt)}
                                         </p>
                                         {msg.pending && (
-                                            <span className="text-xs text-gray-200 ml-2">Sending...</span>
+                                            <span className="text-xs text-blue-500 ml-2">Sending...</span>
                                         )}
                                         {msg.error && (
                                             <span className="text-xs text-gray-200 ml-2">Failed to send</span>
@@ -119,7 +122,6 @@ const Page = () => {
                         {/* Display selected file */}
                         {selectedFile && (
                             <div className="text-sm absolute button-0 text-gray-500 mt-2">
-                                {/* <p>Selected file: {selectedFile.name}</p> */}
                                 {selectedFile.type.startsWith("image/") && (
                                     <img
                                         src={URL.createObjectURL(selectedFile)}
