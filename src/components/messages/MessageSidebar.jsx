@@ -1,6 +1,7 @@
 'use client';
 
 import socketUrl from '@/utils/socket';
+import moment from 'moment';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { CiSearch } from 'react-icons/ci';
@@ -85,7 +86,21 @@ const MessageSidebar = () => {
 
             <div className="my-5 bg-gray-100 rounded">
                 {loading ? (
-                    <p className="px-4 py-3 text-gray-500">Loading conversations...</p>
+                    <div class="mx-auto w-full max-w-sm rounded-md border border-gray-300 p-4">
+                        <div class="flex animate-pulse space-x-4">
+                            <div class="size-10 rounded-full bg-gray-200"></div>
+                            <div class="flex-1 space-y-6 py-1">
+                                <div class="h-2 rounded bg-gray-200"></div>
+                                <div class="space-y-3">
+                                    <div class="grid grid-cols-3 gap-4">
+                                        <div class="col-span-2 h-2 rounded bg-gray-200"></div>
+                                        <div class="col-span-1 h-2 rounded bg-gray-200"></div>
+                                    </div>
+                                    {/* <div class="h-2 rounded bg-gray-200"></div> */}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 ) : conversations?.length > 0 ? (
                     conversations?.map((conv) => {
                         // You may need to adjust these paths based on your actual data structure
@@ -93,7 +108,7 @@ const MessageSidebar = () => {
                         const lastMessage = conv.lastMessage || {};
                         return (
                             <Link
-                                href={`/chat/${conv._id || conv.conversationId}`}
+                                href={`/chat/${conv.userId?._userId || conv.conversationId}`}
                                 key={conv._id || conv.conversationId}
                                 className="px-2 py-5 rounded-lg flex items-start hover:bg-gray-200 cursor-pointer justify-between gap-3"
                             >
@@ -102,8 +117,8 @@ const MessageSidebar = () => {
                                     src={conv?.userId?.profileImage?.imageUrl.includes("amazonaws.com") ? conv?.userId?.profileImage?.imageUrl : url + conv?.userId?.profileImage?.imageUrl}
                                     alt={conv?.userId?.name}
                                 />
-                                 
-                                 
+
+
                                 <div className="flex-1 min-w-0">
                                     <h2 className="font-semibold text-sm truncate">
                                         {conv?.userId?.name}
@@ -113,7 +128,7 @@ const MessageSidebar = () => {
                                     </p>
                                 </div>
                                 <p className="text-xs text-gray-500">
-                                    {conv?.conversations[0]?.updatedAt && moment(conv?.conversations[0]?.updatedAt).fromNow() }
+                                    {conv?.conversations[0]?.updatedAt && moment(conv?.conversations[0]?.updatedAt).fromNow()}
                                 </p>
                             </Link>
                         );
