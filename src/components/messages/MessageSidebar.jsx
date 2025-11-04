@@ -3,6 +3,7 @@
 import socketUrl from '@/utils/socket';
 import moment from 'moment';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { CiSearch } from 'react-icons/ci';
 import { io } from 'socket.io-client';
@@ -27,6 +28,9 @@ const initializeSocket = () => {
 };
 
 const MessageSidebar = () => {
+    const { id } = useParams();
+    console.log(id);
+
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -110,34 +114,34 @@ const MessageSidebar = () => {
                             <Link
                                 href={`/chat/${conv.userId?._userId || conv.conversationId}`}
                                 key={conv._id || conv.conversationId}
-                                className="px-2 py-5 rounded-lg flex items-start hover:bg-gray-200 cursor-pointer justify-between gap-3"
+                                className={`px-2 py-5 rounded-lg flex items-start hover:bg-gray-200 cursor-pointer justify-between gap-3 ${id === conv.userId?._userId && 'bg-blue-200 hover:bg-blue-200' }`}
                             >
-                                <img
-                                    className="w-10 h-10 rounded-full object-cover"
-                                    src={conv?.userId?.profileImage?.imageUrl.includes("amazonaws.com") ? conv?.userId?.profileImage?.imageUrl : url + conv?.userId?.profileImage?.imageUrl}
-                                    alt={conv?.userId?.name}
-                                />
+                <img
+                    className="w-10 h-10 rounded-full object-cover"
+                    src={conv?.userId?.profileImage?.imageUrl.includes("amazonaws.com") ? conv?.userId?.profileImage?.imageUrl : url + conv?.userId?.profileImage?.imageUrl}
+                    alt={conv?.userId?.name}
+                />
 
 
-                                <div className="flex-1 min-w-0">
-                                    <h2 className="font-semibold text-sm truncate">
-                                        {conv?.userId?.name}
-                                    </h2>
-                                    <p className="text-sm text-gray-600 truncate">
-                                        {conv?.conversations[0]?.lastMessage?.length > 25 ? conv?.conversations[0]?.lastMessage?.slice(0, 25) + '...' : conv?.conversations[0]?.lastMessage}
-                                    </p>
-                                </div>
-                                <p className="text-xs text-gray-500">
-                                    {conv?.conversations[0]?.updatedAt && moment(conv?.conversations[0]?.updatedAt).fromNow()}
-                                </p>
-                            </Link>
-                        );
+                <div className="flex-1 min-w-0">
+                    <h2 className="font-semibold text-sm truncate">
+                        {conv?.userId?.name}
+                    </h2>
+                    <p className="text-sm text-gray-600 truncate">
+                        {conv?.conversations[0]?.lastMessage?.length > 25 ? conv?.conversations[0]?.lastMessage?.slice(0, 25) + '...' : conv?.conversations[0]?.lastMessage}
+                    </p>
+                </div>
+                <p className="text-xs text-gray-500">
+                    {conv?.conversations[0]?.updatedAt && moment(conv?.conversations[0]?.updatedAt).fromNow()}
+                </p>
+            </Link>
+            );
                     })
-                ) : (
-                    <p className="px-4 py-3 text-gray-500">No conversations found.</p>
+            ) : (
+            <p className="px-4 py-3 text-gray-500">No conversations found.</p>
                 )}
-            </div>
         </div>
+        </div >
     );
 };
 
