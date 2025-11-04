@@ -102,6 +102,8 @@ const MessageSidebar = () => {
                                     src={conv?.userId?.profileImage?.imageUrl.includes("amazonaws.com") ? conv?.userId?.profileImage?.imageUrl : url + conv?.userId?.profileImage?.imageUrl}
                                     alt={conv?.userId?.name}
                                 />
+                                 
+                                 
                                 <div className="flex-1 min-w-0">
                                     <h2 className="font-semibold text-sm truncate">
                                         {conv?.userId?.name}
