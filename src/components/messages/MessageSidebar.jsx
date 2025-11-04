@@ -12,116 +12,116 @@ const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGViM2Q
 let socketInstance = null;
 
 const initializeSocket = () => {
-  if (!socketInstance) {
-    socketInstance = io(socketUrl, {
-      auth: { token: AUTH_TOKEN },
-      extraHeaders: { token: AUTH_TOKEN },
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      timeout: 10000,
-    });
-  }
-  return socketInstance;
+    if (!socketInstance) {
+        socketInstance = io(socketUrl, {
+            auth: { token: AUTH_TOKEN },
+            extraHeaders: { token: AUTH_TOKEN },
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            timeout: 10000,
+        });
+    }
+    return socketInstance;
 };
 
 const MessageSidebar = () => {
-  const [conversations, setConversations] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [conversations, setConversations] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const socket = initializeSocket();
+    useEffect(() => {
+        const socket = initializeSocket();
 
-    const fetchConversations = () => {
-      socket.emit(
-        'get-all-conversations-with-pagination',
-        { page: 1, limit: 10, search: '' },
-        (response) => {
-          setLoading(false);
-          console.log('✅ Conversations response:', response);
+        const fetchConversations = () => {
+            socket.emit(
+                'get-all-conversations-with-pagination',
+                { page: 1, limit: 10, search: '' },
+                (response) => {
+                    setLoading(false);
+                    console.log('✅ Conversations response:', response);
 
-          if (response && response.success) {
-            // Adjust based on your actual API response structure
-            const data = Array.isArray(response.data)
-              ? response.data
-              : (response.data && response.data.results) || [];
+                    if (response && response.success) {
+                        // Adjust based on your actual API response structure
+                        const data = Array.isArray(response.data)
+                            ? response.data
+                            : (response.data && response.data.results) || [];
 
-            setConversations(data);
-          } else {
-            console.error('Failed to load conversations:', response?.message || 'Unknown error');
-          }
-        }
-      );
-    };
-
-    // If already connected, fetch immediately
-    if (socket.connected) {
-      fetchConversations();
-    } else {
-      // Otherwise, wait for connection
-      const onConnect = () => fetchConversations();
-      socket.on('connect', onConnect);
-
-      // Cleanup listener on unmount
-      return () => {
-        socket.off('connect', onConnect);
-      };
-    }
-  }, []);
-
-  return (
-    <div className="p-3">
-      <h2 className="text-center text-2xl font-semibold my-5">Messages</h2>
-      <div className="relative">
-        <CiSearch className="absolute text-[#b8b8b8] top-[14px] text-2xl left-3" />
-        <input
-          className="py-3 w-full pl-10 px-2 rounded-lg focus:border-blue-300 outline-none border-2 border-gray-200"
-          type="text"
-          placeholder="Search Here..."
-        />
-      </div>
-
-      <div className="my-5 bg-gray-100 rounded">
-        {loading ? (
-          <p className="px-4 py-3 text-gray-500">Loading conversations...</p>
-        ) : conversations.length > 0 ? (
-          conversations.map((conv) => {
-            // You may need to adjust these paths based on your actual data structure
-            const participant = conv.participant || conv.otherUser || {};
-            const lastMessage = conv.lastMessage || {};
-            return (
-              <Link
-                href={`/chat/${conv._id || conv.conversationId}`}
-                key={conv._id || conv.conversationId}
-                className="px-2 py-5 rounded-lg flex items-start hover:bg-gray-200 cursor-pointer justify-between gap-3"
-              >
-                <img
-                  className="w-10 h-10 rounded-full object-cover"
-                  src={participant.profileImage || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
-                  alt={participant.name || 'User'}
-                />
-                <div className="flex-1 min-w-0">
-                  <h2 className="font-semibold text-sm truncate">
-                    {participant.name || 'Unknown User'}
-                  </h2>
-                  <p className="text-sm text-gray-600 truncate">
-                    {lastMessage.text || 'No messages yet'}
-                  </p>
-                </div>
-                <p className="text-xs text-gray-500">
-                  {conv.updatedAt
-                    ? new Date(conv.updatedAt).toLocaleDateString()
-                    : 'Just now'}
-                </p>
-              </Link>
+                        setConversations(data);
+                    } else {
+                        console.error('Failed to load conversations:', response?.message || 'Unknown error');
+                    }
+                }
             );
-          })
-        ) : (
-          <p className="px-4 py-3 text-gray-500">No conversations found.</p>
-        )}
-      </div>
-    </div>
-  );
+        };
+
+        // If already connected, fetch immediately
+        if (socket.connected) {
+            fetchConversations();
+        } else {
+            // Otherwise, wait for connection
+            const onConnect = () => fetchConversations();
+            socket.on('connect', onConnect);
+
+            // Cleanup listener on unmount
+            return () => {
+                socket.off('connect', onConnect);
+            };
+        }
+    }, []);
+
+    console.log(conversations);
+
+    return (
+        <div className="p-3">
+            <h2 className="text-center text-2xl font-semibold my-5">Messages</h2>
+            <div className="relative">
+                <CiSearch className="absolute text-[#b8b8b8] top-[14px] text-2xl left-3" />
+                <input
+                    className="py-3 w-full pl-10 px-2 rounded-lg focus:border-blue-300 outline-none border-2 border-gray-200"
+                    type="text"
+                    placeholder="Search Here..."
+                />
+            </div>
+
+            <div className="my-5 bg-gray-100 rounded">
+                {loading ? (
+                    <p className="px-4 py-3 text-gray-500">Loading conversations...</p>
+                ) : conversations?.length > 0 ? (
+                    conversations?.map((conv) => {
+                        // You may need to adjust these paths based on your actual data structure
+                        const participant = conv.participant || conv.otherUser || {};
+                        const lastMessage = conv.lastMessage || {};
+                        return (
+                            <Link
+                                href={`/chat/${conv._id || conv.conversationId}`}
+                                key={conv._id || conv.conversationId}
+                                className="px-2 py-5 rounded-lg flex items-start hover:bg-gray-200 cursor-pointer justify-between gap-3"
+                            >
+                                <img
+                                    className="w-10 h-10 rounded-full object-cover"
+                                    src={conv?.userId?.profileImage?.imageUrl.includes("amazonaws.com") ? conv?.userId?.profileImage?.imageUrl : url + conv?.userId?.profileImage?.imageUrl}
+                                    alt={conv?.userId?.name}
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <h2 className="font-semibold text-sm truncate">
+                                        {conv?.userId?.name}
+                                    </h2>
+                                    <p className="text-sm text-gray-600 truncate">
+                                        {conv?.conversations[0]?.lastMessage?.length > 25 ? conv?.conversations[0]?.lastMessage?.slice(0, 25) + '...' : conv?.conversations[0]?.lastMessage}
+                                    </p>
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                    {conv?.conversations[0]?.updatedAt && moment(conv?.conversations[0]?.updatedAt).fromNow() }
+                                </p>
+                            </Link>
+                        );
+                    })
+                ) : (
+                    <p className="px-4 py-3 text-gray-500">No conversations found.</p>
+                )}
+            </div>
+        </div>
+    );
 };
 
 export default MessageSidebar;

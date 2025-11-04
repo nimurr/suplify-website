@@ -38,7 +38,7 @@ const WrapMsgSocket = ({ children }) => {
         };
 
         const onDisconnect = () => {
-            console.log('❌ Socket disconnected:', reason);
+            console.log('❌ Socket disconnected:');
         };
 
         const onConnectError = () => {
