@@ -47,12 +47,12 @@ const ProductCard = ({ product, onViewDetails }) => {
       bodyStyle={{ padding: '16px' }}
     >
       <Toaster />
-      <p className="text-gray-600">{product.category.charAt(0).toUpperCase() + product.category.slice(1)}</p>
-      <h3 className="text-lg font-bold">${product.price}</h3>
+      <p className="text-gray-700 font-semibold text-xl">{product.name.charAt(0).toUpperCase() + product.name.slice(1)}</p>
+      <h3 className="text-2xl font-bold">${product.price}</h3>
       <p className="text-sm text-gray-500 mb-2">
         {/* Render either truncated or full description based on state */}
         {show ? product?.description : (product?.description?.length > 100 ? product.description.slice(0, 100) + '...' : product?.description)}
-        
+
         {/* Toggle button to see more or less */}
         {product?.description?.length > 100 && (
           <button onClick={toggleDescription} className="text-blue-600 flex items-center text-sm">
