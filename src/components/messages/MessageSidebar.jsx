@@ -43,7 +43,7 @@ const MessageSidebar = () => {
                 { page: 1, limit: 10, search: '' },
                 (response) => {
                     setLoading(false);
-                    console.log('✅ Conversations response:', response);
+                    // console.log('✅ Conversations response:', response);
 
                     if (response && response.success) {
                         // Adjust based on your actual API response structure
@@ -74,7 +74,7 @@ const MessageSidebar = () => {
         }
     }, []);
 
-    console.log(conversations);
+    // console.log(conversations);
 
     return (
         <div className="p-3">

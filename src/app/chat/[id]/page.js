@@ -6,6 +6,7 @@ import React from "react";
 import { IoIosSend } from "react-icons/io";
 import { io } from 'socket.io-client';
 import socketUrl from "@/utils/socket";
+import moment from "moment";
 
 const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGViM2Q5MDIyMDMzODQ2YzNjYjIyZWQiLCJ1c2VyTmFtZSI6InBhdGllbnQgdGhyZWUiLCJlbWFpbCI6InAzQGdtYWlsLmNvbSIsInJvbGUiOiJwYXRpZW50Iiwic3RyaXBlX2N1c3RvbWVyX2lkIjoiY3VzX1RKMlhicTJTQ0Z5RU9RIiwiaWF0IjoxNzYxOTY3ODg4LCJleHAiOjE3NjIzOTk4ODh9.4U2Xgs3F5WHZJlZHh8JhutCjyTUpSB02QL_Uk_1l120';
 
@@ -28,23 +29,35 @@ const initializeSocket = () => {
 
 
 const Page = () => {
-    const { id } = useParams(); // Get chat ID from URL
     const inputRef = useRef(null);
     const messagesEndRef = useRef(null);
     const [fullMessage, setFullMessage] = useState([]);
 
+    const { id } = useParams(); // Get chat ID from URL
+    const [user, setUser] = useState(null);
+
+    const socket = initializeSocket();
 
     useEffect(() => {
-        const socket = initializeSocket();
+        const user = localStorage.getItem('user');
+        const fullUser = JSON.parse(user);
+        setUser(fullUser);
+
 
         socket.emit('get-all-message-by-conversationId', { conversationId: id, page: 1, limit: 10 }, (response) => {
             console.log('✅ Joined conversation:', response?.data?.results);
             setFullMessage(response?.data?.results);
         });
 
-    }, []);
-    console.log(fullMessage);
+        // send new message with :- send-new-message
 
+        // {
+        // for send-new-message
+        // "conversationId": "690090300faf5014b8d671fb",
+        //     "text": "from p3 to s3 for third time"
+        // }
+
+    }, []);
 
 
     const [showSidebar, setShowSidebar] = useState(false);
@@ -62,31 +75,28 @@ const Page = () => {
     const [selectedFile, setSelectedFile] = useState(null); // New state to handle file upload
 
     const handleSendMessage = () => {
-        if (newMessage.trim()) {
-            setIsLoading(true);
-            const newMsg = {
-                _id: Math.random().toString(),
-                text: newMessage,
-                sender: { id: "user1", name: activeUser.name },
-                createdAt: new Date(),
-                pending: true,
-                error: false,
-            };
-            setMessages([...messages, newMsg]);
-            setNewMessage("");
-            setIsLoading(false);
-            setTimeout(() => {
-                setMessages((prevMessages) =>
-                    prevMessages.map((msg) =>
-                        msg._id === newMsg._id ? { ...msg, pending: false } : msg
-                    )
-                );
-            }, 2000);
-        }
+
+        // Ensure the socket is connected
+        const messageData = {
+            conversationId: "690090300faf5014b8d671fb",
+            text: "from p3 to s3 for third time",
+        };
+
+        // Send the message to the server
+        socket.emit('send-new-message', messageData, (response) => {
+            console.log('✅ Joined conversation:', response);
+            if (response?.success) {
+                setNewMessage('');
+            }
+        });
+
     };
 
+
     const handleFileChange = (e) => {
+
         const file = e.target.files[0];
+        console.log(file);
         if (file) {
             setSelectedFile(file);
         }
@@ -99,7 +109,7 @@ const Page = () => {
     // Scroll to the last message when messages change
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]); // Trigger scroll on messages change
+    }, [fullMessage]); // Trigger scroll on messages change
 
     return (
         <div className="p-5">
@@ -111,23 +121,31 @@ const Page = () => {
                         paddingBottom: "50px",
                     }}
                 >
-                    {messages.length > 0 ? (
-                        messages.map((msg) => (
-                            <div key={msg._id} className={`flex ${msg.sender?.id === "user1" ? "justify-end" : "justify-start"}`}>
+                    {fullMessage?.length > 0 ? (
+                        fullMessage?.map((msg) => (
+                            <div key={msg._id} className={`flex ${msg.senderId?._userId === user?.id ? "justify-end" : "justify-start"}`}>
+
+                                {
+                                    msg.senderId?._userId !== user?.id && (
+                                        <div className="mr-2">
+                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl} alt="" />
+                                        </div>
+                                    )
+                                }
                                 <div
                                     className={`px-4 py-2 rounded-lg break-words ${msg.pending
                                         ? "bg-red-100 text-gray-600"
                                         : msg.error
                                             ? "bg-red-500 text-white"
-                                            : msg.sender?.id === "user1"
+                                            : msg.senderId?._userId === user?.id
                                                 ? "bg-red-200 text-black"
                                                 : "bg-gray-200 text-gray-800"
                                         }`}
                                 >
-                                    <p>{msg.text}</p>
+                                    <p>{msg?.text}</p>
                                     <div className="flex justify-between items-center mt-1">
                                         <p className={`text-xs ${msg.sender?.id === "user1" ? "text-gray-600" : "text-gray-500"}`}>
-                                            {formatTime(msg?.createdAt)}
+                                            {moment(msg.createdAt).fromNow()}
                                         </p>
                                         {msg.pending && (
                                             <span className="text-xs text-blue-500 ml-2">Sending...</span>
@@ -137,10 +155,19 @@ const Page = () => {
                                         )}
                                     </div>
                                 </div>
+                                {
+                                    msg.senderId?._userId === user?.id && (
+                                        <div className="mr-2">
+                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl} alt="" />
+                                        </div>
+                                    )
+                                }
                             </div>
                         ))
                     ) : (
-                        <p className="text-center text-gray-500">No messages available</p>
+                        <div className="h-[500px] flex items-center justify-center">
+                            <p className="text-center text-gray-500">No messages available</p>
+                        </div>
                     )}
                     <div ref={messagesEndRef} />
                 </div>
@@ -177,13 +204,12 @@ const Page = () => {
                         placeholder="Type your message"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                        disabled={!activeUser}
+                    // onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                    // disabled={!activeUser}
                     />
                     <button
                         className={`bg-red-600 text-white cursor-pointer rounded-lg text-xl p-2 md:text-base whitespace-nowrap ${(!activeUser || !newMessage.trim() || isLoading) ? '' : ''}`}
                         onClick={handleSendMessage}
-                        disabled={!activeUser || !newMessage.trim()}
                     >
                         <IoIosSend className="text-2xl" />
                     </button>
