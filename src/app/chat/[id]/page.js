@@ -4,13 +4,46 @@ import { useParams } from "next/navigation";
 import { LuImagePlus } from "react-icons/lu"; // Icon for file upload
 import React from "react";
 import { IoIosSend } from "react-icons/io";
+import { io } from 'socket.io-client';
+import socketUrl from "@/utils/socket";
+
+const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGViM2Q5MDIyMDMzODQ2YzNjYjIyZWQiLCJ1c2VyTmFtZSI6InBhdGllbnQgdGhyZWUiLCJlbWFpbCI6InAzQGdtYWlsLmNvbSIsInJvbGUiOiJwYXRpZW50Iiwic3RyaXBlX2N1c3RvbWVyX2lkIjoiY3VzX1RKMlhicTJTQ0Z5RU9RIiwiaWF0IjoxNzYxOTY3ODg4LCJleHAiOjE3NjIzOTk4ODh9.4U2Xgs3F5WHZJlZHh8JhutCjyTUpSB02QL_Uk_1l120';
+
+let socketInstance = null;
+
+const initializeSocket = () => {
+    if (!socketInstance) {
+        socketInstance = io(socketUrl, {
+            auth: { token: AUTH_TOKEN },
+            extraHeaders: { token: AUTH_TOKEN },
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            timeout: 10000,
+        });
+    }
+    return socketInstance;
+};
+
+
 
 const Page = () => {
     const { id } = useParams(); // Get chat ID from URL
     const inputRef = useRef(null);
     const messagesEndRef = useRef(null);
+    const [fullMessage, setFullMessage] = useState([]);
 
-    
+
+    useEffect(() => {
+        const socket = initializeSocket();
+
+        socket.emit('get-all-message-by-conversationId', { conversationId: id, page: 1, limit: 10 }, (response) => {
+            console.log('✅ Joined conversation:', response?.data?.results);
+            setFullMessage(response?.data?.results);
+        });
+
+    }, []);
+    console.log(fullMessage);
 
 
 
@@ -155,7 +188,7 @@ const Page = () => {
                         <IoIosSend className="text-2xl" />
                     </button>
                 </div>
-                
+
             </div>
         </div>
     );
