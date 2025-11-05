@@ -45,19 +45,13 @@ const Page = () => {
 
 
         socket.emit('get-all-message-by-conversationId', { conversationId: id, page: 1, limit: 10 }, (response) => {
-            console.log('✅ Joined conversation:', response?.data?.results);
+            console.log('✅ Joined conversation before:', response?.data);
             setFullMessage(response?.data?.results);
         });
 
-        // send new message with :- send-new-message
 
-        // {
-        // for send-new-message
-        // "conversationId": "690090300faf5014b8d671fb",
-        //     "text": "from p3 to s3 for third time"
-        // }
-
-    }, []);
+    }, [fullMessage.length]);
+    console.log('✅ Joined conversation after:', fullMessage);
 
 
     const [showSidebar, setShowSidebar] = useState(false);
@@ -79,7 +73,7 @@ const Page = () => {
         // Ensure the socket is connected
         const messageData = {
             conversationId: "690090300faf5014b8d671fb",
-            text: "from p3 to s3 for third time",
+            text: newMessage,
         };
 
         // Send the message to the server
@@ -121,7 +115,7 @@ const Page = () => {
                         paddingBottom: "50px",
                     }}
                 >
-                    {fullMessage?.length > 0 ? (
+                    {fullMessage ? (
                         fullMessage?.map((msg) => (
                             <div key={msg._id} className={`flex ${msg.senderId?._userId === user?.id ? "justify-end" : "justify-start"}`}>
 
@@ -165,9 +159,48 @@ const Page = () => {
                             </div>
                         ))
                     ) : (
-                        <div className="h-[500px] flex items-center justify-center">
-                            <p className="text-center text-gray-500">No messages available</p>
-                        </div>
+                        fullMessage?.map((msg) => (
+                            <div key={msg._id} className={`flex ${msg.senderId?._userId === user?.id ? "justify-end" : "justify-start"}`}>
+
+                                {
+                                    msg.senderId?._userId !== user?.id && (
+                                        <div className="mr-2">
+                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl} alt="" />
+                                        </div>
+                                    )
+                                }
+                                <div
+                                    className={`px-4 py-2 rounded-lg break-words ${msg.pending
+                                        ? "bg-red-100 text-gray-600"
+                                        : msg.error
+                                            ? "bg-red-500 text-white"
+                                            : msg.senderId?._userId === user?.id
+                                                ? "bg-red-200 text-black"
+                                                : "bg-gray-200 text-gray-800"
+                                        }`}
+                                >
+                                    <p>{msg?.text}</p>
+                                    <div className="flex justify-between items-center mt-1">
+                                        <p className={`text-xs ${msg.sender?.id === "user1" ? "text-gray-600" : "text-gray-500"}`}>
+                                            {moment(msg.createdAt).fromNow()}
+                                        </p>
+                                        {msg.pending && (
+                                            <span className="text-xs text-blue-500 ml-2">Sending...</span>
+                                        )}
+                                        {msg.error && (
+                                            <span className="text-xs text-gray-200 ml-2">Failed to send</span>
+                                        )}
+                                    </div>
+                                </div>
+                                {
+                                    msg.senderId?._userId === user?.id && (
+                                        <div className="mr-2">
+                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl} alt="" />
+                                        </div>
+                                    )
+                                }
+                            </div>
+                        ))
                     )}
                     <div ref={messagesEndRef} />
                 </div>
