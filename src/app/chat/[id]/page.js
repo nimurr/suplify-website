@@ -32,6 +32,7 @@ const Page = () => {
     const inputRef = useRef(null);
     const messagesEndRef = useRef(null);
     const [fullMessage, setFullMessage] = useState([]);
+    const [totalPages, setTotalPages] = useState(1);
 
     const { id } = useParams(); // Get chat ID from URL
     const [user, setUser] = useState(null);
@@ -46,6 +47,7 @@ const Page = () => {
 
         socket.emit('get-all-message-by-conversationId', { conversationId: id, page: 1, limit: 10 }, (response) => {
             console.log('✅ Joined conversation before:', response?.data);
+            setTotalPages(response?.data?.totalPages);
             setFullMessage(response?.data?.results);
         });
 
@@ -81,6 +83,14 @@ const Page = () => {
             console.log('✅ Joined conversation:', response);
             if (response?.success) {
                 setNewMessage('');
+                const user = localStorage.getItem('user');
+                const fullUser = JSON.parse(user);
+                setUser(fullUser);
+                socket.emit('get-all-message-by-conversationId', { conversationId: id, page: 1, limit: 10 }, (response) => {
+                    console.log('✅ Joined conversation before:', response?.data);
+                    setTotalPages(response?.data?.totalPages);
+                    setFullMessage(response?.data?.results);
+                });
             }
         });
 
