@@ -77,15 +77,14 @@ export default function DoctorPage() {
   const { data: data2 } = useGetAllOthersQuery()
   const othersFullData = data2?.data?.attributes?.results;
 
-  console.log(data2);
-
 
   const ViewFull = (id) => {
     if (data?.data?.additionalResponse?.subscriptionType == 'none' || data2?.data?.additionalResponse?.subscriptionType == 'none') {
-      return toast.error('Please subscribe to use this feature')
+      return toast.error('Please Buy Subscription to View Full Details')
     }
-    router.push(`/dashboard/specialist/${id}`)
+    router.push(`/dashboard/doctor/view-full/${id}`)
   }
+
 
   return (
     <div className=" mx-auto p-6 space-y-10">

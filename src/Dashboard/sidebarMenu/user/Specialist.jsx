@@ -65,7 +65,7 @@ const SpecialistsPage = () => {
 
   const ViewFull = (id) => {
     if (specialistData?.data?.additionalResponse?.subscriptionType == 'none' || specialistData?.data?.additionalResponse?.subscriptionType == 'none') {
-      return toast.error('Please subscribe to use this feature')
+      return toast.error('Please Buy Subscription to View Full Details')
     }
     router.push(`/dashboard/specialist/${id}`)
   }
@@ -97,39 +97,41 @@ const SpecialistsPage = () => {
 
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {data.map((spec) => (
+        {data?.map((spec) => (
           <div
             key={spec.id}
             className="bg-white border rounded-lg shadow-sm p-4 max-w-xs w-full"
           >
-            <AntImage
-              // src={spec.specialistId?.profileImage?.imageUrl}
-              src={spec?.specialistId?.profileImage?.imageUrl.includes("amazonaws") ? spec?.specialistId?.profileImage?.imageUrl : url + spec?.specialistId?.profileImage?.imageUrl}
-              alt={spec.name}
-              width="100%"
-              style={{ objectFit: "cover", borderRadius: "8px" }}
-              preview={false}
-            />
-            <h3 className="mt-4 font-semibold text-lg">{spec.specialistId.name}</h3>
+            {
+              activeTab !== "your" ?
+                <AntImage
+                  // src={spec.specialistId?.profileImage?.imageUrl}
+                  src={spec?.profileImage?.imageUrl.includes("amazonaws") ? spec?.profileImage?.imageUrl : url + spec?.profileImage?.imageUrl}
+                  alt={spec.name}
+                  width="100%"
+                  style={{ objectFit: "cover", borderRadius: "8px" }}
+                  preview={false}
+                /> :
+                <AntImage
+                  // src={spec.specialistId?.profileImage?.imageUrl}
+                  src={spec?.specialistId?.profileImage?.imageUrl.includes("amazonaws") ? spec?.specialistId?.profileImage?.imageUrl : url + spec?.specialistId?.profileImage?.imageUrl}
+                  alt={spec.name}
+                  width="100%"
+                  style={{ objectFit: "cover", borderRadius: "8px" }}
+                  preview={false}
+                />
+            }
+
+            <h3 className="mt-4 font-semibold text-lg">{activeTab !== "your" ? spec.name : spec.specialistId.name}</h3>
             <p className="text-sm text-gray-600 mb-2">
+              {
+                activeTab !== "your" ?
+                  spec?.profile?.description?.length > 100 ? `${spec?.profile?.description.slice(0, 100)}...` : spec?.profile?.description :
+                  spec?.specialistId?.profileId?.description?.length > 100 ? `${spec?.specialistId?.profileId?.description.slice(0, 100)}...` : spec?.specialistId?.profileId?.description
+              }
               {spec?.specialistId?.profileId?.description?.length > 100 ? `${spec?.specialistId?.profileId?.description.slice(0, 100)}...` : spec?.specialistId?.profileId?.description}
             </p>
-            <div className="flex items-center gap-2 text-sm flex-wrap mb-1">
-              {
-                spec?.specialistId?.profileId?.protocolNames?.map((program, index) => (
-                  <span key={index} className="border px-2 py-1 rounded-full text-gray-600">
-                    {program}
-                  </span>
-                )) || 'No Programs Available' // Optionally handle if howManyPrograms is empty or undefined
-              }
-            </div>
-            <div className="flex items-center gap-2 text-sm text-gray-700 mb-4">
-              <LaptopOutlined />
-              {
-                spec?.specialistId?.profileId?.howManyPrograms
-              }
-              <span>Programs</span>
-            </div>
+
             <CustomButton
               onClick={() => ViewFull(spec?.specialistId?._userId)}
               text="View Full"
