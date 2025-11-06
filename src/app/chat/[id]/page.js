@@ -8,7 +8,14 @@ import { io } from 'socket.io-client';
 import socketUrl from "@/utils/socket";
 import moment from "moment";
 
-const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGViM2Q5MDIyMDMzODQ2YzNjYjIyZWQiLCJ1c2VyTmFtZSI6InBhdGllbnQgdGhyZWUiLCJlbWFpbCI6InAzQGdtYWlsLmNvbSIsInJvbGUiOiJwYXRpZW50Iiwic3RyaXBlX2N1c3RvbWVyX2lkIjoiY3VzX1RKMlhicTJTQ0Z5RU9RIiwiaWF0IjoxNzYxOTY3ODg4LCJleHAiOjE3NjIzOTk4ODh9.4U2Xgs3F5WHZJlZHh8JhutCjyTUpSB02QL_Uk_1l120';
+// get token from localStorage and set it to AUTH_TOKEN
+let AUTH_TOKEN = '';
+if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    if (token) {
+        AUTH_TOKEN = token;
+    }
+}
 
 let socketInstance = null;
 
@@ -29,6 +36,14 @@ const initializeSocket = () => {
 
 
 const Page = () => {
+
+
+    const [showSidebar, setShowSidebar] = useState(false);
+
+    const [newMessage, setNewMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null); // New state to handle file upload
+
     const inputRef = useRef(null);
     const messagesEndRef = useRef(null);
     const [fullMessage, setFullMessage] = useState([]);
@@ -46,52 +61,53 @@ const Page = () => {
 
 
         socket.emit('get-all-message-by-conversationId', { conversationId: id, page: 1, limit: 10 }, (response) => {
-            console.log('✅ Joined conversation before:', response?.data);
+            // console.log('✅ Joined conversation before:', response?.data?.results);
             setTotalPages(response?.data?.totalPages);
-            setFullMessage(response?.data?.results);
+            setFullMessage(response?.data?.results.reverse());
+        });
+
+
+        // new message new-message-received::id 
+
+        socket.on(`new-message-received::${id}`, (res) => {
+            console.log('✅ new-message-received', res);
+            // setMsg(res);
         });
 
 
     }, [fullMessage.length]);
-    console.log('✅ Joined conversation after:', fullMessage);
 
+    // console.log(fullMessage);
 
-    const [showSidebar, setShowSidebar] = useState(false);
-    const [activeUser, setActiveUser] = useState({
-        name: "Nimur Rahman Nerob",
-        status: "Active",
-    });
-    const [messages, setMessages] = useState([
-        { _id: "1", text: "Hello, how are you?", sender: { id: "user1", name: "Nimur Rahman Nerob" }, createdAt: new Date(), pending: false, error: false },
-        { _id: "2", text: "I'm good, thanks!", sender: { id: "user2", name: "Abu Syad" }, createdAt: new Date(), pending: false, error: false },
-        { _id: "3", text: "What are you up to?", sender: { id: "user1", name: "Nimur Rahman Nerob" }, createdAt: new Date(), pending: false, error: false },
-    ]);
-    const [newMessage, setNewMessage] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null); // New state to handle file upload
 
     const handleSendMessage = () => {
 
         // Ensure the socket is connected
         const messageData = {
-            conversationId: "690090300faf5014b8d671fb",
+            conversationId: id,
             text: newMessage,
         };
 
         // Send the message to the server
         socket.emit('send-new-message', messageData, (response) => {
-            console.log('✅ Joined conversation:', response);
+            // console.log('✅ Joined conversation:', response);
             if (response?.success) {
                 setNewMessage('');
                 const user = localStorage.getItem('user');
                 const fullUser = JSON.parse(user);
                 setUser(fullUser);
                 socket.emit('get-all-message-by-conversationId', { conversationId: id, page: 1, limit: 10 }, (response) => {
-                    console.log('✅ Joined conversation before:', response?.data);
+                    // console.log('✅ Joined conversation before:', response?.data);
                     setTotalPages(response?.data?.totalPages);
-                    setFullMessage(response?.data?.results);
+                    setFullMessage(response?.data?.results.reverse());
                 });
             }
+        });
+
+
+        socket.on(`new-message-received::${id}`, (res) => {
+            console.log('✅ new-message-received', res);
+            // setMsg(res);
         });
 
     };
@@ -126,7 +142,7 @@ const Page = () => {
                     }}
                 >
                     {fullMessage ? (
-                        fullMessage?.map((msg) => (
+                        fullMessage?.reverse()?.map((msg) => (
                             <div key={msg._id} className={`flex ${msg.senderId?._userId === user?.id ? "justify-end" : "justify-start"}`}>
 
                                 {
@@ -161,7 +177,7 @@ const Page = () => {
                                 </div>
                                 {
                                     msg.senderId?._userId === user?.id && (
-                                        <div className="mr-2">
+                                        <div className="ml-2">
                                             <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl} alt="" />
                                         </div>
                                     )
@@ -169,7 +185,7 @@ const Page = () => {
                             </div>
                         ))
                     ) : (
-                        fullMessage?.map((msg) => (
+                        fullMessage?.reverse()?.map((msg) => (
                             <div key={msg._id} className={`flex ${msg.senderId?._userId === user?.id ? "justify-end" : "justify-start"}`}>
 
                                 {
@@ -251,7 +267,7 @@ const Page = () => {
                     // disabled={!activeUser}
                     />
                     <button
-                        className={`bg-red-600 text-white cursor-pointer rounded-lg text-xl p-2 md:text-base whitespace-nowrap ${(!activeUser || !newMessage.trim() || isLoading) ? '' : ''}`}
+                        className={`bg-red-600 text-white cursor-pointer rounded-lg text-xl p-2 md:text-base whitespace-nowrap `}
                         onClick={handleSendMessage}
                     >
                         <IoIosSend className="text-2xl" />

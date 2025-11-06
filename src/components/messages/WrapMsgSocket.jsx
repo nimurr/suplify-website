@@ -5,7 +5,13 @@ import { io, Socket } from 'socket.io-client';
 
 // 🔑 Replace with your actual token (in real app: from localStorage/context)
 
-const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGViM2Q5MDIyMDMzODQ2YzNjYjIyZWQiLCJ1c2VyTmFtZSI6InBhdGllbnQgdGhyZWUiLCJlbWFpbCI6InAzQGdtYWlsLmNvbSIsInJvbGUiOiJwYXRpZW50Iiwic3RyaXBlX2N1c3RvbWVyX2lkIjoiY3VzX1RKMlhicTJTQ0Z5RU9RIiwiaWF0IjoxNzYxOTY3ODg4LCJleHAiOjE3NjIzOTk4ODh9.4U2Xgs3F5WHZJlZHh8JhutCjyTUpSB02QL_Uk_1l120';
+let AUTH_TOKEN = '';
+if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    if (token) {
+        AUTH_TOKEN = token;
+    }
+}
 
 let socket = null;
 

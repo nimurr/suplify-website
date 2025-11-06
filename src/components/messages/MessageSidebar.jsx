@@ -10,7 +10,13 @@ import { io } from 'socket.io-client';
 
 // 🔑 Your JWT token (replace with dynamic token in real app)
 
-const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGViM2Q5MDIyMDMzODQ2YzNjYjIyZWQiLCJ1c2VyTmFtZSI6InBhdGllbnQgdGhyZWUiLCJlbWFpbCI6InAzQGdtYWlsLmNvbSIsInJvbGUiOiJwYXRpZW50Iiwic3RyaXBlX2N1c3RvbWVyX2lkIjoiY3VzX1RKMlhicTJTQ0Z5RU9RIiwiaWF0IjoxNzYxOTY3ODg4LCJleHAiOjE3NjIzOTk4ODh9.4U2Xgs3F5WHZJlZHh8JhutCjyTUpSB02QL_Uk_1l120';
+let AUTH_TOKEN = '';
+if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    if (token) {
+        AUTH_TOKEN = token;
+    }
+}
 
 let socketInstance = null;
 
@@ -76,6 +82,16 @@ const MessageSidebar = () => {
 
     // console.log(conversations);
 
+    const handleJoinSocket = () => {
+        const socket = initializeSocket();
+        const conversationId = {
+            conversationId: id,
+        };
+        socket.emit('join', conversationId, (response) => {
+            console.log('✅ Joined conversation:', response);
+        }); 
+    };
+
     return (
         <div className="p-3">
             <h2 className="text-center text-2xl font-semibold my-5">Messages</h2>
@@ -115,6 +131,7 @@ const MessageSidebar = () => {
                                 href={`/chat/${conv.conversations[0]?._conversationId || conv.conversationId}`}
                                 key={conv._id || conv.conversationId}
                                 className={`px-2 py-5 rounded-lg flex items-start hover:bg-gray-200 cursor-pointer justify-between gap-3 ${id === conv.conversations[0]?._conversationId && 'bg-blue-200 hover:bg-blue-200'}`}
+                                onClick={handleJoinSocket}
                             >
                                 <img
                                     className="w-10 h-10 rounded-full object-cover"
