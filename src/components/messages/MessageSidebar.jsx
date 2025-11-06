@@ -9,6 +9,7 @@ import { CiSearch } from 'react-icons/ci';
 import { io } from 'socket.io-client';
 
 // 🔑 Your JWT token (replace with dynamic token in real app)
+
 const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGViM2Q5MDIyMDMzODQ2YzNjYjIyZWQiLCJ1c2VyTmFtZSI6InBhdGllbnQgdGhyZWUiLCJlbWFpbCI6InAzQGdtYWlsLmNvbSIsInJvbGUiOiJwYXRpZW50Iiwic3RyaXBlX2N1c3RvbWVyX2lkIjoiY3VzX1RKMlhicTJTQ0Z5RU9RIiwiaWF0IjoxNzYxOTY3ODg4LCJleHAiOjE3NjIzOTk4ODh9.4U2Xgs3F5WHZJlZHh8JhutCjyTUpSB02QL_Uk_1l120';
 
 let socketInstance = null;
@@ -29,7 +30,6 @@ const initializeSocket = () => {
 
 const MessageSidebar = () => {
     const { id } = useParams();
-    console.log(id);
 
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -43,7 +43,7 @@ const MessageSidebar = () => {
                 { page: 1, limit: 10, search: '' },
                 (response) => {
                     setLoading(false);
-                    console.log('✅ Conversations response:', response);
+                    // console.log('✅ Conversations response:', response);
 
                     if (response && response.success) {
                         // Adjust based on your actual API response structure
@@ -74,7 +74,7 @@ const MessageSidebar = () => {
         }
     }, []);
 
-    console.log(conversations);
+    // console.log(conversations);
 
     return (
         <div className="p-3">
@@ -112,35 +112,35 @@ const MessageSidebar = () => {
                         const lastMessage = conv.lastMessage || {};
                         return (
                             <Link
-                                href={`/chat/${conv.userId?._userId || conv.conversationId}`}
+                                href={`/chat/${conv.conversations[0]?._conversationId || conv.conversationId}`}
                                 key={conv._id || conv.conversationId}
-                                className={`px-2 py-5 rounded-lg flex items-start hover:bg-gray-200 cursor-pointer justify-between gap-3 ${id === conv.userId?._userId && 'bg-blue-200 hover:bg-blue-200' }`}
+                                className={`px-2 py-5 rounded-lg flex items-start hover:bg-gray-200 cursor-pointer justify-between gap-3 ${id === conv.conversations[0]?._conversationId && 'bg-blue-200 hover:bg-blue-200'}`}
                             >
-                <img
-                    className="w-10 h-10 rounded-full object-cover"
-                    src={conv?.userId?.profileImage?.imageUrl.includes("amazonaws.com") ? conv?.userId?.profileImage?.imageUrl : url + conv?.userId?.profileImage?.imageUrl}
-                    alt={conv?.userId?.name}
-                />
+                                <img
+                                    className="w-10 h-10 rounded-full object-cover"
+                                    src={conv?.userId?.profileImage?.imageUrl.includes("amazonaws.com") ? conv?.userId?.profileImage?.imageUrl : url + conv?.userId?.profileImage?.imageUrl}
+                                    alt={conv?.userId?.name}
+                                />
 
 
-                <div className="flex-1 min-w-0">
-                    <h2 className="font-semibold text-sm truncate">
-                        {conv?.userId?.name}
-                    </h2>
-                    <p className="text-sm text-gray-600 truncate">
-                        {conv?.conversations[0]?.lastMessage?.length > 25 ? conv?.conversations[0]?.lastMessage?.slice(0, 25) + '...' : conv?.conversations[0]?.lastMessage}
-                    </p>
-                </div>
-                <p className="text-xs text-gray-500">
-                    {conv?.conversations[0]?.updatedAt && moment(conv?.conversations[0]?.updatedAt).fromNow()}
-                </p>
-            </Link>
-            );
+                                <div className="flex-1 min-w-0">
+                                    <h2 className="font-semibold text-sm truncate">
+                                        {conv?.userId?.name}
+                                    </h2>
+                                    <p className="text-sm text-gray-600 truncate">
+                                        {conv?.conversations[0]?.lastMessage?.length > 25 ? conv?.conversations[0]?.lastMessage?.slice(0, 25) + '...' : conv?.conversations[0]?.lastMessage}
+                                    </p>
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                    {conv?.conversations[0]?.updatedAt && moment(conv?.conversations[0]?.updatedAt).fromNow()}
+                                </p>
+                            </Link>
+                        );
                     })
-            ) : (
-            <p className="px-4 py-3 text-gray-500">No conversations found.</p>
+                ) : (
+                    <p className="px-4 py-3 text-gray-500">No conversations found.</p>
                 )}
-        </div>
+            </div>
         </div >
     );
 };
