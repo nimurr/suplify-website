@@ -7,6 +7,7 @@ import { Card, Button, Radio, Row, Col, Divider, Tabs, Image } from "antd";
 import { useRouter } from "next/navigation";
 
 import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 const { TabPane } = Tabs;
 
@@ -88,6 +89,7 @@ export default function DoctorPage() {
 
   return (
     <div className=" mx-auto p-6 space-y-10">
+      <Toaster />
       {/* Doctors Tabs: Your Doctor & Others Doctor */}
       <Tabs defaultActiveKey="your" size="middle" tabBarGutter={50}>
         <TabPane
