@@ -89,7 +89,7 @@ const MessageSidebar = () => {
         };
         socket.emit('join', conversationId, (response) => {
             console.log('✅ Joined conversation:', response);
-        }); 
+        });
     };
 
     return (

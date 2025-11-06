@@ -11,7 +11,10 @@ import { MinusOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 const Page = () => {
     const { data, refetch, isLoading } = useGetAllcartProductsQuery();
-    const fullData = data?.data?.attributes || [];
+    const fullData = data?.data?.attributes?.cart || [];
+    const userToKnowHisSubscription = data?.data?.attributes?.userToKnowHisSubscription || [];
+
+    console.log(fullData);
 
     const [increseAndDecrease] = useIncreseCartProductMutation();
     const [removeItem] = useRemoveAddToCartProductMutation();
@@ -97,9 +100,8 @@ const Page = () => {
 
     // ✅ Calculate Total Price
     const totalPrice = fullData.reduce((acc, product) => {
-        const qty = quantities[product._id] || product.quantity || 1;
+        const qty = product?.quantity;
         return acc + (product?.itemId?.price || 0) * qty;
-        // eslint-disable-next-line
     }, 0);
 
     return (
@@ -171,7 +173,7 @@ const Page = () => {
                     )}
                 </div>
 
-                {/* 💳 Right Side - Order Summary */}
+                {/* Right Side - Order Summary */}
                 <div className="border rounded-lg p-6 shadow-sm h-fit">
                     <h3 className="font-semibold mb-4 text-gray-800">Order Summary</h3>
                     <div className="border-b pb-2 mb-2 text-sm text-gray-600 space-y-5">
@@ -179,19 +181,66 @@ const Page = () => {
                             const qty = quantities[product._id] || product.quantity || 1;
                             return (
                                 <div key={i} className="flex justify-between">
-                                    <span>
-                                        {product?.itemId?.name || "Product"}{" "}
-                                        <span className="text-blue-400 ml-4 ">x{product?.quantity}</span>
+                                    <span className="capitalize">
+                                        {product?.itemId?.name || "Product"}
+                                        <span className="text-blue-400 ml-2">x{product?.quantity}</span>
                                     </span>
-                                    <span>${(product?.itemId?.price || 0) * product?.quantity}</span>
+                                    <span>  ${(product?.itemId?.price || 0) * product?.quantity}</span>
                                 </div>
                             );
                         })}
                     </div>
-                    <div className="flex justify-between font-semibold text-gray-800">
-                        <span>Total</span>
-                        <span>${totalPrice}</span>
+                    <div>
+                        <div className="flex justify-between  font-semibold text-gray-800">
+                            <span>Subtotal</span>
+                            <span>${totalPrice.toFixed(2)}</span> {/* No discount applied */}
+                        </div>
                     </div>
+
+                    {
+                        userToKnowHisSubscription?.subscriptionType === "standard" && (
+                            <div>
+                                <div className="flex my-2 justify-between font-semibold text-gray-800">
+                                    <span>No discount available</span>
+                                </div>
+                                <div className="flex border-t pt-2  justify-between font-semibold text-gray-800">
+                                    <span>Total</span>
+                                    <span>${totalPrice.toFixed(2)}</span> {/* No discount applied */}
+                                </div>
+                            </div>
+                        )
+                    }
+
+                    {
+                        userToKnowHisSubscription?.subscriptionType === "standardPlus" && (
+                            <div>
+                                <div className="flex my-2 justify-between font-semibold text-gray-800">
+                                    <span>You got 15% discount</span>
+                                    <span>${(totalPrice * 0.15).toFixed(2)}</span> {/* 15% discount amount */}
+                                </div>
+                                <div className="flex border-t pt-2  justify-between font-semibold text-gray-800">
+                                    <span>Total</span>
+                                    <span>${(totalPrice - (totalPrice * 0.15)).toFixed(2)}</span> {/* Total after 15% discount */}
+                                </div>
+                            </div>
+                        )
+                    }
+
+                    {
+                        userToKnowHisSubscription?.subscriptionType === "vise" && (
+                            <div>
+                                <div className="flex my-2 justify-between font-semibold text-gray-800">
+                                    <span>You got 20% discount</span>
+                                    <span>${(totalPrice * 0.20).toFixed(2)}</span> {/* 20% discount amount */}
+                                </div>
+                                <div className="flex border-t pt-2 justify-between font-semibold text-gray-800">
+                                    <span>Total</span>
+                                    <span>${(totalPrice - (totalPrice * 0.20)).toFixed(2)}</span> {/* Total after 20% discount */}
+                                </div>
+                            </div>
+                        )
+                    }
+
                 </div>
             </div>
 
