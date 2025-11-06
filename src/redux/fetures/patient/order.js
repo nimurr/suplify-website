@@ -8,9 +8,16 @@ const order = apiSlice.injectEndpoints({
                 method: 'GET',
             }),
             providesTags: ['Order']
-        })
+        }),
+        getOrderDetails: builder.query({
+            query: (id) => ({
+                url: `/order-items/paginate/for-patient?orderId=${id}`,
+                method: 'GET',
+            }),
+            providesTags: ['Order']
+        }),
     }),
 });
 
 
-export const { useGetAllOrdersQuery } = order
+export const { useGetAllOrdersQuery, useGetOrderDetailsQuery } = order

@@ -43,8 +43,7 @@ export default function Sidebar() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const currentUser = getUser();  // Call the function here
-    console.log("full user here :-", currentUser);
+    const currentUser = getUser();  // Call the function here 
     setUser(currentUser);
   }, []);
 
@@ -95,11 +94,17 @@ export default function Sidebar() {
         path: "/dashboard/subscription",
       },
       {
-        key: "/dashboard/message",
+        key: "/chat",
         icon: <TiMessageTyping />,
         label: "Message",
-        path: "/dashboard/message",
+        path: "/chat",
       },
+      // {
+      //   key: "/dashboard/message",
+      //   icon: <TiMessageTyping />,
+      //   label: "Message",
+      //   path: "/dashboard/message",
+      // },
     ],
     specialist: [
       {

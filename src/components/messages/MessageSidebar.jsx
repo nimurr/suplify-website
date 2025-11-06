@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { CiSearch } from 'react-icons/ci';
+import { FaArrowLeft } from 'react-icons/fa6';
 import { io } from 'socket.io-client';
 
 // 🔑 Your JWT token (replace with dynamic token in real app)
@@ -94,7 +95,7 @@ const MessageSidebar = () => {
 
     return (
         <div className="p-3">
-            <h2 className="text-center text-2xl font-semibold my-5">Messages</h2>
+            <Link href={'/'} className="text-center flex items-center gap-2 bg-gray-200 p-2 rounded text-xl font-semibold my-5"><FaArrowLeft /> Back Home</Link>
             <div className="relative">
                 <CiSearch className="absolute text-[#b8b8b8] top-[14px] text-2xl left-3" />
                 <input

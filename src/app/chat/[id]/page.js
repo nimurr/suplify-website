@@ -49,6 +49,9 @@ const Page = () => {
     const [fullMessage, setFullMessage] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
 
+
+    console.log(fullMessage);
+
     const { id } = useParams(); // Get chat ID from URL
     const [user, setUser] = useState(null);
 

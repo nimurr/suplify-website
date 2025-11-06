@@ -52,7 +52,7 @@ const columns = [
         dataIndex: 'action',
         key: 'action',
         render: (text, record) => (
-            <a href={`/dashboard/order/${text?._orderId}`}>
+            <a href={`/dashboard/order/${record?._orderId}`}>
                 <IoEyeOutline className='text-2xl' />
             </a>
         ),
@@ -69,11 +69,11 @@ const CompositionEvent = () => {
         setUser(currentUser);
     }, []);
 
-    const id = user?._id;
+    const id = user?.id;
 
 
     const { data } = useGetAllOrdersQuery(id);
-    const fullData = data?.data?.attributes?.results;
+    const fullData = data?.data?.attributes?.results || [];
 
     console.log(fullData);
 
