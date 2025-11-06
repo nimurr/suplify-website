@@ -6,6 +6,7 @@ import CustomButton from "@/components/customComponent/CustomButton";
 import { useRouter } from "next/navigation";
 import { useGetAllSpecialistPatientsPaginateOthersQuery, useGetAllSpecialistPatientsPaginateQuery } from "@/redux/fetures/patient/specialist";
 import url from "@/redux/api/baseUrl";
+import toast, { Toaster } from "react-hot-toast";
 
 const yourSpecialists = [
   {
@@ -50,7 +51,7 @@ const SpecialistsPage = () => {
 
   const { data: specialistData } = useGetAllSpecialistPatientsPaginateQuery();
   const fullSpecialistData = specialistData?.data?.attributes?.results || [];
-  console.log(fullSpecialistData);
+  console.log(specialistData?.data?.additionalResponse?.subscriptionType);
 
   const { data: otherSpecialistData } = useGetAllSpecialistPatientsPaginateOthersQuery();
   const fullOtherSpecialistData = otherSpecialistData?.data?.attributes?.results || [];
@@ -63,12 +64,15 @@ const SpecialistsPage = () => {
   const data = activeTab === "your" ? fullSpecialistData : fullOtherSpecialistData;
 
   const ViewFull = (id) => {
-
+    if (specialistData?.data?.additionalResponse?.subscriptionType == 'none' || specialistData?.data?.additionalResponse?.subscriptionType == 'none') {
+      return toast.error('Please subscribe to use this feature')
+    }
     router.push(`/dashboard/specialist/${id}`)
-
   }
+
   return (
     <div className="p-6">
+      <Toaster />
       {/* Tabs */}
       <div className="flex gap-8 border-b mb-6">
         <button
@@ -99,8 +103,8 @@ const SpecialistsPage = () => {
             className="bg-white border rounded-lg shadow-sm p-4 max-w-xs w-full"
           >
             <AntImage
-              src={spec.specialistId?.profileImage?.imageUrl}
-              //? src={spec?.specialistId?.profileImage?.imageUrl.includes("amazonaws.com") ? spec?.specialistId?.profileImage?.imageUrl : url + spec?.specialistId?.profileImage?.imageUrl}
+              // src={spec.specialistId?.profileImage?.imageUrl}
+              src={spec?.specialistId?.profileImage?.imageUrl.includes("amazonaws") ? spec?.specialistId?.profileImage?.imageUrl : url + spec?.specialistId?.profileImage?.imageUrl}
               alt={spec.name}
               width="100%"
               style={{ objectFit: "cover", borderRadius: "8px" }}
