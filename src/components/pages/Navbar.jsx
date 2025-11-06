@@ -129,6 +129,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Button } from 'antd'
+import getUser from '@/utils/user'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -159,8 +160,9 @@ export default function Navbar() {
   const userRole = "specialist";
   // const userRole = 'doctor';
 
+  const user = getUser();
 
-  const user = JSON.parse(localStorage.getItem('user'));
+  // const user = JSON.parse(localStorage.getItem('user'));
 
 
   // Map role → dashboard route
