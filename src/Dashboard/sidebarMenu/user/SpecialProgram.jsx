@@ -9,6 +9,9 @@ import Link from "next/link";
 import CustomButton from "@/components/customComponent/CustomButton";
 import { useGetTrainingProgramsQuery } from "@/redux/fetures/patient/specialist";
 import { IoPaperPlaneSharp } from "react-icons/io5";
+import url from "@/redux/api/baseUrl";
+import { useCreateNewChatMutation } from "@/redux/fetures/messaging/createChat";
+import toast, { Toaster } from "react-hot-toast";
 
 
 
@@ -18,36 +21,55 @@ const SpecialistProgram = ({ id }) => {
   const fullData = program?.data?.attributes?.result?.results;
   const specialistInfo = program?.data?.attributes?.specialistInfo;
 
-  console.log(specialistInfo);
-
-  console.log(id)
   const router = useRouter()
   const [selectedIndex, setSelectedIndex] = useState(0);
   const back = () => {
     router.push('/dashboard/specialist')
   }
 
+  const [createNewChat] = useCreateNewChatMutation()
 
+  const handleCreatNewMessage = async () => {
+
+    const data = {
+      participants: [id],
+      message: "Conversation started ..."
+    }
+
+    try {
+      const res = await createNewChat(data).unwrap();
+      console.log(res);
+      if (res?.code == 200) {
+        toast.success(res?.message)
+        router.push(`/chat/${res?.data?.attributes?._conversationId}`);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.message)
+    }
+  }
 
   return (
-    <div className="flex items-center gap-10">
+    <div className="flex items-start gap-10">
+      <Toaster />
       {
         specialistInfo && (
           <div
             key={specialistInfo.id}
-            className="bg-white border  rounded-lg shadow-sm p-4 max-w-xs w-full"
+            className="bg-white border rounded-lg shadow-sm p-4 max-w-xs w-full"
           >
             <img
-              src={specialistInfo?.profileImage?.imageUrl}
+              src={specialistInfo?.profileImage?.imageUrl.includes('amazonaws') ? `${specialistInfo?.profileImage?.imageUrl}` : url + specialistInfo?.profileImage?.imageUrl}
               alt={specialistInfo.name}
               width="100%"
               height={350}
               style={{ objectFit: "cover", borderRadius: "8px" }}
               preview={false}
             />
-            <h3 className="mt-4 font-semibold text-lg">{specialistInfo.name}</h3>
+            <h3 className="mt-4 font-semibold text-lg">{specialistInfo?.name}</h3>
+            <h3 className="mb-2 ">{specialistInfo?.profileId?.description}</h3>
             <p className="text-sm text-gray-600 mb-2">
-              {specialistInfo?.profileId?.description?.length > 100 ? `${specialistInfo?.profileId?.description.slice(0, 100)}...` : spec?.specialistId?.profileId?.description}
+              {specialistInfo?.profileId?.description?.length > 100 ? `${specialistInfo?.profileId?.description.slice(0, 100)}...` : specialistInfo?.specialistId?.profileId?.description}
             </p>
             <div className="flex items-center gap-2 text-sm flex-wrap mb-1">
               {
@@ -66,7 +88,7 @@ const SpecialistProgram = ({ id }) => {
               <span>Programs</span>
             </div>
 
-            <button className=" py-2 w-full bg-red-600 text-white rounded-md flex items-center justify-center gap-2"><IoPaperPlaneSharp className="text-2xl" /> Message </button>
+            <button onClick={handleCreatNewMessage} className=" py-2 w-full bg-red-600 text-white rounded-md flex items-center justify-center gap-2"><IoPaperPlaneSharp className="text-2xl" /> Message </button>
 
           </div>
         )
