@@ -7,6 +7,7 @@ import { IoIosSend } from "react-icons/io";
 import { io } from 'socket.io-client';
 import socketUrl from "@/utils/socket";
 import moment from "moment";
+import url from "@/redux/api/baseUrl";
 
 // get token from localStorage and set it to AUTH_TOKEN
 let AUTH_TOKEN = '';
@@ -95,7 +96,7 @@ const Page = () => {
         // Send the message to the server
         socket.emit('send-new-message', messageData, (response) => {
             // console.log('✅ Joined conversation:', response);
-            if (response?.success) { 
+            if (response?.success) {
                 setNewMessage('');
                 const user = localStorage.getItem('user');
                 const fullUser = JSON.parse(user);
@@ -152,7 +153,7 @@ const Page = () => {
                                 {
                                     msg.senderId?._userId !== user?.id && (
                                         <div className="mr-2">
-                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl} alt="" />
+                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl.includes('amazonaws') ? msg?.senderId?.profileImage?.imageUrl : (url + msg?.senderId?.profileImage?.imageUrl)} alt="" />
                                         </div>
                                     )
                                 }
