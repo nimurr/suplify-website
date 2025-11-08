@@ -73,7 +73,7 @@ const Page = () => {
 
         // new message new-message-received::id 
 
-        socket.on(`new-message-received::${id}`, (res) => {
+        socket.on(`new-message-received::690eb81a9c4909cc2ee087cf`, (res) => {
             console.log('✅ new-message-received', res);
             // setMsg(res);
         });
@@ -183,7 +183,7 @@ const Page = () => {
                                 {
                                     msg.senderId?._userId === user?.id && (
                                         <div className="ml-2">
-                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl} alt="" />
+                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl.includes('amazonaws') ? msg?.senderId?.profileImage?.imageUrl : (url + msg?.senderId?.profileImage?.imageUrl)} alt="" />
                                         </div>
                                     )
                                 }
@@ -226,7 +226,7 @@ const Page = () => {
                                 {
                                     msg.senderId?._userId === user?.id && (
                                         <div className="mr-2">
-                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl} alt="" />
+                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl.includes('amazonaws') ? msg?.senderId?.profileImage?.imageUrl : (url + msg?.senderId?.profileImage?.imageUrl)} alt="" />
                                         </div>
                                     )
                                 }
