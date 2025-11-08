@@ -17,6 +17,8 @@ import {
 import { Header } from 'antd/es/layout/layout';
 import { useGetUserProfileQuery } from '@/redux/fetures/user/getUsers';
 import url from '@/redux/api/baseUrl';
+import { AiOutlineMessage } from 'react-icons/ai';
+import Link from 'next/link';
 
 export default function DashboardHeader({ collapsed }) {
   // State for modals and mobile menu
@@ -130,7 +132,10 @@ export default function DashboardHeader({ collapsed }) {
         </div>
 
         {/* User profile */}
-        <div className="mr-6">
+        <div className="mr-6 flex items-center gap-2">
+          <Link href="/chat" className='w-10 cursor-pointer h-10 bg-red-600 text-white flex items-center justify-center rounded-lg'>
+            <AiOutlineMessage className='text-2xl font-semibold' />
+          </Link>
           <Dropdown
             menu={{ items: userMenuItems }}
             placement="bottomRight"

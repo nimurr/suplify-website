@@ -10,8 +10,6 @@ import { CiSearch } from 'react-icons/ci';
 import { FaArrowLeft } from 'react-icons/fa6';
 import { io } from 'socket.io-client';
 
-// 🔑 Your JWT token (replace with dynamic token in real app)
-
 let AUTH_TOKEN = '';
 if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token');
@@ -41,6 +39,7 @@ const MessageSidebar = () => {
 
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState(''); // To track search input
 
     useEffect(() => {
         const socket = initializeSocket();
@@ -48,13 +47,11 @@ const MessageSidebar = () => {
         const fetchConversations = () => {
             socket.emit(
                 'get-all-conversations-with-pagination',
-                { page: 1, limit: 10, search: '' },
+                { page: 1, limit: 10, search: searchQuery }, // Pass searchQuery in socket request
                 (response) => {
                     setLoading(false);
-                    // console.log('✅ Conversations response:', response);
 
                     if (response && response.success) {
-                        // Adjust based on your actual API response structure
                         const data = Array.isArray(response.data)
                             ? response.data
                             : (response.data && response.data.results) || [];
@@ -67,22 +64,21 @@ const MessageSidebar = () => {
             );
         };
 
-        // If already connected, fetch immediately
         if (socket.connected) {
             fetchConversations();
         } else {
-            // Otherwise, wait for connection
             const onConnect = () => fetchConversations();
             socket.on('connect', onConnect);
 
-            // Cleanup listener on unmount
             return () => {
                 socket.off('connect', onConnect);
             };
         }
-    }, []);
+    }, [searchQuery]);  // Re-fetch conversations when searchQuery changes
 
-    // console.log(conversations);
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value); // Update search query as user types
+    };
 
     const handleJoinSocket = () => {
         const socket = initializeSocket();
@@ -94,15 +90,41 @@ const MessageSidebar = () => {
         });
     };
 
+    const handleClickSearch = (e) => {
+        e.preventDefault();
+        const socket = initializeSocket();
+        const serarchInfo = {
+            page: 1,
+            limit: 10,
+            search: searchQuery,  // Using the state value for search query
+        };
+
+        socket.emit('get-all-conversations-with-pagination', serarchInfo, (response) => {
+            console.log('✅ Conversations response:', response);
+        });
+
+        console.log('clicked', serarchInfo);
+    };
+
     return (
         <div className="p-3">
-            <Link href={'/'} className="text-center flex items-center gap-2 bg-gray-200 p-2 rounded text-xl font-semibold my-5"><FaArrowLeft /> Back Home</Link>
+            <Link href={'/'} className="text-center flex items-center gap-2 bg-gray-200 p-2 rounded text-xl font-semibold my-5">
+                <FaArrowLeft /> Back Home
+            </Link>
             <div className="relative">
                 <CiSearch className="absolute text-[#b8b8b8] top-[14px] text-2xl left-3" />
                 <input
                     className="py-3 w-full pl-10 px-2 rounded-lg focus:border-blue-300 outline-none border-2 border-gray-200"
                     type="text"
+                    name="search"
+                    value={searchQuery} // Bind to state
+                    onChange={handleSearchChange} // Update the search query
                     placeholder="Search Here..."
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleClickSearch(e); // Trigger search on Enter key
+                        }
+                    }}
                 />
             </div>
 
@@ -118,14 +140,12 @@ const MessageSidebar = () => {
                                         <div className="col-span-2 h-2 rounded bg-gray-200"></div>
                                         <div className="col-span-1 h-2 rounded bg-gray-200"></div>
                                     </div>
-                                    {/* <div className="h-2 rounded bg-gray-200"></div> */}
                                 </div>
                             </div>
                         </div>
                     </div>
                 ) : conversations?.length > 0 ? (
                     conversations?.map((conv) => {
-                        // You may need to adjust these paths based on your actual data structure
                         const participant = conv.participant || conv.otherUser || {};
                         const lastMessage = conv.lastMessage || {};
                         return (
@@ -137,11 +157,9 @@ const MessageSidebar = () => {
                             >
                                 <img
                                     className="w-10 h-10 rounded-full object-cover"
-                                    src={conv?.userId?.profileImage?.imageUrl.includes("amazonaws.com") ? conv?.userId?.profileImage?.imageUrl : url + conv?.userId?.profileImage?.imageUrl}
+                                    src={conv?.userId?.profileImage?.imageUrl.includes('amazonaws.com') ? conv?.userId?.profileImage?.imageUrl : url + conv?.userId?.profileImage?.imageUrl}
                                     alt={conv?.userId?.name}
                                 />
-
-
                                 <div className="flex-1 min-w-0">
                                     <h2 className="font-semibold text-sm truncate">
                                         {conv?.userId?.name}
@@ -160,7 +178,7 @@ const MessageSidebar = () => {
                     <p className="px-4 py-3 text-gray-500">No conversations found.</p>
                 )}
             </div>
-        </div >
+        </div>
     );
 };
 

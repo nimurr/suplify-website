@@ -93,12 +93,12 @@ export default function Sidebar() {
         label: "Subscription",
         path: "/dashboard/subscription",
       },
-      {
-        key: "/chat",
-        icon: <TiMessageTyping />,
-        label: "Message",
-        path: "/chat",
-      },
+      // {
+      //   key: "/chat",
+      //   icon: <TiMessageTyping />,
+      //   label: "Message",
+      //   path: "/chat",
+      // },
       // {
       //   key: "/dashboard/message",
       //   icon: <TiMessageTyping />,
@@ -161,12 +161,12 @@ export default function Sidebar() {
         label: "Information Video",
         path: "/specialistDs/information-video",
       },
-      {
-        key: "/specialistDs/support",
-        icon: <MdOutlineSupportAgent />,
-        label: "Support",
-        path: "/specialistDs/support",
-      },
+      // {
+      //   key: "/specialistDs/support",
+      //   icon: <MdOutlineSupportAgent />,
+      //   label: "Support",
+      //   path: "/specialistDs/support",
+      // },
 
     ],
     doctor: [

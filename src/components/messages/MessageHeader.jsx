@@ -56,16 +56,24 @@ const MessageHeader = () => {
 
     return (
         <div>
-            <div className='w-full border-b-2 flex items-center gap-2 p-5'>
-                <div className=" bg-gray-500 w-10 rounded-full h-10 ">
-                    {
-                        fullMessage[0]?.senderId?._userId === user?.id && (
-                            <img className="bg-gray-200 w-10 rounded-full h-10 " src={fullMessage[0]?.senderId?.profileImage?.imageUrl.includes("amazonaws") ? fullMessage[0]?.senderId?.profileImage?.imageUrl : url + fullMessage[0]?.senderId?.profileImage?.imageUrl} alt="" />
-                        )
-                    }
-                </div>
 
-                <h2>{fullMessage[0]?.senderId?.name || 'N/A'}</h2>
+
+            <div className='w-full border-b-2  '>
+                {
+                    id && (
+                        <div className='flex items-center gap-2 p-5 '>
+                            <div className=" bg-gray-500 w-10 rounded-full h-10 ">
+                                {
+                                    fullMessage[0]?.senderId?._userId === user?.id && (
+                                        <img className="bg-gray-200 w-10 rounded-full h-10 " src={fullMessage[0]?.senderId?.profileImage?.imageUrl.includes("amazonaws") ? fullMessage[0]?.senderId?.profileImage?.imageUrl : url + fullMessage[0]?.senderId?.profileImage?.imageUrl} alt="" />
+                                    )
+                                }
+                            </div>
+
+                            <h2>{fullMessage[0]?.senderId?.name || 'N/A'}</h2>
+                        </div>
+                    )
+                }
             </div>
         </div>
     );

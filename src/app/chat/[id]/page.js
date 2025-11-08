@@ -50,7 +50,7 @@ const Page = () => {
     const [fullMessage, setFullMessage] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
 
-    console.log(fullMessage);
+    // console.log(fullMessage);
 
     const { id } = useParams(); // Get chat ID from URL
     const [user, setUser] = useState(null);
@@ -271,7 +271,7 @@ const Page = () => {
                         placeholder="Type your message"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                    // onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                        onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                     // disabled={!activeUser}
                     />
                     <button
