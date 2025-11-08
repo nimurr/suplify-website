@@ -35,7 +35,7 @@ const SpecialistProgram = ({ id }) => {
       participants: [id],
       message: "Conversation started ..."
     }
-    
+
     try {
       const res = await createNewChat(data).unwrap();
       console.log(res);
