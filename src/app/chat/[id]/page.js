@@ -85,7 +85,8 @@ const Page = () => {
 
     const handleSendMessage = () => {
 
-        // Ensure the socket is connected
+        // Ensure the socket is connected 
+
         const messageData = {
             conversationId: id,
             text: newMessage,
@@ -94,7 +95,7 @@ const Page = () => {
         // Send the message to the server
         socket.emit('send-new-message', messageData, (response) => {
             // console.log('✅ Joined conversation:', response);
-            if (response?.success) {
+            if (response?.success) { 
                 setNewMessage('');
                 const user = localStorage.getItem('user');
                 const fullUser = JSON.parse(user);
