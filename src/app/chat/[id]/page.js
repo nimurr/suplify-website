@@ -196,7 +196,7 @@ const Page = () => {
                                 {
                                     msg.senderId?._userId !== user?.id && (
                                         <div className="mr-2">
-                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl} alt="" />
+                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl.includes('amazonaws') ? msg?.senderId?.profileImage?.imageUrl : (url + msg?.senderId?.profileImage?.imageUrl)} alt="" />
                                         </div>
                                     )
                                 }
