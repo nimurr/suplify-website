@@ -50,7 +50,6 @@ const Page = () => {
     const [fullMessage, setFullMessage] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
 
-
     console.log(fullMessage);
 
     const { id } = useParams(); // Get chat ID from URL
@@ -70,12 +69,16 @@ const Page = () => {
             setFullMessage(response?.data?.results.reverse());
         });
 
+        socket.emit('join', { conversationId: id }, (response) => {
+            console.log('✅ Joined conversation:', response);
+        });
 
         // new message new-message-received::id 
 
-        socket.on(`new-message-received::690eb81a9c4909cc2ee087cf`, (res) => {
+        socket.on(`new-message-received::${id}`, (res) => {
             console.log('✅ new-message-received', res);
             // setMsg(res);
+            setFullMessage((prevMessages) => [...prevMessages, res]);
         });
 
 
