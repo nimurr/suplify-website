@@ -20,7 +20,6 @@ export default function Page() {
 
     }, []); // Only run this once when component mounts
 
-
     const { data: planeData, isLoading } = useGetAllSuggestionByProtocalIdQuery({ protocolId: id, type: planType });
     const filteredPlanes = planeData?.data?.attributes || [];
 

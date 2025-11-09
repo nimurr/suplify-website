@@ -146,7 +146,7 @@ function ScheduleCard({ schedule, refetch }) {
           <div className="absolute top-1 right-1 bg-green-300 text-green-800 text-xs px-2 py-1 rounded-full">
             Booked
           </div>
-        )
+        ) 
       }
 
       <div className="mb-4 pt-5">
