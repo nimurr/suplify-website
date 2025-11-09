@@ -144,7 +144,7 @@ function ScheduleCard({ schedule, refetch }) {
       {
         schedule.patientBookings && schedule.scheduleStatus == "booked" && (
           <div className="absolute top-1 right-1 bg-green-300 text-green-800 text-xs px-2 py-1 rounded-full">
-            Booked
+            Booked 
           </div>
         )
       }
