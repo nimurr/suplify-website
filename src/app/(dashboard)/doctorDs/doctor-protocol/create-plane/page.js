@@ -122,6 +122,8 @@ const Page = () => {
     const { data: searchData, isLoading } = useSearchPlaneQuery({ type: selectedPlan, title: searchTitle });
     const fullData = searchData?.data?.attributes?.results || [];
 
+    console.log(fullData);
+
     const handleSearch = (value) => {
         if (!selectedPlan) {
             return toast.error("Please select a plan type");

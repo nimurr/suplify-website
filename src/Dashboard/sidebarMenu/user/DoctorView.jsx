@@ -15,7 +15,7 @@ export default function AppointmentScheduler({ doctorId }) {
   const { data, isLoading, refetch } = useGetFullDataQuery(doctorId)
   const fullData = data?.data?.attributes?.result?.results;
   const profile = data?.data?.attributes?.doctorProfile;
-  console.log(profile);
+  console.log(fullData);
 
   // Sample data for schedules
   const router = useRouter()
@@ -136,14 +136,14 @@ function ScheduleCard({ schedule, refetch }) {
   return (
     <div
       className={`relative border border-[#eee] rounded-lg p-4 
-        ${schedule.patientBookings?.status == "completed" && "bg-green-100 border-2 border-green-400"} 
-        ${schedule.patientBookings && schedule.scheduleStatus == "booked" && "bg-red-100 border-2 border-red-400"} hover:shadow-md transition-shadow duration-200`}
+        ${schedule?.scheduleStatus == "booked" && "bg-green-100 border-2 border-green-400"} 
+        ${schedule.patientBookings && schedule.scheduleStatus == "expired" && "bg-red-100 border-2 border-red-400"} hover:shadow-md transition-shadow duration-200`}
     >
       <Toaster />
 
       {
         schedule.patientBookings && schedule.scheduleStatus == "booked" && (
-          <div className="absolute top-1 right-1 bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+          <div className="absolute top-1 right-1 bg-green-300 text-green-800 text-xs px-2 py-1 rounded-full">
             Booked
           </div>
         )
@@ -189,7 +189,7 @@ function ScheduleCard({ schedule, refetch }) {
       </div>
 
       {
-        schedule.scheduleStatus !== "booked" && (
+        schedule.scheduleStatus !== "booked" && schedule.scheduleStatus !== "expired" && (
           <button onClick={handleBooked} className="w-full bg-red-500 text-white py-2 rounded-md">
             Book Now
           </button>
