@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Row, Col, Card, Button, Typography } from 'antd';
 import { useGetAllSubscriptionsQuery, useTakeSubscriptionMutation } from '@/redux/fetures/subscription/subscription';
 import toast, { Toaster } from 'react-hot-toast';
+import moment from 'moment';
 
 const { Title, Text } = Typography;
 
@@ -76,6 +77,7 @@ const Page = () => {
             console.log(res);
             if (res?.code === 200) {
                 toast.success(res?.message);
+                window.location.href = `${res?.data?.attributes}`
             }
             else {
                 toast.error(res?.message);
@@ -90,15 +92,15 @@ const Page = () => {
             <Toaster />
             <div>
                 {
-                    subscriptionsUserInfo?.length < 0 && (
-                        <p style={{ textAlign: 'center' }}>Your have No subscriptions</p>
+                    subscriptionsUserInfo?.length < 1 && (
+                        <p className=' font-semibold text-red-500 mt-5 bg-red-200 p-2 text-center rounded'>Your have No Active subscriptions</p>
                     )
                 }
             </div>
             <div>
                 {
                     subscriptionsUserInfo?.length > 0 && (
-                        <div className='bg-green-300 rounded-lg font-semibold p-5 md:w-1/2 mx-auto space-y-2'>
+                        <div className='bg-red-300 rounded-lg font-semibold p-5 md:max-w-[400px] space-y-2'>
                             <p >Your Name : {subscriptionsUserInfo[0]?.userId?.name} </p>
                             <p >Your Email : {subscriptionsUserInfo[0]?.userId?.email} </p>
                             <p >Your Subscription Type : {subscriptionsUserInfo[0]?.userId?.subscriptionType} </p>
@@ -113,9 +115,11 @@ const Page = () => {
                         <thead>
                             <tr className="bg-gray-100 border-b">
                                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Subscription Name</th>
-                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Subscription Amount</th>
-                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Subscription Currency</th>
-                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Subscription Status</th>
+                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700"> Start Date</th>
+                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Current Period Start Date</th>
+                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700"> Expire Date</th>
+                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Cancelled At Period End</th>
+                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700"> Cancel Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -125,9 +129,11 @@ const Page = () => {
                                     className={`border-b ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100`}
                                 >
                                     <td className="px-4 py-3 text-sm text-gray-800">{item?.subscriptionPlanId?.subscriptionName}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-800">{item?.subscriptionPlanId?.amount}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-800">{item?.subscriptionPlanId?.currency}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-800">{item?.status}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-800">{moment(item?.subscriptionStartDate).format('YYYY-MM-DD')}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-800">{moment(item?.currentPeriodStartDate).format('YYYY-MM-DD')}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-800">{moment(item?.expirationDate).format('YYYY-MM-DD')}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-800">{item?.cancelledAtPeriodEnd ? 'True' : 'False'}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-800">{moment(item?.cancelledAt || "N/A").format('YYYY-MM-DD')}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -151,7 +157,13 @@ const Page = () => {
                                 boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
                                 background: plan.subscriptionType === 'Vise' ? '#fffbe6' : '#fff',
                             }}
+                            className='overflow-hidden'
                         >
+                            {
+                                plan?.subscriptionType === subscriptionsUserInfo[0]?.userId?.subscriptionType && (
+                                    <span className='bg-green-500 absolute top-5 -right-10 rotate-45 text-white p-2 px-14 '>Active</span>
+                                )
+                            }
                             <Text strong style={{ fontSize: '24px' }}>{plan.price}</Text>
                             <Text type="secondary" style={{ display: 'block', marginBottom: '20px' }}>
                                 {plan.trial}
