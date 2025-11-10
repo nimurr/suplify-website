@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Card, Button, Typography } from 'antd';
-import { useGetAllSubscriptionsQuery } from '@/redux/fetures/subscription/subscription';
+import { useGetAllSubscriptionsQuery, useTakeSubscriptionMutation } from '@/redux/fetures/subscription/subscription';
+import toast, { Toaster } from 'react-hot-toast';
 
 const { Title, Text } = Typography;
 
@@ -10,7 +11,8 @@ const Page = () => {
     const subscriptionsUserInfo = data?.data?.attributes?.result?.results || [];
     const subscriptions = data?.data?.attributes?.subscription || [];
 
-    console.log(subscriptions);
+    console.log(data);
+
 
     const [subscriptionsList, setSubscriptionsList] = useState([]);
 
@@ -18,7 +20,7 @@ const Page = () => {
         if (subscriptions?.length > 0) {
             // Format the data for subscriptions
             const formattedSubscriptions = subscriptions?.map(subscription => ({
-                id: subscription.id,
+                id: subscription._subscriptionId,
                 name: subscription.subscriptionName,
                 price: `$${subscription.amount} ${subscription.currency}`,
                 trial: subscription.subscriptionType === 'standard' ? '7 Day Free Trial' : 'No Free Trial',
@@ -65,23 +67,82 @@ const Page = () => {
         }
     }, [subscriptions]);
 
+    const [takeSub] = useTakeSubscriptionMutation();
+
+    const handleSubscribe = async (plan) => {
+        console.log(plan?.id);
+        try {
+            const res = await takeSub(plan).unwrap();
+            console.log(res);
+            if (res?.code === 200) {
+                toast.success(res?.message);
+            }
+            else {
+                toast.error(res?.message);
+            }
+        } catch (error) {
+            toast.error(error?.data?.message || "Failed to take subscription");
+        }
+    };
+
     return (
         <div style={{ padding: '50px', background: '#f9f9f9' }}>
+            <Toaster />
             <div>
                 {
-                    subscriptionsUserInfo?.length > 0 && (
+                    subscriptionsUserInfo?.length < 0 && (
                         <p style={{ textAlign: 'center' }}>Your have No subscriptions</p>
                     )
                 }
             </div>
+            <div>
+                {
+                    subscriptionsUserInfo?.length > 0 && (
+                        <div className='bg-green-300 rounded-lg font-semibold p-5 md:w-1/2 mx-auto space-y-2'>
+                            <p >Your Name : {subscriptionsUserInfo[0]?.userId?.name} </p>
+                            <p >Your Email : {subscriptionsUserInfo[0]?.userId?.email} </p>
+                            <p >Your Subscription Type : {subscriptionsUserInfo[0]?.userId?.subscriptionType} </p>
+                        </div>
+                    )
+                }
+
+            </div>
+            <div>
+                {subscriptionsUserInfo?.length > 0 && (
+                    <table className="min-w-full table-auto border-collapse my-5">
+                        <thead>
+                            <tr className="bg-gray-100 border-b">
+                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Subscription Name</th>
+                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Subscription Amount</th>
+                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Subscription Currency</th>
+                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Subscription Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {subscriptionsUserInfo?.map((item, index) => (
+                                <tr
+                                    key={index}
+                                    className={`border-b ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100`}
+                                >
+                                    <td className="px-4 py-3 text-sm text-gray-800">{item?.subscriptionPlanId?.subscriptionName}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-800">{item?.subscriptionPlanId?.amount}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-800">{item?.subscriptionPlanId?.currency}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-800">{item?.status}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+
             <Title level={2} style={{ textAlign: 'center', marginBottom: '40px' }}>
                 {isLoading && <p>Loading...</p>}
                 {error && <p className="text-red-600">Error loading subscriptions</p>}
             </Title>
 
-            <Row gutter={[24, 24]} justify="center">
+            <Row gutter={[40, 40]} justify="center">
                 {subscriptionsList?.map((plan) => (
-                    <Col xs={24} sm={24} md={8} key={plan.id}>
+                    <Col xs={40} sm={40} md={8} key={plan.id}>
                         <Card
                             title={plan.name}
                             bordered={false}
@@ -136,7 +197,8 @@ const Page = () => {
                             <Button
                                 type="primary"
                                 size="large"
-                                block
+                                onClick={() => handleSubscribe(plan)}
+
                                 style={{
                                     backgroundColor: plan.subscriptionType === 'VIP' ? '#ff4d4f' : '#1da57a',
                                     borderColor: plan.subscriptionType === 'VIP' ? '#ff4d4f' : '#1da57a',

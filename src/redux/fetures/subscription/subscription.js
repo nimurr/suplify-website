@@ -21,8 +21,14 @@ const subscription = apiSlice.injectEndpoints({
                 method: "GET",
             }),
         }),
+        takeSubscription: builder.mutation({
+            query: ({ id }) => ({
+                url: `/subscription-plans/purchase/${id}`,
+                method: "POST"
+            }),
+        })
     }),
 });
 
 
-export const { useTakeFreeTrialMutation, useGetFullSubscriptionQuery, useGetAllSubscriptionsQuery } = subscription;
+export const { useTakeFreeTrialMutation, useGetFullSubscriptionQuery, useGetAllSubscriptionsQuery, useTakeSubscriptionMutation } = subscription;
