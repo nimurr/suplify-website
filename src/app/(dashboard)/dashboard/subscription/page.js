@@ -206,18 +206,28 @@ const Page = () => {
                             }
 
 
-                            <Button
-                                type="primary"
-                                size="large"
-                                onClick={() => handleSubscribe(plan)}
+                            {
+                                plan?.subscriptionType !== subscriptionsUserInfo[0]?.userId?.subscriptionType ? (
+                                    <Button
+                                        type="primary"
+                                        size="large"
+                                        onClick={() => handleSubscribe(plan)}
 
-                                style={{
-                                    backgroundColor: plan.subscriptionType === 'VIP' ? '#ff4d4f' : '#1da57a',
-                                    borderColor: plan.subscriptionType === 'VIP' ? '#ff4d4f' : '#1da57a',
-                                }}
-                            >
-                                Subscribe Now
-                            </Button>
+                                        style={{
+                                            backgroundColor: plan.subscriptionType === 'VIP' ? '#ff4d4f' : '#1da57a',
+                                            borderColor: plan.subscriptionType === 'VIP' ? '#ff4d4f' : '#1da57a',
+                                        }}
+                                    >
+                                        Subscribe Now
+                                    </Button>
+                                ) :
+                                    (
+                                        <button className='bg-red-500 text-white py-2 px-8 rounded-lg'>
+                                            Cancel Subscription
+                                        </button>
+                                    )
+                            }
+
                         </Card>
                     </Col>
                 ))}
