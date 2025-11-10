@@ -21,7 +21,7 @@ export const apiSlice = createApi({
 
 
   }),
-  tagTypes: ["Profile", "Property", "Chat", "Coupon", "About", "specialistKeyPoints", "InformationVideo", "TrainingProgram", "DoctorCreatePlane", "DoctorProtocol", "OrderHistory", "Landing", "YourDoctors", "WorkoutClass", "Order", "Earning", "Protocal"],
+  tagTypes: ["Profile", "Property", "Chat", "Coupon", "About", "specialistKeyPoints", "InformationVideo", "TrainingProgram", "DoctorCreatePlane", "DoctorProtocol", "OrderHistory", "Landing", "YourDoctors", "WorkoutClass", "Order", "Earning", "Protocal" , "Subscription"],
 
   endpoints: () => ({}),
 });

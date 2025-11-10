@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Card, Button, Typography } from 'antd';
-import { useGetAllSubscriptionsQuery, useTakeSubscriptionMutation } from '@/redux/fetures/subscription/subscription';
+import { useCancelSubMutation, useGetAllSubscriptionsQuery, useTakeSubscriptionMutation } from '@/redux/fetures/subscription/subscription';
 import toast, { Toaster } from 'react-hot-toast';
 import moment from 'moment';
 
@@ -85,6 +85,25 @@ const Page = () => {
         } catch (error) {
             toast.error(error?.data?.message || "Failed to take subscription");
         }
+    };
+
+    const [cancelSub] = useCancelSubMutation();
+
+    const handleCancelSubscription = async (plan) => {
+        console.log(plan);
+        try {
+            const res = await cancelSub(plan).unwrap();
+            console.log(res);
+            if (res?.code === 200) {
+                toast.success(res?.message);
+            }
+            else {
+                toast.error(res?.message);
+            }
+        } catch (error) {
+            toast.error(error?.data?.message || "Failed to cancel subscription");
+        }
+
     };
 
     return (
@@ -222,7 +241,7 @@ const Page = () => {
                                     </Button>
                                 ) :
                                     (
-                                        <button className='bg-red-500 text-white py-2 px-8 rounded-lg'>
+                                        <button onClick={() => handleCancelSubscription(plan)} className='bg-red-500 text-white py-2 px-8 rounded-lg'>
                                             Cancel Subscription
                                         </button>
                                     )

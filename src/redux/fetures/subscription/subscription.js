@@ -7,6 +7,7 @@ const subscription = apiSlice.injectEndpoints({
                 url: `/notifications/?page=${page}&limit=20`,
                 method: "GET",
             }),
+            invalidatesTags: ["Subscription"],
         }),
         takeFreeTrial: builder.mutation({
             query: (data) => ({
@@ -14,21 +15,31 @@ const subscription = apiSlice.injectEndpoints({
                 method: "POST",
                 body: data,
             }),
+            providesTags: ["Subscription"],
         }),
         getAllSubscriptions: builder.query({
             query: () => ({
                 url: `/user-subs/paginate`,
                 method: "GET",
             }),
+            invalidatesTags: ["Subscription"],
         }),
         takeSubscription: builder.mutation({
             query: ({ id }) => ({
                 url: `/subscription-plans/purchase/${id}`,
                 method: "POST"
             }),
+            providesTags: ["Subscription"]
+        }),
+        cancelSub: builder.mutation({
+            query: ({ id }) => ({
+                url: `/subscription-plans/cancel/${id}`,
+                method: "POST"
+            }),
+            providesTags: ["Subscription"]
         })
     }),
 });
 
 
-export const { useTakeFreeTrialMutation, useGetFullSubscriptionQuery, useGetAllSubscriptionsQuery, useTakeSubscriptionMutation } = subscription;
+export const { useTakeFreeTrialMutation, useGetFullSubscriptionQuery, useGetAllSubscriptionsQuery, useTakeSubscriptionMutation, useCancelSubMutation } = subscription;
