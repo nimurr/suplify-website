@@ -12,8 +12,7 @@ const Page = () => {
     const subscriptionsUserInfo = data?.data?.attributes?.result?.results || [];
     const subscriptions = data?.data?.attributes?.subscription || [];
 
-    console.log(data);
-
+    console.log(subscriptionsUserInfo);
 
     const [subscriptionsList, setSubscriptionsList] = useState([]);
 
@@ -92,7 +91,7 @@ const Page = () => {
     const handleCancelSubscription = async (plan) => {
         console.log(plan);
         try {
-            const res = await cancelSub(plan).unwrap();
+            const res = await cancelSub().unwrap();
             console.log(res);
             if (res?.code === 200) {
                 toast.success(res?.message);
@@ -128,17 +127,19 @@ const Page = () => {
                 }
 
             </div>
-            <div>
+            <div className='max-w-[500px] md:max-w-full overflow-x-auto'>
                 {subscriptionsUserInfo?.length > 0 && (
                     <table className="min-w-full table-auto border-collapse my-5">
                         <thead>
                             <tr className="bg-gray-100 border-b">
+                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">User Subscription Id</th>
                                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Subscription Name</th>
                                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700"> Start Date</th>
                                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Current Period Start Date</th>
                                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700"> Expire Date</th>
                                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Cancelled At Period End</th>
                                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700"> Cancel Date</th>
+                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -147,12 +148,14 @@ const Page = () => {
                                     key={index}
                                     className={`border-b ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100`}
                                 >
+                                    <td className="px-4 py-3 text-sm text-gray-800">{item?._userSubscriptionId}</td>
                                     <td className="px-4 py-3 text-sm text-gray-800">{item?.subscriptionPlanId?.subscriptionName}</td>
                                     <td className="px-4 py-3 text-sm text-gray-800">{moment(item?.subscriptionStartDate).format('YYYY-MM-DD')}</td>
                                     <td className="px-4 py-3 text-sm text-gray-800">{moment(item?.currentPeriodStartDate).format('YYYY-MM-DD')}</td>
                                     <td className="px-4 py-3 text-sm text-gray-800">{moment(item?.expirationDate).format('YYYY-MM-DD')}</td>
                                     <td className="px-4 py-3 text-sm text-gray-800">{item?.cancelledAtPeriodEnd ? 'True' : 'False'}</td>
                                     <td className="px-4 py-3 text-sm text-gray-800">{moment(item?.cancelledAt || "N/A").format('YYYY-MM-DD')}</td>
+                                    <td className="px-4 py-3 text-sm text-red-600 capitalize">{item?.status}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -165,9 +168,9 @@ const Page = () => {
                 {error && <p className="text-red-600">Error loading subscriptions</p>}
             </Title>
 
-            <Row gutter={[40, 40]} justify="center">
+            <Row gutter={[24, 24]} justify="center">
                 {subscriptionsList?.map((plan) => (
-                    <Col xs={40} sm={40} md={8} key={plan.id}>
+                    <Col xs={24} sm={24} md={8} key={plan.id}>
                         <Card
                             title={plan.name}
                             bordered={false}

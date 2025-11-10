@@ -32,8 +32,8 @@ const subscription = apiSlice.injectEndpoints({
             providesTags: ["Subscription"]
         }),
         cancelSub: builder.mutation({
-            query: ({ id }) => ({
-                url: `/subscription-plans/cancel/${id}`,
+            query: () => ({
+                url: `/subscription-plans/cancel`,
                 method: "POST"
             }),
             providesTags: ["Subscription"]
