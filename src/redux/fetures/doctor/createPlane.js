@@ -20,7 +20,7 @@ const createPlane = apiSlice.injectEndpoints({
         }),
         getAllPlanes: builder.query({
             query: (planType) => ({
-                url: `/doctor-plans/paginate?planType=${planType || "mealPlan"}`,
+                url: `/doctor-plans/paginate/without-search?planType=${planType || "mealPlan"}`,
                 method: "GET",
             }),
             providesTags: ["DoctorCreatePlane"],

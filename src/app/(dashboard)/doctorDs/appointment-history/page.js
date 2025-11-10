@@ -38,7 +38,7 @@ const Page = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {isLoading && <tr><td colSpan={7} className='text-center'>Loading...</td></tr>}
+                    {isLoading && <tr><td colSpan={7} className='text-center py-5'>Loading...</td></tr>}
                     {fullData?.map((row) => (
                         <tr className='border-b border-gray-200 py-2' key={row._DoctorPatientScheduleBookingId}>
                             <td className='text-center' style={{ padding: '10px' }}>{row._DoctorPatientScheduleBookingId || 'N/A'}</td>
@@ -56,6 +56,12 @@ const Page = () => {
                     ))}
                 </tbody>
             </table>
+
+            <div>
+                {
+                    !isLoading && fullData?.length === 0 && <p className='text-center py-5 text-red-500'>No Appointment History Found</p>
+                }
+            </div>
 
             {/* Ant Design Modal */}
             <Modal
