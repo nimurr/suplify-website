@@ -21,7 +21,7 @@ const DoctorProtocolPage = () => {
   const patientId = urlParams.get("patientId");
 
   // Fetch patient protocols and specialists using redux hooks
-  const { data: patientData, isLoading: isPatientDataLoading , refetch } = useGetAllProtocalsByPatientIdQuery(patientId);
+  const { data: patientData, isLoading: isPatientDataLoading, refetch } = useGetAllProtocalsByPatientIdQuery(patientId);
   const { data: specialistData, isLoading: isSpecialistDataLoading } = useGetAllSpacialistQuery(patientId);
 
   const fullPatientData = patientData?.data?.attributes || [];
@@ -118,8 +118,9 @@ const DoctorProtocolPage = () => {
             <h2>All Protocol</h2>
             <div className="flex gap-2">
               <button
+                disabled
                 onClick={() => setIsModalVisible(true)}  // Show modal on click
-                className="bg-red-600 text-white py-2 px-6 rounded-lg"
+                className={`bg-red-600 text-white py-2 px-6 rounded-lg disabled:bg-red-300 disabled:cursor-not-allowed flex items-center gap-2`}
               >
                 Assign a Specialist
               </button>

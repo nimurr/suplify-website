@@ -20,8 +20,8 @@ const columns = [
     // },
     {
         title: 'Transaction ID',
-        dataIndex: 'transactionId',
-        key: 'transactionId',
+        dataIndex: 'paymentTransactionId',
+        key: 'paymentTransactionId',
         render: (text) => <span className='font-semibold'>{text || 'Null'}</span>,
     },
     {

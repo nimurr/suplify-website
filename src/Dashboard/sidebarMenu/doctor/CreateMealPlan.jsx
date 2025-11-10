@@ -92,7 +92,7 @@ export default function CreateMealPlan() {
         formData.keyPoints = [''];
         setTimeout(() => {
           window.location.href = '/doctorDs/create-plan';
-        }, 1000);
+        }, 1500);
       }
       else {
         toast.error(res?.data?.message)

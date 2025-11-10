@@ -12,7 +12,6 @@ const Page = () => {
     const subscriptionsUserInfo = data?.data?.attributes?.result?.results || [];
     const subscriptions = data?.data?.attributes?.subscription || [];
 
-    console.log(subscriptionsUserInfo);
 
     const [subscriptionsList, setSubscriptionsList] = useState([]);
 
@@ -89,7 +88,7 @@ const Page = () => {
     const [cancelSub] = useCancelSubMutation();
 
     const handleCancelSubscription = async (plan) => {
-        console.log(plan);
+      
         try {
             const res = await cancelSub().unwrap();
             console.log(res);
@@ -100,6 +99,7 @@ const Page = () => {
                 toast.error(res?.message);
             }
         } catch (error) {
+            console.log(error);
             toast.error(error?.data?.message || "Failed to cancel subscription");
         }
 
