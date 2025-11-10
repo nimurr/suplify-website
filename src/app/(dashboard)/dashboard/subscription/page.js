@@ -88,7 +88,7 @@ const Page = () => {
     const [cancelSub] = useCancelSubMutation();
 
     const handleCancelSubscription = async (plan) => {
-      
+
         try {
             const res = await cancelSub().unwrap();
             console.log(res);
