@@ -84,15 +84,20 @@ export default function CreateMealPlan() {
     try {
       const res = await createPlane(submissionData);  // Send the form data
       console.log(res);
-      if (res?.data?.code == 200) toast.success(res?.data?.message)
-      formData.planType = '';
-      formData.title = '';
-      formData.description = '';
-      formData.keyPoints = [''];
+      if (res?.data?.code == 200) {
+        toast.success(res?.data?.message)
+        formData.planType = '';
+        formData.title = '';
+        formData.description = '';
+        formData.keyPoints = [''];
+        setTimeout(() => {
+          window.location.href = '/doctorDs/create-plan';
+        }, 1000);
+      }
+      else {
+        toast.error(res?.data?.message)
+      }
 
-      setTimeout(() => {
-        window.location.href = '/doctorDs/create-plan';
-      }, 1000);
 
 
     } catch (error) {

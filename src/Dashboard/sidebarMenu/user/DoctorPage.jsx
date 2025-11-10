@@ -83,7 +83,8 @@ export default function DoctorPage() {
     if (data?.data?.additionalResponse?.subscriptionType == 'none' || data2?.data?.additionalResponse?.subscriptionType == 'none') {
       return toast.error('Please Buy Subscription to View Full Details')
     }
-    router.push(`/dashboard/doctor/view-full/${id}`)
+    window.location.href = `/dashboard/doctor/view-full/${id}`
+    // router.push(`/dashboard/doctor/view-full/${id}`)
   }
 
 

@@ -1,44 +1,63 @@
-
 "use client"
 import CustomButton from '@/components/customComponent/customButton';
 import url from '@/redux/api/baseUrl';
 import { useDoctorAppoinmentBookedMutation, useGetFullDataQuery } from '@/redux/fetures/patient/patient';
 import { LeftOutlined } from '@ant-design/icons';
-import { Button, Image } from 'antd';
 import { Calendar, Clock } from 'lucide-react';
 import moment from 'moment';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function AppointmentScheduler({ doctorId }) {
 
-  const { data, isLoading, refetch } = useGetFullDataQuery(doctorId)
-  const fullData = data?.data?.attributes?.result?.results;
-  const profile = data?.data?.attributes?.doctorProfile;
-  console.log(fullData);
 
-  // Sample data for schedules
-  const router = useRouter()
+  const { data, isLoading, refetch, isFetching } = useGetFullDataQuery(doctorId);
+
+  const [fullData, setFullData] = useState(null);
+  const [profile, setProfile] = useState(null);
+
+
+
+  // Ensure refetch is called once on first render and whenever doctorId changes
+  useEffect(() => {
+    if (doctorId) {
+      refetch();
+    }
+  }, [doctorId, refetch]);
+
+  // Set data once refetch has been done
+  useEffect(() => {
+    const fullData = data?.data?.attributes?.result?.results;
+    const profile = data?.data?.attributes?.doctorProfile;
+    setFullData(fullData);
+    setProfile(profile);
+  }, [data]);
 
   const back = () => {
-    router.push('/dashboard/doctor')
+    router.push('/dashboard/doctor');
   }
+
+  if (isLoading || isFetching) {
+    return <p>Loading...</p>;
+  }
+
+
   return (
     <div>
       <h1 className='text-2xl font-semibold flex items-center gap-2 my-12'>
-        <LeftOutlined onClick={() => back()} className=' cursor-pointer' />
+        <LeftOutlined onClick={() => back()} className='cursor-pointer' />
         View Full Doctor
       </h1>
       <div className="bg-gray-50 min-h-screen lg:flex gap-4 p-6">
         {/* Header Section */}
-        <div className=" lg:w-[20%] mb-8">
+        <div className="lg:w-[20%] mb-8">
           <div className="rounded-lg shadow-md bg-white border border-gray-200 overflow-hidden font-sans">
-
             <div className="relative w-full h-60">
               <img
                 src={profile?.profileImage?.imageUrl.includes("amazonaws.com") ? profile?.profileImage?.imageUrl : url + profile?.profileImage?.imageUrl}
                 alt="doctor"
-                className="w-full" // optional styling
+                className="w-full"
               />
             </div>
 
@@ -50,37 +69,17 @@ export default function AppointmentScheduler({ doctorId }) {
               <p className="text-sm text-gray-700 mb-6 leading-relaxed">
                 {profile?.profileId?.description}
               </p>
-              {/* <div className="md:flex md:gap-3">
-
-                <CustomButton
-                  text='Book Now'
-                />
-
-                <Button
-                  type="default"
-                  className="flex-1 border-red-700 text-red-700 hover:bg-red-50"
-                  size="large"
-                >
-                  Message
-                </Button>
-              </div> */}
             </div>
           </div>
         </div>
 
+        {/* Main Content Section */}
         <div className='lg:w-[80%]'>
-
           <div className="ml-auto flex items-center justify-between mb-2">
             <div className="text-sm text-gray-500">Available Schedules</div>
-            <div className="font-bold text-gray-800">Total Schedules: 10</div>
+            <div className="font-bold text-gray-800">Total Schedules: {fullData?.length || 0}</div>
           </div>
-          {
-            isLoading && (
-              <h1 className='text-2xl font-semibold flex items-center gap-2 my-12'>
-                Loading...
-              </h1>
-            )
-          }
+
           {/* Schedules Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start gap-6">
             {fullData?.map((schedule) => (
@@ -92,9 +91,6 @@ export default function AppointmentScheduler({ doctorId }) {
             ))}
           </div>
         </div>
-
-        {/* Footer Section */}
-
       </div>
     </div>
   );
@@ -116,22 +112,21 @@ function ScheduleCard({ schedule, refetch }) {
   const handleBooked = async () => {
     try {
       const res = await doctorBooked(schedule._id).unwrap();
-      console.log(res);
       refetch();
+
       if (res?.code == 200) {
-        toast.success(res?.message)
+        toast.success(res?.message);
         refetch();
         if (res?.data?.attributes?.url) {
           window.location.href = `${res?.data?.attributes?.url}`;
         }
-      }
-      else {
-        toast.error(res?.message)
+      } else {
+        toast.error(res?.message);
       }
     } catch (error) {
-      toast.error(error?.data?.message)
+      toast.error(error?.data?.message);
     }
-  }
+  };
 
   return (
     <div
@@ -141,13 +136,11 @@ function ScheduleCard({ schedule, refetch }) {
     >
       <Toaster />
 
-      {
-        schedule.patientBookings && schedule.scheduleStatus == "booked" && (
-          <div className="absolute top-1 right-1 bg-green-300 text-green-800 text-xs px-2 py-1 rounded-full">
-            Booked 
-          </div>
-        )
-      }
+      {schedule.patientBookings && schedule.scheduleStatus == "booked" && (
+        <div className="absolute top-1 right-1 bg-green-300 text-green-800 text-xs px-2 py-1 rounded-full">
+          Booked
+        </div>
+      )}
 
       <div className="mb-4 pt-5">
         <span className="inline-block text-sm font-medium"> {schedule.scheduleName}</span>
@@ -188,20 +181,16 @@ function ScheduleCard({ schedule, refetch }) {
         {schedule.description}
       </div>
 
-      {
-        schedule.scheduleStatus !== "booked" && schedule.scheduleStatus !== "expired" && (
-          <button onClick={handleBooked} className="w-full bg-red-500 text-white py-2 rounded-md">
-            Book Now
-          </button>
-        )
-      }
-      {
-        schedule.patientBookings?.status == "pending" && schedule.scheduleStatus !== "available" && (
-          <button onClick={handleBooked} className="w-full bg-red-500 text-white py-2 rounded-md">
-            Book Now
-          </button>
-        )
-      }
+      {schedule.scheduleStatus !== "booked" && schedule.scheduleStatus !== "expired" && (
+        <button onClick={handleBooked} className="w-full bg-red-500 text-white py-2 rounded-md">
+          Book Now
+        </button>
+      )}
+      {schedule.patientBookings?.status == "pending" && schedule.scheduleStatus !== "available" && (
+        <button onClick={handleBooked} className="w-full bg-red-500 text-white py-2 rounded-md">
+          Book Now
+        </button>
+      )}
     </div>
   );
 }
