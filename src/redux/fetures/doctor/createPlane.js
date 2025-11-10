@@ -43,4 +43,4 @@ const createPlane = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useCreatePlaneMutation, useUpdatePlaneMutation, useGetAllPlanesQuery, useGetSinglePlaneQuery , useCreatePlanByDocMutation } = createPlane;
+export const { useCreatePlaneMutation, useUpdatePlaneMutation, useGetAllPlanesQuery, useGetSinglePlaneQuery, useCreatePlanByDocMutation } = createPlane;
