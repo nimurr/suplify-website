@@ -10,7 +10,7 @@ const Page = () => {
     const subscriptionsUserInfo = data?.data?.attributes?.result?.results || [];
     const subscriptions = data?.data?.attributes?.subscription || [];
 
-    console.log(subscriptionsUserInfo);
+    console.log(subscriptions);
 
     const [subscriptionsList, setSubscriptionsList] = useState([]);
 
@@ -67,13 +67,13 @@ const Page = () => {
 
     return (
         <div style={{ padding: '50px', background: '#f9f9f9' }}>
-            {/* <div>
+            <div>
                 {
                     subscriptionsUserInfo?.length > 0 && (
                         <p style={{ textAlign: 'center' }}>Your have No subscriptions</p>
                     )
                 }
-            </div> */}
+            </div>
             <Title level={2} style={{ textAlign: 'center', marginBottom: '40px' }}>
                 {isLoading && <p>Loading...</p>}
                 {error && <p className="text-red-600">Error loading subscriptions</p>}
