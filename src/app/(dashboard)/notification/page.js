@@ -1,5 +1,6 @@
 'use client';
 import { useGetFullSubscriptionQuery } from '@/redux/fetures/subscription/subscription';
+import moment from 'moment';
 import { useState } from 'react';
 import React from 'react';
 import { FaCalendarCheck, FaCogs, FaBoxOpen, FaUser, FaMoneyCheckAlt, FaHeartbeat, FaCreditCard, FaUserPlus, FaExclamationTriangle } from 'react-icons/fa';
@@ -35,9 +36,17 @@ const Notification = ({ notification }) => {
 
     return (
         <div className={`border-l-4 p-4 mb-3 rounded-lg flex justify-between items-center ${style}`}>
-            <div className="flex items-center gap-3">
-                <div className="text-2xl">{icon}</div>
-                <p>{notification?.title}</p>
+            <div className="flex items-center justify-between w-full gap-3">
+                <div className='flex items-center gap-5'>
+                    <div className="text-2xl">{icon}</div>
+                    <p>{notification?.title}</p>
+                </div>
+                <div className='text-right'>
+                    {/* // HOW MANY TIME AGEO NOTIFICATION SHWO THIS FORMATE  */}
+                    <p className='capitalize'>{moment(notification?.createdAt).fromNow()}</p>
+
+                    <p className='text-xs'>{moment(notification?.createdAt).format('YYYY-MM-DD')}</p>
+                </div>
             </div>
         </div>
     );
@@ -50,6 +59,7 @@ const Page = () => {
 
     const subscription = data?.data?.attributes?.results || [];
     const totalPages = data?.data?.attributes?.totalPages || 1;
+    console.log(subscription);
 
     // Handle the 'Next' and 'Previous' page changes
     const handleNextPage = () => {
