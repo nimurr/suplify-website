@@ -146,7 +146,7 @@ const Page = () => {
                             {subscriptionsUserInfo?.map((item, index) => (
                                 <tr
                                     key={index}
-                                    className={`border-b ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100`}
+                                    className={`border-b ${index == 0 ? 'bg-green-100' : ''} ${index !== 0 && index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100`}
                                 >
                                     <td className="px-4 py-3 text-sm text-gray-800">{item?._userSubscriptionId}</td>
                                     <td className="px-4 py-3 text-sm text-gray-800">{item?.subscriptionPlanId?.subscriptionName}</td>
@@ -155,7 +155,17 @@ const Page = () => {
                                     <td className="px-4 py-3 text-sm text-gray-800">{moment(item?.expirationDate).format('YYYY-MM-DD')}</td>
                                     <td className="px-4 py-3 text-sm text-gray-800">{item?.cancelledAtPeriodEnd ? 'True' : 'False'}</td>
                                     <td className="px-4 py-3 text-sm text-gray-800">{moment(item?.cancelledAt || "N/A").format('YYYY-MM-DD')}</td>
-                                    <td className="px-4 py-3 text-sm text-red-600 capitalize">{item?.status}</td>
+                                    <td
+                                        className={`
+                                            px-4 py-3 text-sm 
+                                            ${item?.status === 'active' ? 'text-green-600' : ''}
+                                            ${item?.status === 'cancelled' ? 'text-red-500' : ''}
+                                            ${item?.status === 'cancelling' ? 'text-yellow-600' : ''}
+                                        `}
+                                    >
+                                        {item?.status}
+                                    </td>
+
                                 </tr>
                             ))}
                         </tbody>
