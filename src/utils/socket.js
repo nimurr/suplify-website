@@ -1,5 +1,5 @@
 
 
-const socketUrl = 'https://newsheakh6731.sobhoy.com';
+const socketUrl = 'https://newsheakh6735.sobhoy.com';
 
 export default socketUrl;

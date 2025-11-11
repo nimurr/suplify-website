@@ -27,8 +27,8 @@ export default function CreateSchedule() {
   const route = useRouter();
 
   const onFinish = async (values) => {
- 
-    try { 
+
+    try {
       const s = dayjs(values.date)
         .hour(values.startTime.hour() + 6)
         .minute(values.startTime.minute())
@@ -37,7 +37,7 @@ export default function CreateSchedule() {
         .hour(values.endTime.hour() + 6)
         .minute(values.endTime.minute())
         .second(values.endTime.second() || 0);
-        console.log("sdfsdf");
+      console.log("sdfsdf");
 
       if (e.isBefore(s)) {
         toast.error("End time must be after start time");
@@ -77,7 +77,7 @@ export default function CreateSchedule() {
     } catch (err) {
       console.log(err);
       toast.error("Failed to create schedule");
-    } 
+    }
   };
 
   return (

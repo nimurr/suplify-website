@@ -64,6 +64,8 @@ const MessageSidebar = () => {
             );
         };
 
+        console.log(conversations);
+
         if (socket.connected) {
             fetchConversations();
         } else {
