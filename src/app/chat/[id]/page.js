@@ -96,6 +96,8 @@ const Page = () => {
             text: newMessage,
         };
 
+        console.log(messageData);
+
         // Send the message to the server
         socket.emit('send-new-message', messageData, (response) => {
             // console.log('✅ Joined conversation:', response);
