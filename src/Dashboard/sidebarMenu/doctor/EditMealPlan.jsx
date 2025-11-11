@@ -175,7 +175,7 @@ export default function EditMealPlan() {
           >
             <Select.Option value="mealPlan">Meal Plan</Select.Option>
             <Select.Option value="workOut">Workout</Select.Option>
-            <Select.Option value="supplement">Supplement</Select.Option>
+            <Select.Option value="suppliment">Suppliment</Select.Option>
             <Select.Option value="lifeStyleChanges">Lifestyle Changes</Select.Option>
           </Select>
         </Form.Item>

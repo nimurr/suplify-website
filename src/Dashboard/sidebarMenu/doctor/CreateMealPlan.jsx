@@ -6,6 +6,7 @@ import { DeleteOutlined, PlusOutlined, InfoCircleOutlined, ArrowLeftOutlined } f
 import Link from 'next/link';
 import { useCreatePlaneMutation } from '@/redux/fetures/doctor/createPlane';
 import toast, { Toaster } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -69,6 +70,8 @@ export default function CreateMealPlan() {
 
   const [createPlane, { isLoading }] = useCreatePlaneMutation();
 
+  const route = useRouter();
+
   // Submit the form
   const onFinish = async () => {
     // Submit the formData in the desired format
@@ -83,7 +86,7 @@ export default function CreateMealPlan() {
 
     try {
       const res = await createPlane(submissionData);  // Send the form data
-      console.log(res);
+
       if (res?.data?.code == 200) {
         toast.success(res?.data?.message)
         formData.planType = '';
@@ -91,14 +94,13 @@ export default function CreateMealPlan() {
         formData.description = '';
         formData.keyPoints = [''];
         setTimeout(() => {
-          window.location.href = '/doctorDs/create-plan';
-        }, 1500);
+          route.push('/doctorDs/create-plan');
+        }, 1000);
       }
       else {
-        toast.error(res?.data?.message)
+        console.log(res?.error?.data);
+        toast.error(res?.error?.data?.message)
       }
-
-
 
     } catch (error) {
       console.log('Error:', error);
@@ -160,7 +162,7 @@ export default function CreateMealPlan() {
           >
             <Select.Option value="mealPlan">Meal Plan</Select.Option>
             <Select.Option value="workOut">Workout</Select.Option>
-            <Select.Option value="supplement">Supplement</Select.Option>
+            <Select.Option value="suppliment">Supplement</Select.Option>
             <Select.Option value="lifeStyleChanges">Lifestyle Changes</Select.Option>
           </Select>
         </Form.Item>

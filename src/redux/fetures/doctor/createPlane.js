@@ -27,7 +27,7 @@ const createPlane = apiSlice.injectEndpoints({
         }),
         getSinglePlane: builder.query({
             query: (id) => ({
-                url: `/doctor-plans/paginate?_id=${id}`,
+                url: `/doctor-plans/paginate/without-search?_id=${id}`,
                 method: "GET",
             }),
             providesTags: ["DoctorCreatePlane"],

@@ -27,11 +27,8 @@ export default function CreateSchedule() {
   const route = useRouter();
 
   const onFinish = async (values) => {
-    // console.log("Received values:", values);
-
-
-    try {
-      // Basic guard: End time must be >= start time (same selected date)
+ 
+    try { 
       const s = dayjs(values.date)
         .hour(values.startTime.hour() + 6)
         .minute(values.startTime.minute())
@@ -40,9 +37,10 @@ export default function CreateSchedule() {
         .hour(values.endTime.hour() + 6)
         .minute(values.endTime.minute())
         .second(values.endTime.second() || 0);
+        console.log("sdfsdf");
 
       if (e.isBefore(s)) {
-        message.error("End time must be after or equal to start time.");
+        toast.error("End time must be after start time");
         return;
       }
 
@@ -60,8 +58,11 @@ export default function CreateSchedule() {
 
       // (Optional) See the exact result:
       console.log("Submitting payload:", payload);
-      // return
+
       const res = await createSchedule(payload).unwrap();
+
+      console.log(res);
+
       if (res?.code == 200) {
         console.log(res);
         toast.success("Schedule created");
@@ -69,14 +70,14 @@ export default function CreateSchedule() {
         route.push("/doctorDs/schedule");
       }
       else {
+        console.log(res);
         toast.error(res?.message);
       }
 
     } catch (err) {
       console.log(err);
-      // message.error(err?.data?.message || "Failed to create schedule");
       toast.error("Failed to create schedule");
-    }
+    } 
   };
 
   return (
@@ -90,16 +91,6 @@ export default function CreateSchedule() {
           form={form}
           layout="vertical"
           onFinish={onFinish}
-          // initialValues={{
-          //   scheduleName: "schedule one doc one",
-          //   price: "60",
-          //   date: dayjs("2025-11-04"),
-          //   startTime: dayjs("14:45:00", "HH:mm:ss"),
-          //   endTime: dayjs("14:45:09", "HH:mm:ss"),
-          //   linkType: "zoom",
-          //   link: "meeting link",
-          //   description: "schedule one doc one description",
-          // }}
           requiredMark="optional"
           colon={false}
         >
