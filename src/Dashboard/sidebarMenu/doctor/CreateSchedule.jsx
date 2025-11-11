@@ -6,6 +6,8 @@ import utc from "dayjs/plugin/utc";
 import BackHeader from "@/components/customComponent/BackHeader";
 import { useCreateScheduleMutation } from "@/redux/fetures/doctor/doctor";
 import toast, { Toaster } from "react-hot-toast";
+import moment from "moment";
+import { useRouter } from "next/navigation";
 
 dayjs.extend(utc);
 
@@ -16,21 +18,26 @@ export default function CreateSchedule() {
   // Helper: merge a date + a time, convert to UTC, and return "YYYY-MM-DDTHH:mm:ss" (no Z)
   const combineToUTCNoZ = (date, time) => {
     const merged = dayjs(date)
-      .hour(time.hour())
+      .hour(time.hour() + 6)
       .minute(time.minute())
       .second(time.second() || 0);
     return merged.utc().format("YYYY-MM-DDTHH:mm:ss"); // NOTE: no trailing "Z"
   };
 
+  const route = useRouter();
+
   const onFinish = async (values) => {
+    // console.log("Received values:", values);
+
+
     try {
       // Basic guard: End time must be >= start time (same selected date)
       const s = dayjs(values.date)
-        .hour(values.startTime.hour())
+        .hour(values.startTime.hour() + 6)
         .minute(values.startTime.minute())
         .second(values.startTime.second() || 0);
       const e = dayjs(values.date)
-        .hour(values.endTime.hour())
+        .hour(values.endTime.hour() + 6)
         .minute(values.endTime.minute())
         .second(values.endTime.second() || 0);
 
@@ -42,7 +49,7 @@ export default function CreateSchedule() {
       // Build EXACT backend payload
       const payload = {
         scheduleName: values.scheduleName?.trim(),
-        scheduleDate: dayjs(values.date).utc().startOf("day").toISOString(), // has trailing "Z"
+        scheduleDate: combineToUTCNoZ(values.date, moment("00:00:00", "HH:mm:ss")) + "Z", // has trailing "Z"
         startTime: combineToUTCNoZ(values.date, values.startTime), // UTC, no "Z"
         endTime: combineToUTCNoZ(values.date, values.endTime),     // UTC, no "Z"
         description: values.description?.trim(),
@@ -53,12 +60,18 @@ export default function CreateSchedule() {
 
       // (Optional) See the exact result:
       console.log("Submitting payload:", payload);
-
+      // return
       const res = await createSchedule(payload).unwrap();
-      console.log(res);
-      toast.success("Schedule created");
-      form.resetFields();
-      
+      if (res?.code == 200) {
+        console.log(res);
+        toast.success("Schedule created");
+        form.resetFields();
+        route.push("/doctorDs/schedule");
+      }
+      else {
+        toast.error(res?.message);
+      }
+
     } catch (err) {
       console.log(err);
       // message.error(err?.data?.message || "Failed to create schedule");

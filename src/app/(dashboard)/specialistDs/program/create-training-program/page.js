@@ -1,7 +1,8 @@
 'use client'
 import { useCreateTrainingProgramMutation } from '@/redux/fetures/Specialist/traningProgram';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { MdOutlineCancel } from 'react-icons/md';
 
 const Page = () => {
@@ -25,6 +26,7 @@ const Page = () => {
         setPhoto(null); // Reset the photo state to remove the image
     }
 
+    const route = useRouter();
 
     const [createTraningPrograms] = useCreateTrainingProgramMutation();
 
@@ -57,20 +59,22 @@ const Page = () => {
                 totalSessions = '';
                 price = '';
                 duration = '';
+                route.push("/specialistDs/program")
             }
-
+            else {
+                toast.error(response?.message)
+            }
 
         } catch (error) {
             console.log(error);
-            toast.error(error?.data?.message || "Something went wrong!");
+            toast.error(error?.data?.message);
         }
 
-        // Show success message
-        alert('Training Program Created Successfully!');
     }
 
     return (
         <div className='lg:m-0 m-5' style={{ padding: '30px', maxWidth: '800px', margin: '0 auto', backgroundColor: '#f7f7f7', borderRadius: '8px' }}>
+            <Toaster />
             <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>Training Program</h1>
 
             {/* Photo Upload Section */}

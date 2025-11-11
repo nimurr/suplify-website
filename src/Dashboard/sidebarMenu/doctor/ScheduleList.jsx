@@ -40,11 +40,11 @@ const ScheduleCard = ({ schedule, onEdit, onDelete }) => {
       </Space>
 
       <Space>
-        <Button
+        {/* <Button
           onClick={() => router.push('/doctorDs/schedule/edit-schedule')}
           type="primary" className="!font-semibold" danger icon={<EditOutlined />}  >
           Edit
-        </Button>
+        </Button> */}
         <Button type="default" className="!font-semibold" danger icon={<DeleteOutlined />} onClick={onDelete}>
           Delete
         </Button>

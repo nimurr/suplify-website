@@ -26,7 +26,7 @@ const Page = () => {
 
     return (
         <div>
-            <table border="1" className='rounded-lg capitalize' style={{ borderRadius: '10px', width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
+            <table border="1" className='rounded-lg capitalize overflow-hidden' style={{ borderRadius: '10px', width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
                 <thead>
                     <tr>
                         <th style={{ backgroundColor: 'red', color: 'white', padding: '8px' }}>SL</th>
@@ -59,6 +59,11 @@ const Page = () => {
                     ))}
                 </tbody>
             </table>
+            <div>
+                {
+                   !isLoading && fullData?.length === 0 && <p className='text-center text-red-600 font-medium py-3'>No Booked Workout Class found</p>
+                }
+            </div>
 
             {/* Ant Design Modal */}
             <Modal

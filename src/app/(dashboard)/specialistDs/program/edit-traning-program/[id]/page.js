@@ -1,6 +1,6 @@
 'use client'
 import { useCreateTrainingProgramMutation, useGetTrainingProgramByIdQuery, useUpdateTrainingProgramMutation } from '@/redux/fetures/Specialist/traningProgram';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { MdOutlineCancel } from 'react-icons/md';
@@ -9,7 +9,7 @@ const Page = () => {
 
     const { id } = useParams();
 
-    const { data } = useGetTrainingProgramByIdQuery(id);
+    const { data, refetch } = useGetTrainingProgramByIdQuery(id);
     const fullData = data?.data?.attributes;
 
 
@@ -33,6 +33,7 @@ const Page = () => {
         setPhoto(null); // Reset the photo state to remove the image
     }
 
+    const route = useRouter();
 
     const [updateTraningProgram] = useUpdateTrainingProgramMutation();
 
@@ -63,14 +64,8 @@ const Page = () => {
             console.log(response);
             if (response?.code == 200) {
                 toast.success(response?.message)
-
-                photo = null;
-                name = '';
-                description = '';
-                totalSessions = '';
-                price = '';
-                duration = '';
-                window.location.href = `/specialistDs/program`
+                refetch();
+                route.push("/specialistDs/program")
             }
         } catch (error) {
             console.log(error);

@@ -1,7 +1,8 @@
 'use client';
 import { useCreateWorkoutClassMutation } from '@/redux/fetures/Specialist/workoutClass';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 const Page = () => {
     // Initialize formData with empty values
@@ -32,6 +33,8 @@ const Page = () => {
         const date = new Date(datetime);
         return date.toISOString().split('.')[0]; // Converts to 'YYYY-MM-DDTHH:mm:ssZ' format
     };
+
+    const route = useRouter();
 
     // Handle form submission
     const handleSubmit = async (e) => {
@@ -64,6 +67,7 @@ const Page = () => {
                     meetingLink: '',
                     price: '',
                 });
+                route.push("/specialistDs/workoutClass")
             }
         } catch (error) {
             console.log(error);
@@ -73,6 +77,7 @@ const Page = () => {
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-md shadow-lg">
+            <Toaster />
             <h2 className="text-2xl font-semibold text-center mb-6">Create Workout Session</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Schedule Date */}
@@ -86,7 +91,7 @@ const Page = () => {
                         name="scheduleDate"
                         value={formData.scheduleDate} // Bind input value to formData
                         onChange={handleChange} // Update formData on change
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         required
                     />
                 </div>
@@ -102,7 +107,7 @@ const Page = () => {
                         name="startTime"
                         value={formData.startTime} // Bind input value to formData
                         onChange={handleChange} // Update formData on change
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         required
                     />
                 </div>
@@ -115,10 +120,11 @@ const Page = () => {
                     <input
                         type="datetime-local"
                         id="endTime"
+                        placeholder='Enter end time'
                         name="endTime"
                         value={formData.endTime} // Bind input value to formData
                         onChange={handleChange} // Update formData on change
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         required
                     />
                 </div>
@@ -131,10 +137,11 @@ const Page = () => {
                     <input
                         type="text"
                         id="scheduleName"
+                        placeholder='Enter schedule name'
                         name="scheduleName"
                         value={formData.scheduleName} // Bind input value to formData
                         onChange={handleChange} // Update formData on change
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         required
                     />
                 </div>
@@ -146,11 +153,12 @@ const Page = () => {
                     </label>
                     <textarea
                         id="description"
+                        placeholder='Enter description'
                         name="description"
                         value={formData.description} // Bind input value to formData
                         onChange={handleChange} // Update formData on change
                         rows="4"
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         required
                     />
                 </div>
@@ -165,7 +173,7 @@ const Page = () => {
                         name="typeOfLink"
                         value={formData.typeOfLink} // Bind select value to formData
                         onChange={handleChange} // Update formData on change
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         required
                     >
                         <option value="">Select Link Type</option>
@@ -186,7 +194,7 @@ const Page = () => {
                         name="sessionType"
                         value={formData.sessionType} // Bind select value to formData
                         onChange={handleChange} // Update formData on change
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         required
                     >
                         <option value="">Select Session Type</option>
@@ -203,10 +211,11 @@ const Page = () => {
                     <input
                         type="url"
                         id="meetingLink"
+                        placeholder='Enter Meeting Link'
                         name="meetingLink"
                         value={formData.meetingLink} // Bind input value to formData
                         onChange={handleChange} // Update formData on change
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         required
                     />
                 </div>
@@ -218,11 +227,12 @@ const Page = () => {
                     </label>
                     <input
                         type="number"
+                        placeholder='Enter Price '
                         id="price"
                         name="price"
                         value={formData.price} // Bind input value to formData
                         onChange={handleChange} // Update formData on change
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         required
                     />
                 </div>
