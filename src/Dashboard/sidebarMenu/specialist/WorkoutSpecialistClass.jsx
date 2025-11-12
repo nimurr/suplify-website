@@ -16,7 +16,7 @@ const WorkoutSpecialistClass = () => {
 
   const { data } = useGetAllWorkoutClassQuery();
   const fullData = data?.data?.attributes;
-  console.log(fullData?.results);
+  console.log(fullData);
 
 
 
@@ -35,23 +35,25 @@ const WorkoutSpecialistClass = () => {
             <p className="text-lg font-semibold capitalize">{fullData?.specialistInfo?.name}</p>
             {/* <p type="secondary" className="text-xs">New Yorke, America</p> */}
           </div>
-          <div className="flex flex-wrap justify-center gap-2 mb-4">
-            {/* Replaced Ant Design Tag with raw <tag> */}
-            {/* <tag className="text-xs bg-gray-200 px-2 py-1 rounded-md">Trainer</tag>
-            <tag className="text-xs bg-gray-200 px-2 py-1 rounded-md">Body trainer</tag> */}
-            {
-              fullData?.specialistInfo?.profileId?.protocolNames?.map((role, index) => (
-                <span
-                  key={index}
-                  className="text-xs border border-gray-300 px-2 py-1 rounded-md"
-                >
-                  {role}
-                </span>
-              ))
-            }
-          </div>
-          <p className="text-xs text-gray-600 mb-4">
-            Lorem ipsum dolor sit amet consectetur. Massa risus eget justo vel urna sapien posuere.
+          {
+            fullData?.specialistInfo?.profileId?.protocolNames?.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2 mb-2">
+
+                {
+                  fullData?.specialistInfo?.profileId?.protocolNames?.map((role, index) => (
+                    <span
+                      key={index}
+                      className="text-xs border border-gray-300 px-2 py-1 rounded-md"
+                    >
+                      {role}
+                    </span>
+                  ))
+                }
+              </div>
+            )
+          }
+          <p className="text-xs text-gray-600 ">
+            {fullData?.specialistInfo?.profileId?.description || "No description provided."}
           </p>
         </div>
 

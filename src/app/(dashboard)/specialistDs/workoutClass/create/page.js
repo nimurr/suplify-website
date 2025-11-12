@@ -27,11 +27,18 @@ const Page = () => {
     };
 
     const [createWorkoutClass] = useCreateWorkoutClassMutation();
+    // Function to convert to UTC with 'Z' for scheduleDate (add 6 hours)
+    const convertToUTCWithZ = (datetime) => {
+        const date = new Date(datetime);
+        date.setHours(date.getHours() + 6); // Add 6 hours
+        return date.toISOString(); // Converts to 'YYYY-MM-DDTHH:mm:ssZ' format
+    };
 
-    // Function to convert to the correct UTC format
+    // Function to convert to UTC without 'Z' for startTime and endTime (add 6 hours)
     const convertToUTC = (datetime) => {
         const date = new Date(datetime);
-        return date.toISOString().split('.')[0]; // Converts to 'YYYY-MM-DDTHH:mm:ssZ' format
+        date.setHours(date.getHours() + 6); // Add 6 hours
+        return date.toISOString().split('.')[0]; // Converts to 'YYYY-MM-DDTHH:mm:ss' format without 'Z'
     };
 
     const route = useRouter();
@@ -41,16 +48,14 @@ const Page = () => {
         e.preventDefault();
         console.log("Form data:", formData);
 
-        // Convert to UTC before sending data
+        // Convert to UTC before sending data and add 6 hours to each datetime
         const formattedData = {
             ...formData,
-            scheduleDate: convertToUTC(formData.scheduleDate), // Convert scheduleDate to UTC with 'Z'
-            startTime: convertToUTC(formData.startTime), // Convert startTime to UTC
-            endTime: convertToUTC(formData.endTime), // Convert endTime to UTC
+            scheduleDate: convertToUTCWithZ(formData.scheduleDate), // Convert scheduleDate to UTC with 'Z' and add 6 hours
+            startTime: convertToUTC(formData.startTime), // Convert startTime to UTC without 'Z' and add 6 hours
+            endTime: convertToUTC(formData.endTime), // Convert endTime to UTC without 'Z' and add 6 hours
         };
-
-        console.log('Formatted Data:', formattedData); // Log to check format
-
+ 
         try {
             const response = await createWorkoutClass(formattedData).unwrap();
             console.log(response);
@@ -67,13 +72,14 @@ const Page = () => {
                     meetingLink: '',
                     price: '',
                 });
-                route.push("/specialistDs/workoutClass")
+                route.push("/specialistDs/workoutClass");
             }
         } catch (error) {
             console.log(error);
             toast.error(error?.data?.message || "Something went wrong!");
         }
     };
+
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-md shadow-lg">
