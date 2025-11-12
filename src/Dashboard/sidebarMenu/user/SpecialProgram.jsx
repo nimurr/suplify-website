@@ -21,6 +21,8 @@ const SpecialistProgram = ({ id }) => {
   const fullData = program?.data?.attributes?.result?.results;
   const specialistInfo = program?.data?.attributes?.specialistInfo;
 
+  console.log(fullData);
+
   const router = useRouter()
   const [selectedIndex, setSelectedIndex] = useState(0);
   const back = () => {
@@ -50,7 +52,7 @@ const SpecialistProgram = ({ id }) => {
   }
 
   return (
-    <div className="flex items-start gap-10">
+    <div className="flex items-start flex-wrap lg:flex-nowrap gap-10">
       <Toaster />
       {
         specialistInfo && (
@@ -93,8 +95,6 @@ const SpecialistProgram = ({ id }) => {
           </div>
         )
       }
-
-
 
       <div>
         <h1 className='text-2xl font-semibold items-center gap-2 mb-6 mt-6'>
@@ -164,6 +164,15 @@ const SpecialistProgram = ({ id }) => {
                 )}
               </Card>
             ))}
+          </div>
+          <div>
+            {
+              fullData?.length === 0 && (
+                <div className="flex w-full justify-center items-center h-screen">
+                  <h1 className="py-3 text-red-500 font-semibold">No Programs Found</h1>
+                </div>
+              )
+            }
           </div>
         </div>
       </div>
