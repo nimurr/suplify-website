@@ -1,7 +1,7 @@
 "use client";
 
 import BackHeader from "@/components/customComponent/BackHeader";
-import { useAddSpecialistKeyPointMutation, useGetAllMealSuggestionQuery } from "@/redux/fetures/Specialist/specialist";
+import { useAddSpecialistKeyPointMutation, useGetAllMealSuggestionQuery, useUpdateDeleteSuggestionForAPlanMutation } from "@/redux/fetures/Specialist/specialist";
 import React, { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { FiPlus } from "react-icons/fi";
@@ -38,13 +38,14 @@ export default function MealPlan() {
 
   const { data, isLoading } = useGetAllMealSuggestionQuery({ protocolId: planByDoctorId });
   const fullMealPlanData = data?.data?.attributes[0] || [];
-  console.log(fullMealPlanData);
+
 
   useEffect(() => {
     if (fullMealPlanData?.specialistSuggestions) {
       // Setting rows with specialist suggestions fetched from the server
       const formattedRows = fullMealPlanData.specialistSuggestions.map((suggestion, index) => ({
         id: index + 1,
+        deleteId: suggestion ? suggestion._id : null,
         keyPoint: suggestion?.suggestionDetails?.keyPoint || "",
         solutionName: suggestion?.suggestionDetails?.solutionName || "",
         suggestLink: suggestion?.suggestionDetails?.suggestFromStore || "",
@@ -119,6 +120,28 @@ export default function MealPlan() {
     }
   };
 
+  const [deleteItem] = useUpdateDeleteSuggestionForAPlanMutation();
+
+
+  const handleDeleteOldKeyPoints = async (item) => {
+    // const planId = item?.deleteId; 
+
+    try {
+      const res = await deleteItem({ planId: item?.deleteId }).unwrap();
+      console.log(res);
+      if (res?.code == 200) {
+        toast.success(res?.message);
+        refetch();
+      }
+      else {
+        toast.error(res?.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.message)
+    }
+  }
+
   return (
     <div className="max-w-6xl mx-auto bg-white rounded-lg border border-gray-200 p-8">
       <Toaster
@@ -169,7 +192,7 @@ export default function MealPlan() {
                   <td className="border px-4 py-2">{row.solutionName}</td>
                   <td className="border px-4 py-2">{row.suggestLink}</td>
                   <td className="border px-4 py-2">
-                    <button className="text-red-500" disabled>
+                    <button onClick={() => handleDeleteOldKeyPoints(row)} className="text-red-500 cursor-pointer" >
                       Delete
                     </button>
                   </td>
