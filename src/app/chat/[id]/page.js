@@ -118,6 +118,7 @@ const Page = () => {
         socket.on(`new-message-received::${id}`, (res) => {
             console.log('✅ new-message-received', res);
             // setMsg(res);
+            setFullMessage((prevMessages) => [...prevMessages, res]);
         });
 
     };
