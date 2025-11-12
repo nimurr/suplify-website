@@ -89,10 +89,10 @@ const WorkoutSpecialistClass = () => {
                   </div>
 
                   {/* Session and Duration Info */}
-                  <div className="flex justify-between mb-4">
+                  {/* <div className="flex justify-between mb-4">
                     <p className="text-sm text-gray-600">Total Session: <strong>{item?.bookingCount}</strong></p>
                     <p className="text-sm text-gray-600">Total Duration: <strong>4h</strong></p>
-                  </div>
+                  </div> */}
 
                   {/* Start Date and Platform */}
                   <div className="grid grid-cols-2 gap-4 text-base text-gray-600 mb-4">
