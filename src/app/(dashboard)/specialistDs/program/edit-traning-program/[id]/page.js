@@ -19,11 +19,20 @@ const Page = () => {
     const [totalSessions, setTotalSessions] = useState('');
     const [price, setPrice] = useState('');
     const [duration, setDuration] = useState('');
+    const [video, setVideo] = useState(null);
 
     const handlePhotoUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
             setPhoto(file);
+        } else {
+            alert("Failed to upload the file.");
+        }
+    }
+    const handlevideoUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setVideo(file);
         } else {
             alert("Failed to upload the file.");
         }
@@ -57,6 +66,9 @@ const Page = () => {
         }
         if (duration) {
             formData.append("durationInMonths", duration);
+        }
+        if (video) {
+            formData.append("trailerContents", video);
         }
 
         try {
@@ -119,6 +131,33 @@ const Page = () => {
                         </button>
                     </div>
                 )}
+            </div>
+            {/* with video show and edit  */}
+            <div>
+                <label htmlFor="video" style={{ display: 'block', marginBottom: '8px' }}>Video</label>
+                <input
+                    type="file"
+                    id="video"
+                    accept=".mp4,.mov,.avi,.mkv"
+                    onChange={handlevideoUpload}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px' }}
+                />
+                {
+                    video && (
+                        <div className='relative' style={{ marginTop: '10px' }}>
+                            <video
+                                src={video}
+                                controls
+                                style={{
+                                    width: '100%',
+                                    height: 'auto',
+                                    maxWidth: '300px',
+                                    borderRadius: '8px',
+                                }}
+                            />
+                        </div>
+                    )
+                }
             </div>
 
             {/* Name Input */}

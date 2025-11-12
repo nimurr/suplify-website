@@ -12,11 +12,21 @@ const Page = () => {
     const [totalSessions, setTotalSessions] = useState('');
     const [price, setPrice] = useState('');
     const [duration, setDuration] = useState('');
+    const [video, setVideo] = useState(null);
 
     const handlePhotoUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
             setPhoto(file);
+        } else {
+            alert("Failed to upload the file.");
+        }
+    }
+
+    const handleUploadVideo = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setVideo(file);
         } else {
             alert("Failed to upload the file.");
         }
@@ -31,17 +41,10 @@ const Page = () => {
     const [createTraningPrograms] = useCreateTrainingProgramMutation();
 
     const handleSubmit = async () => {
-        // Handle form submission
-        console.log({
-            photo,
-            name,
-            description,
-            totalSessions,
-            price,
-            duration
-        });
+
         const formData = new FormData();
         formData.append("attachments", photo);
+        formData.append("trailerContents", video);
         formData.append("programName", name);
         formData.append("description", description);
         formData.append("totalSessionCount", totalSessions);
@@ -53,21 +56,22 @@ const Page = () => {
             console.log(response);
             if (response?.code == 200) {
                 toast.success(response?.message)
+                route.push("/specialistDs/program")
                 photo = null;
                 name = '';
                 description = '';
                 totalSessions = '';
                 price = '';
                 duration = '';
-                route.push("/specialistDs/program")
             }
             else {
                 toast.error(response?.message)
             }
 
         } catch (error) {
-            console.log(error);
-            toast.error(error?.data?.message);
+            if (error?.data?.code || error?.code) {
+                toast.error(error?.data?.message);
+            }
         }
 
     }
@@ -119,6 +123,17 @@ const Page = () => {
                 )}
             </div>
 
+            <div className='mb-5'>
+                <label htmlFor="photo" style={{ display: 'block', marginBottom: '8px' }}>Trailer Contents Video *</label>
+                <input
+                    type="file"
+                    id="trailerContents"
+                    accept=".mp4,.mkv,.avi,.mov"
+                    onChange={handleUploadVideo}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px' }}
+                />
+
+            </div>
             {/* Name Input */}
             <div style={{ marginBottom: '20px' }}>
                 <label htmlFor="name" style={{ display: 'block', marginBottom: '8px' }}>Name *</label>

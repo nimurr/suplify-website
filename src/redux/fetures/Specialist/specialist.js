@@ -45,13 +45,13 @@ const specialist = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["specialistKeyPoints"]
         }),
-        updateDeleteSuggestionForAPlan: builder.mutation({
-            query: ({planId}) => ({
-                url: `/suggestion-by-specialist/softDelete/${planId}`,
+        removeKeyPoint: builder.mutation({
+            query: ({ id }) => ({
+                url: `/suggestion-by-specialist-for-a-plan/softDelete/${id}`,
                 method: "PUT",
             }),
             invalidatesTags: ["specialistKeyPoints"]
-        }),
+        })
     })
 })
 
@@ -61,6 +61,7 @@ export const {
     useSpacialistPotentialPatientQuery,
     useGetMealPlanByProtocolIdAndPatientIdQuery,
     useGetAllMealSuggestionQuery,
-    useAddSpecialistKeyPointMutation,
-    
+    useAddSpecialistKeyPointMutation, 
+    useRemoveKeyPointMutation
+
 } = specialist;

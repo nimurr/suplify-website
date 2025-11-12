@@ -1,3 +1,4 @@
+"use client";
 import MealPlan from '@/Dashboard/sidebarMenu/specialist/MealPlan';
 import React from 'react';
 

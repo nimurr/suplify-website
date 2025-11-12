@@ -1,7 +1,7 @@
 "use client";
 
 import BackHeader from "@/components/customComponent/BackHeader";
-import { useAddSpecialistKeyPointMutation, useGetAllMealSuggestionQuery, useUpdateDeleteSuggestionForAPlanMutation } from "@/redux/fetures/Specialist/specialist";
+import { useAddSpecialistKeyPointMutation, useGetAllMealSuggestionQuery, useRemoveKeyPointMutation } from "@/redux/fetures/Specialist/specialist";
 import React, { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { FiPlus } from "react-icons/fi";
@@ -27,6 +27,7 @@ export default function MealPlan() {
 
   // Always call hooks at the top level, and never inside conditionals
   const [createSpecialistKeyPoint] = useAddSpecialistKeyPointMutation();
+  const [removeItem] = useRemoveKeyPointMutation();
 
   // Get patientId and protocolId from URL, only on the client side
   useEffect(() => {
@@ -36,16 +37,16 @@ export default function MealPlan() {
     }
   }, []); // This runs only once, after the component mounts on the client side
 
-  const { data, isLoading } = useGetAllMealSuggestionQuery({ protocolId: planByDoctorId });
+  const { data, isLoading, refetch } = useGetAllMealSuggestionQuery({ protocolId: planByDoctorId });
   const fullMealPlanData = data?.data?.attributes[0] || [];
-
+  console.log(fullMealPlanData);
 
   useEffect(() => {
     if (fullMealPlanData?.specialistSuggestions) {
       // Setting rows with specialist suggestions fetched from the server
       const formattedRows = fullMealPlanData.specialistSuggestions.map((suggestion, index) => ({
         id: index + 1,
-        deleteId: suggestion ? suggestion._id : null,
+        deleteId: suggestion ? suggestion?._id : null,
         keyPoint: suggestion?.suggestionDetails?.keyPoint || "",
         solutionName: suggestion?.suggestionDetails?.solutionName || "",
         suggestLink: suggestion?.suggestionDetails?.suggestFromStore || "",
@@ -120,27 +121,21 @@ export default function MealPlan() {
     }
   };
 
-  const [deleteItem] = useUpdateDeleteSuggestionForAPlanMutation();
 
 
   const handleDeleteOldKeyPoints = async (item) => {
-    // const planId = item?.deleteId; 
-
+    const id = item?.deleteId;
     try {
-      const res = await deleteItem({ planId: item?.deleteId }).unwrap();
+      const res = await removeItem({ id }).unwrap();
       console.log(res);
       if (res?.code == 200) {
         toast.success(res?.message);
         refetch();
       }
-      else {
-        toast.error(res?.message);
-      }
     } catch (error) {
-      console.log(error);
-      toast.error(error?.data?.message)
+      toast.error(error?.data?.message);
     }
-  }
+  };
 
   return (
     <div className="max-w-6xl mx-auto bg-white rounded-lg border border-gray-200 p-8">
@@ -149,10 +144,12 @@ export default function MealPlan() {
         reverseOrder={false}
       />
       <BackHeader title={"View full"} />
-      <h2 className="text-2xl font-semibold">{fullMealPlanData?.title}</h2>
-      <h1 className="text-base font-semibold capitalize border mt-1  w-auto inline-block border-gray-200 rounded-full py-1.5 px-5 bg-gray-50 mb-10">
-        {fullMealPlanData?.planType}
-      </h1>
+      <div className="flex items-center justify-between gap-5 flex-wrap">
+        <h2 className="text-2xl font-semibold">{fullMealPlanData?.title}</h2>
+        <h1 className="text-base font-semibold capitalize border mt-1  w-auto inline-block bg-blue-100 border-blue-200 rounded-full py-1.5 px-5  mb-10">
+          {fullMealPlanData?.planType}
+        </h1>
+      </div>
 
       <div className="mb-6">
         <h2 className="font-semibold mb-2">Key Points</h2>
@@ -192,7 +189,7 @@ export default function MealPlan() {
                   <td className="border px-4 py-2">{row.solutionName}</td>
                   <td className="border px-4 py-2">{row.suggestLink}</td>
                   <td className="border px-4 py-2">
-                    <button onClick={() => handleDeleteOldKeyPoints(row)} className="text-red-500 cursor-pointer" >
+                    <button onClick={() => handleDeleteOldKeyPoints(row)} className="text-red-500 duration-300 hover:font-medium cursor-pointer" >
                       Delete
                     </button>
                   </td>
