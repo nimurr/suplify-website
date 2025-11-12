@@ -100,84 +100,88 @@ const SpecialistProgram = ({ id }) => {
         )
       }
 
-      <div>
+      <div className="w-full">
         <h1 className='text-2xl font-semibold items-center gap-2 mb-6 mt-6'>
           <LeftOutlined onClick={() => back()} className='cursor-pointer' />
           View Full Program
         </h1>
-        <div className="p-4 border border-blue-200 rounded-lg overflow-auto">
-          {isLoading && (
-            <div className="flex justify-center items-center h-screen">
-              <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-blue-500"></div>
-            </div>
-          )}
-          <div className="grid lg:grid-cols-3 sm:grid-cols-2 xl:grid-cols-4 grid-cols-1 gap-4">
-            {fullData?.map((item, index) => (
-              <div  >
-                <Card
-                  key={index}
-                  hoverable
-                  className={`border ${index === selectedIndex
-                    ? "border-blue-500 shadow-lg"
-                    : "border-gray-200"
-                    } rounded-md`}
-                  cover={
-                    <img
-                      alt="program"
-                      onClick={() => handleProgramClick(item)}
-                      src={item?.attachmentDetails[0]?.attachment}
-                      className="w-full object-cover rounded-t-md"
-                    />
-                  }
-                // Handle program click to show modal
-                >
-                  <h3 className="font-semibold text-base mb-2">{item?.programName}</h3>
-
-                  <div className="flex items-center justify-between gap-5">
-                    <span className="text-xs text-gray-600">
-                      <Tooltip title="Sessions">
-                        <CalendarOutlined className="text-gray-500 text-xl" />
-                      </Tooltip>
-                      {item?.totalSessionCount} Session
-                    </span>
-                    <span className="ml-auto font-semibold">{item?.price}$</span>
-                  </div>
-
-                  <div className="flex items-center space-x-2 my-3">
-                    <Tooltip title="Duration">
-                      <ClockCircleOutlined className="text-gray-500 text-xl" />
-                    </Tooltip>
-                    <span className="text-xs text-gray-600 mr-3 font-semibold">{item?.durationInMonths}</span>
-                  </div>
-
-                  {item?.isPurchased === true ? (
-                    <Button
-                      type="default"
-                      block
-                      onClick={() => router.push(`/dashboard/specialist/specialist-details?id=${id}&programId=${item?._id}`)}
-                      className="border-red-300 mt-5 text-red-500 hover:text-white hover:bg-red-500"
+        {isLoading && (
+          <div className="flex justify-center items-center h-screen">
+            <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-blue-500"></div>
+          </div>
+        )}
+        {
+          fullData?.length > 0 && (
+            <div className="p-4 border border-blue-200 rounded-lg overflow-auto">
+              <div className="grid lg:grid-cols-3 sm:grid-cols-2 xl:grid-cols-4 grid-cols-1 gap-4">
+                {fullData?.map((item, index) => (
+                  <div  >
+                    <Card
+                      key={index}
+                      hoverable
+                      className={`border ${index === selectedIndex
+                        ? "border-blue-500 shadow-lg"
+                        : "border-gray-200"
+                        } rounded-md`}
+                      cover={
+                        <img
+                          alt="program"
+                          onClick={() => handleProgramClick(item)}
+                          src={item?.attachmentDetails[0]?.attachment}
+                          className="w-full object-cover rounded-t-md"
+                        />
+                      }
+                    // Handle program click to show modal
                     >
-                      Start
-                    </Button>
-                  ) : (
-                    <CustomButton
-                      text="Buy"
-                      className="mt-5"
-                    />
-                  )}
-                </Card>
+                      <h3 className="font-semibold text-base mb-2">{item?.programName}</h3>
+
+                      <div className="flex items-center justify-between gap-5">
+                        <span className="text-xs text-gray-600">
+                          <Tooltip title="Sessions">
+                            <CalendarOutlined className="text-gray-500 text-xl" />
+                          </Tooltip>
+                          {item?.totalSessionCount} Session
+                        </span>
+                        <span className="ml-auto font-semibold">{item?.price}$</span>
+                      </div>
+
+                      <div className="flex items-center space-x-2 my-3">
+                        <Tooltip title="Duration">
+                          <ClockCircleOutlined className="text-gray-500 text-xl" />
+                        </Tooltip>
+                        <span className="text-xs text-gray-600 mr-3 font-semibold">{item?.durationInMonths}</span>
+                      </div>
+
+                      {item?.isPurchased === true ? (
+                        <Button
+                          type="default"
+                          block
+                          onClick={() => router.push(`/dashboard/specialist/specialist-details?id=${id}&programId=${item?._id}`)}
+                          className="border-red-300 mt-5 text-red-500 hover:text-white hover:bg-red-500"
+                        >
+                          Start
+                        </Button>
+                      ) : (
+                        <CustomButton
+                          text="Buy"
+                          className="mt-5"
+                        />
+                      )}
+                    </Card>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div>
-            {
-              fullData?.length === 0 && (
-                <div className="flex w-full justify-center items-center h-screen">
-                  <h1 className="py-3 text-red-500 font-semibold">No Programs Found</h1>
-                </div>
-              )
-            }
-          </div>
+            </div>
+          )
+        }
+        <div className="w-full flex justify-center border border-gray-100 p-2 rounded-lg">
+          {
+            fullData?.length === 0 && (
+              <div className="text-center ">
+                <h1 className="py-3 text-red-500 font-semibold">No Programs Found !!</h1>
+              </div>
+            )
+          }
         </div>
       </div>
 
