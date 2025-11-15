@@ -8,6 +8,7 @@ import { io } from 'socket.io-client';
 import socketUrl from "@/utils/socket";
 import moment from "moment";
 import url from "@/redux/api/baseUrl";
+import { useGetMessageQuery } from "@/redux/fetures/messaging/getMessage";
 
 // get token from localStorage and set it to AUTH_TOKEN
 let AUTH_TOKEN = '';
@@ -34,99 +35,85 @@ const initializeSocket = () => {
     return socketInstance;
 };
 
-
-
 const Page = () => {
 
 
-    const [showSidebar, setShowSidebar] = useState(false);
 
+    const [showSidebar, setShowSidebar] = useState(false);
     const [newMessage, setNewMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null); // New state to handle file upload
-
     const inputRef = useRef(null);
     const messagesEndRef = useRef(null);
     const [fullMessage, setFullMessage] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
 
-    // console.log(fullMessage);
-
     const { id } = useParams(); // Get chat ID from URL
     const [user, setUser] = useState(null);
 
+    const page = 1;
+
     const socket = initializeSocket();
+    const { data: chatList, isLoading: chatLoading, refetch } = useGetMessageQuery({ page, id });
+    const chatData = chatList?.data?.attributes || [];
+
 
     useEffect(() => {
         const user = localStorage.getItem('user');
         const fullUser = JSON.parse(user);
         setUser(fullUser);
+        setFullMessage(chatData);
 
-
-        socket.emit('get-all-message-by-conversationId', { conversationId: id, page: 1, limit: 10 }, (response) => {
-            // console.log('✅ Joined conversation before:', response?.data?.results);
-            setTotalPages(response?.data?.totalPages);
-            setFullMessage(response?.data?.results.reverse());
-        });
-
+        // Ensure you only join the conversation once
         socket.emit('join', { conversationId: id }, (response) => {
-            console.log('✅ Joined conversation:', response);
+            console.log('✅ Joined conversation successfully:', response);
         });
 
-        // new message new-message-received::id 
+        // Remove previous listeners to avoid duplicate events
+        socket.off(`new-message-received::${id}`);
 
+        // Listen for new messages only for this conversation
         socket.on(`new-message-received::${id}`, (res) => {
-            console.log('✅ new-message-received', res);
-            // setMsg(res);
             setFullMessage((prevMessages) => [...prevMessages, res]);
+            refetch();
         });
 
+        return () => {
+            // Cleanup the socket listeners when the component is unmounted
+            socket.off(`new-message-received::${id}`);
+        };
 
-    }, [fullMessage.length]);
-
-    // console.log(fullMessage);
+    }, [chatData, id]); // Listen to changes in chatData and conversation ID
 
 
     const handleSendMessage = () => {
-
-        // Ensure the socket is connected 
+        // Ensure the socket is connected
 
         const messageData = {
             conversationId: id,
             text: newMessage,
         };
 
-        console.log(messageData);
-
         // Send the message to the server
         socket.emit('send-new-message', messageData, (response) => {
-            // console.log('✅ Joined conversation:', response);
+            socket.emit('get-all-message-by-conversationId', { conversationId: id, page: 1, limit: 10 }, (response) => {
+                // console.log('✅ Joined conversation before:', response?.data?.results);
+                setTotalPages(response?.data?.totalPages);
+                setFullMessage(response?.data?.results.reverse());
+            });
             if (response?.success) {
                 setNewMessage('');
                 const user = localStorage.getItem('user');
                 const fullUser = JSON.parse(user);
                 setUser(fullUser);
-                socket.emit('get-all-message-by-conversationId', { conversationId: id, page: 1, limit: 10 }, (response) => {
-                    // console.log('✅ Joined conversation before:', response?.data);
-                    setTotalPages(response?.data?.totalPages);
-                    setFullMessage(response?.data?.results.reverse());
-                });
             }
-        });
-
-
-        socket.on(`new-message-received::${id}`, (res) => {
-            console.log('✅ new-message-received', res);
-            // setMsg(res);
         });
 
     };
 
 
     const handleFileChange = (e) => {
-
         const file = e.target.files[0];
-        console.log(file);
         if (file) {
             setSelectedFile(file);
         }
@@ -151,17 +138,19 @@ const Page = () => {
                         paddingBottom: "50px",
                     }}
                 >
+                    {
+                        chatLoading && (
+                            <IsLoadingComponent />
+                        )
+                    }
                     {fullMessage ? (
-                        fullMessage?.reverse()?.map((msg) => (
+                        fullMessage?.map((msg) => (
                             <div key={msg._id} className={`flex ${msg.senderId?._userId === user?.id ? "justify-end" : "justify-start"}`}>
-
-                                {
-                                    msg.senderId?._userId !== user?.id && (
-                                        <div className="mr-2">
-                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl.includes('amazonaws') ? msg?.senderId?.profileImage?.imageUrl : (url + msg?.senderId?.profileImage?.imageUrl)} alt="" />
-                                        </div>
-                                    )
-                                }
+                                {msg.senderId?._userId !== user?.id && (
+                                    <div className="mr-2">
+                                        <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl.includes('amazonaws') ? msg?.senderId?.profileImage?.imageUrl : (url + msg?.senderId?.profileImage?.imageUrl)} alt="" />
+                                    </div>
+                                )}
                                 <div
                                     className={`px-4 py-2 rounded-lg break-words ${msg.pending
                                         ? "bg-red-100 text-gray-600"
@@ -185,58 +174,15 @@ const Page = () => {
                                         )}
                                     </div>
                                 </div>
-                                {
-                                    msg.senderId?._userId === user?.id && (
-                                        <div className="ml-2">
-                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl.includes('amazonaws') ? msg?.senderId?.profileImage?.imageUrl : (url + msg?.senderId?.profileImage?.imageUrl)} alt="" />
-                                        </div>
-                                    )
-                                }
+                                {msg.senderId?._userId === user?.id && (
+                                    <div className="ml-2">
+                                        <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl.includes('amazonaws') ? msg?.senderId?.profileImage?.imageUrl : (url + msg?.senderId?.profileImage?.imageUrl)} alt="" />
+                                    </div>
+                                )}
                             </div>
                         ))
                     ) : (
-                        fullMessage?.reverse()?.map((msg) => (
-                            <div key={msg._id} className={`flex ${msg.senderId?._userId === user?.id ? "justify-end" : "justify-start"}`}>
-
-                                {
-                                    msg.senderId?._userId !== user?.id && (
-                                        <div className="mr-2">
-                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl.includes('amazonaws') ? msg?.senderId?.profileImage?.imageUrl : (url + msg?.senderId?.profileImage?.imageUrl)} alt="" />
-                                        </div>
-                                    )
-                                }
-                                <div
-                                    className={`px-4 py-2 rounded-lg break-words ${msg.pending
-                                        ? "bg-red-100 text-gray-600"
-                                        : msg.error
-                                            ? "bg-red-500 text-white"
-                                            : msg.senderId?._userId === user?.id
-                                                ? "bg-red-200 text-black"
-                                                : "bg-gray-200 text-gray-800"
-                                        }`}
-                                >
-                                    <p>{msg?.text}</p>
-                                    <div className="flex justify-between items-center mt-1">
-                                        <p className={`text-xs ${msg.sender?.id === "user1" ? "text-gray-600" : "text-gray-500"}`}>
-                                            {moment(msg.createdAt).fromNow()}
-                                        </p>
-                                        {msg.pending && (
-                                            <span className="text-xs text-blue-500 ml-2">Sending...</span>
-                                        )}
-                                        {msg.error && (
-                                            <span className="text-xs text-gray-200 ml-2">Failed to send</span>
-                                        )}
-                                    </div>
-                                </div>
-                                {
-                                    msg.senderId?._userId === user?.id && (
-                                        <div className="mr-2">
-                                            <img className=" w-5 rounded-full h-5 " src={msg?.senderId?.profileImage?.imageUrl.includes('amazonaws') ? msg?.senderId?.profileImage?.imageUrl : (url + msg?.senderId?.profileImage?.imageUrl)} alt="" />
-                                        </div>
-                                    )
-                                }
-                            </div>
-                        ))
+                        <div>No messages</div>
                     )}
                     <div ref={messagesEndRef} />
                 </div>
@@ -274,7 +220,6 @@ const Page = () => {
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                    // disabled={!activeUser}
                     />
                     <button
                         className={`bg-red-600 text-white cursor-pointer rounded-lg text-xl p-2 md:text-base whitespace-nowrap `}
@@ -283,10 +228,129 @@ const Page = () => {
                         <IoIosSend className="text-2xl" />
                     </button>
                 </div>
-
             </div>
         </div>
     );
 };
 
 export default Page;
+
+
+const IsLoadingComponent = () => {
+    return (
+        <div className="space-y-1">
+            <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                <div className="flex animate-pulse space-x-4">
+                    <div className="size-10 rounded-full bg-gray-200"></div>
+                    <div className="flex-1 space-y-6 py-1">
+                        <div className="h-2 rounded bg-gray-200"></div>
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="flex items-center justify-end">
+                <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                    <div className="flex animate-pulse space-x-4">
+                        <div className="size-10 rounded-full bg-gray-200"></div>
+                        <div className="flex-1 space-y-6 py-1">
+                            <div className="h-2 rounded bg-gray-200"></div>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                <div className="flex animate-pulse space-x-4">
+                    <div className="size-10 rounded-full bg-gray-200"></div>
+                    <div className="flex-1 space-y-6 py-1">
+                        <div className="h-2 rounded bg-gray-200"></div>
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="flex items-center justify-end">
+                <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                    <div className="flex animate-pulse space-x-4">
+                        <div className="size-10 rounded-full bg-gray-200"></div>
+                        <div className="flex-1 space-y-6 py-1">
+                            <div className="h-2 rounded bg-gray-200"></div>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                <div className="flex animate-pulse space-x-4">
+                    <div className="size-10 rounded-full bg-gray-200"></div>
+                    <div className="flex-1 space-y-6 py-1">
+                        <div className="h-2 rounded bg-gray-200"></div>
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="flex items-center justify-end">
+                <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                    <div className="flex animate-pulse space-x-4">
+                        <div className="size-10 rounded-full bg-gray-200"></div>
+                        <div className="flex-1 space-y-6 py-1">
+                            <div className="h-2 rounded bg-gray-200"></div>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                <div className="flex animate-pulse space-x-4">
+                    <div className="size-10 rounded-full bg-gray-200"></div>
+                    <div className="flex-1 space-y-6 py-1">
+                        <div className="h-2 rounded bg-gray-200"></div>
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="flex items-center justify-end">
+                <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                    <div className="flex animate-pulse space-x-4">
+                        <div className="size-10 rounded-full bg-gray-200"></div>
+                        <div className="flex-1 space-y-6 py-1">
+                            <div className="h-2 rounded bg-gray-200"></div>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};

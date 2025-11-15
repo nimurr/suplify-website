@@ -4,53 +4,14 @@ import { io } from 'socket.io-client';
 import socketUrl from "@/utils/socket";
 import { useParams } from 'next/navigation';
 import url from '@/redux/api/baseUrl';
+import { useGetChatUserInfoQuery } from '@/redux/fetures/messaging/getChatlist';
 
-
-let AUTH_TOKEN = '';
-if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
-    if (token) {
-        AUTH_TOKEN = token;
-    }
-}
-
-let socketInstance = null;
-
-const initializeSocket = () => {
-    if (!socketInstance) {
-        socketInstance = io(socketUrl, {
-            auth: { token: AUTH_TOKEN },
-            extraHeaders: { token: AUTH_TOKEN },
-            reconnection: true,
-            reconnectionAttempts: 5,
-            reconnectionDelay: 1000,
-            timeout: 10000,
-        });
-    }
-    return socketInstance;
-};
 
 const MessageHeader = () => {
-    const { id } = useParams(); // Get chat ID from URL
-    const [user, setUser] = useState(null);
-    const [msg, setMsg] = useState(null);
-    const [fullMessage, setFullMessage] = useState([]);
+    const { id } = useParams(); // Get chat ID from URL 
 
-
-    useEffect(() => {
-        const user = localStorage.getItem('user');
-        const fullUser = JSON.parse(user);
-        setUser(fullUser);
-
-        const socket = initializeSocket();
-
-        socket.emit('get-all-message-by-conversationId', { conversationId: id, page: 1, limit: 10 }, (response) => {
-            // console.log('✅ Joined conversation:', response?.data?.results);
-            setFullMessage(response?.data?.results);
-        });
-
-    }, []);
-
+    const { data, isLoading } = useGetChatUserInfoQuery(id);
+    const fullUserInfo = data?.data?.attributes[0]?.userId
 
 
 
@@ -60,19 +21,30 @@ const MessageHeader = () => {
 
             <div className='w-full border-b-2  '>
                 {
-                    id && (
+                    isLoading ? (
+                        <div className="animate-pulse w-full max-w-sm rounded-md border border-gray-300 p-2 m-1">
+                            <div className="flex animate-pulse space-x-4">
+                                <div className="size-10 rounded-full bg-gray-200"></div>
+                                <div className="flex-1 space-y-6 py-1">
+                                    <div className="h-2 rounded bg-gray-200"></div>
+                                    <div className="space-y-3">
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) :
                         <div className='flex items-center gap-2 p-5 '>
                             <div className=" bg-gray-500 w-10 rounded-full h-10 ">
-                                {
-                                    fullMessage[0]?.senderId?._userId === user?.id && (
-                                        <img className="bg-gray-200 w-10 rounded-full h-10 " src={fullMessage[0]?.senderId?.profileImage?.imageUrl.includes("amazonaws") ? fullMessage[0]?.senderId?.profileImage?.imageUrl : url + fullMessage[0]?.senderId?.profileImage?.imageUrl} alt="" />
-                                    )
-                                }
+
+                                <img className="bg-gray-200 w-10 rounded-full h-10 " src={fullUserInfo?.profileImage?.imageUrl.includes("amazonaws") ? fullUserInfo?.profileImage?.imageUrl : url + fullUserInfo?.profileImage?.imageUrl} alt="" />
+
                             </div>
 
-                            <h2>{fullMessage[0]?.senderId?.name || 'N/A'}</h2>
+                            <h2>{fullUserInfo?.name || 'N/A'}</h2>
                         </div>
-                    )
                 }
             </div>
         </div>

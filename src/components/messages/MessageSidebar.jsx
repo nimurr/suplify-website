@@ -1,6 +1,7 @@
 'use client';
 
 import url from '@/redux/api/baseUrl';
+import { useGetChatlistQuery } from '@/redux/fetures/messaging/getChatlist';
 import socketUrl from '@/utils/socket';
 import moment from 'moment';
 import Link from 'next/link';
@@ -35,54 +36,31 @@ const initializeSocket = () => {
 };
 
 const MessageSidebar = () => {
+
+
     const { id } = useParams();
 
+    const page = 1;
+
+
     const [conversations, setConversations] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState(''); // To track search input
 
+    const { data, isLoading } = useGetChatlistQuery(page);
+    const getConversations = data?.data?.attributes?.results || [];
     useEffect(() => {
-        const socket = initializeSocket();
+        setConversations(getConversations);
 
-        const fetchConversations = () => {
-            socket.emit(
-                'get-all-conversations-with-pagination',
-                { page: 1, limit: 10, search: searchQuery }, // Pass searchQuery in socket request
-                (response) => {
-                    setLoading(false);
+    }, [data]);  // Re-fetch conversations when searchQuery changes
 
-                    if (response && response.success) {
-                        const data = Array.isArray(response.data)
-                            ? response.data
-                            : (response.data && response.data.results) || [];
-
-                        setConversations(data);
-                    } else {
-                        console.error('Failed to load conversations:', response?.message || 'Unknown error');
-                    }
-                }
-            );
-        };
-
-        console.log(conversations);
-
-        if (socket.connected) {
-            fetchConversations();
-        } else {
-            const onConnect = () => fetchConversations();
-            socket.on('connect', onConnect);
-
-            return () => {
-                socket.off('connect', onConnect);
-            };
-        }
-    }, [searchQuery]);  // Re-fetch conversations when searchQuery changes
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value); // Update search query as user types
     };
 
+
     const handleJoinSocket = () => {
+        console.log(" Join button clicked successfully ")
         const socket = initializeSocket();
         const conversationId = {
             conversationId: id,
@@ -131,23 +109,10 @@ const MessageSidebar = () => {
             </div>
 
             <div className="my-5 bg-gray-100 rounded">
-                {loading ? (
-                    <div className="mx-auto w-full max-w-sm rounded-md border border-gray-300 p-4">
-                        <div className="flex animate-pulse space-x-4">
-                            <div className="size-10 rounded-full bg-gray-200"></div>
-                            <div className="flex-1 space-y-6 py-1">
-                                <div className="h-2 rounded bg-gray-200"></div>
-                                <div className="space-y-3">
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div className="col-span-2 h-2 rounded bg-gray-200"></div>
-                                        <div className="col-span-1 h-2 rounded bg-gray-200"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ) : conversations?.length > 0 ? (
-                    conversations?.map((conv) => {
+                {isLoading ? (
+                    <IsLoadingComponent />
+                ) : getConversations?.length > 0 ? (
+                    getConversations?.map((conv) => {
                         const participant = conv.participant || conv.otherUser || {};
                         const lastMessage = conv.lastMessage || {};
                         return (
@@ -180,8 +145,95 @@ const MessageSidebar = () => {
                     <p className="px-4 py-3 text-gray-500">No conversations found.</p>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 
 export default MessageSidebar;
+
+
+const IsLoadingComponent = () => {
+    return (
+        <div className="space-y-1">
+            <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                <div className="flex animate-pulse space-x-4">
+                    <div className="size-10 rounded-full bg-gray-200"></div>
+                    <div className="flex-1 space-y-6 py-1">
+                        <div className="h-2 rounded bg-gray-200"></div>
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                <div className="flex animate-pulse space-x-4">
+                    <div className="size-10 rounded-full bg-gray-200"></div>
+                    <div className="flex-1 space-y-6 py-1">
+                        <div className="h-2 rounded bg-gray-200"></div>
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                <div className="flex animate-pulse space-x-4">
+                    <div className="size-10 rounded-full bg-gray-200"></div>
+                    <div className="flex-1 space-y-6 py-1">
+                        <div className="h-2 rounded bg-gray-200"></div>
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                <div className="flex animate-pulse space-x-4">
+                    <div className="size-10 rounded-full bg-gray-200"></div>
+                    <div className="flex-1 space-y-6 py-1">
+                        <div className="h-2 rounded bg-gray-200"></div>
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                <div className="flex animate-pulse space-x-4">
+                    <div className="size-10 rounded-full bg-gray-200"></div>
+                    <div className="flex-1 space-y-6 py-1">
+                        <div className="h-2 rounded bg-gray-200"></div>
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="animate-pulse w-full max-w-lg rounded-md border border-gray-300 p-4">
+                <div className="flex animate-pulse space-x-4">
+                    <div className="size-10 rounded-full bg-gray-200"></div>
+                    <div className="flex-1 space-y-6 py-1">
+                        <div className="h-2 rounded bg-gray-200"></div>
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    );
+};
