@@ -36,31 +36,34 @@ const initializeSocket = () => {
 };
 
 const MessageSidebar = () => {
-
-
     const { id } = useParams();
-
     const page = 1;
-
 
     const [conversations, setConversations] = useState([]);
     const [searchQuery, setSearchQuery] = useState(''); // To track search input
+    const [filteredConversations, setFilteredConversations] = useState([]);
 
     const { data, isLoading } = useGetChatlistQuery(page);
     const getConversations = data?.data?.attributes?.results || [];
+
+    // Filter conversations based on search query
     useEffect(() => {
-        setConversations(getConversations);
-
-    }, [data]);  // Re-fetch conversations when searchQuery changes
-
+        if (searchQuery.trim() === '') {
+            setFilteredConversations(getConversations); // Show all conversations if no search query
+        } else {
+            const filtered = getConversations.filter((conv) =>
+                conv.userId?.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredConversations(filtered); // Set filtered conversations based on search
+        }
+    }, [searchQuery, getConversations]); // Update whenever search query or conversations change
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value); // Update search query as user types
     };
 
-
     const handleJoinSocket = () => {
-        console.log(" Join button clicked successfully ")
+        console.log("Join button clicked successfully");
         const socket = initializeSocket();
         const conversationId = {
             conversationId: id,
@@ -68,22 +71,6 @@ const MessageSidebar = () => {
         socket.emit('join', conversationId, (response) => {
             console.log('✅ Joined conversation:', response);
         });
-    };
-
-    const handleClickSearch = (e) => {
-        e.preventDefault();
-        const socket = initializeSocket();
-        const serarchInfo = {
-            page: 1,
-            limit: 10,
-            search: searchQuery,  // Using the state value for search query
-        };
-
-        socket.emit('get-all-conversations-with-pagination', serarchInfo, (response) => {
-            console.log('✅ Conversations response:', response);
-        });
-
-        console.log('clicked', serarchInfo);
     };
 
     return (
@@ -100,19 +87,14 @@ const MessageSidebar = () => {
                     value={searchQuery} // Bind to state
                     onChange={handleSearchChange} // Update the search query
                     placeholder="Search Here..."
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            handleClickSearch(e); // Trigger search on Enter key
-                        }
-                    }}
                 />
             </div>
 
             <div className="my-5 bg-gray-100 rounded">
                 {isLoading ? (
                     <IsLoadingComponent />
-                ) : getConversations?.length > 0 ? (
-                    getConversations?.map((conv) => {
+                ) : filteredConversations?.length > 0 ? (
+                    filteredConversations?.map((conv) => {
                         const participant = conv.participant || conv.otherUser || {};
                         const lastMessage = conv.lastMessage || {};
                         return (
@@ -145,11 +127,12 @@ const MessageSidebar = () => {
                     <p className="px-4 py-3 text-gray-500">No conversations found.</p>
                 )}
             </div>
-        </div >
+        </div>
     );
 };
 
 export default MessageSidebar;
+
 
 
 const IsLoadingComponent = () => {

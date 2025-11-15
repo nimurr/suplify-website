@@ -86,6 +86,7 @@ const PatientProfileEdit = () => {
 
         try {
             const res = await updateProfile({ formData, id: userData.id }).unwrap();
+            console.log(res)
             if (res?.code === 200) {
                 toast.success(res?.message);
                 router.push("/profile");
@@ -228,7 +229,7 @@ const PatientProfileEdit = () => {
 
                 <Form.Item className="flex justify-between gap-2 mt-8">
                     <Button className="h-10" onClick={handleBack}>Back to Profile</Button>
-                    <Button className="h-10 ml-2" type="primary" htmlType="submit">
+                    <Button onClick={onFinish} className="h-10 ml-2" type="primary" htmlType="submit">
                         Save Changes
                     </Button>
                 </Form.Item>
