@@ -55,6 +55,7 @@ const WorkoutPage = () => {
 
   const { data: otherSpecialistData } = useGetAllSpecialistPatientsPaginateOthersQuery();
   const fullOtherSpecialistData = otherSpecialistData?.data?.attributes?.results || [];
+  console.log(fullSpecialistData);
   console.log(fullOtherSpecialistData);
 
 
@@ -133,7 +134,7 @@ const WorkoutPage = () => {
             </p>
 
             <CustomButton
-              onClick={() => ViewFull(spec?.specialistId?._userId)}
+              onClick={() => ViewFull(spec?.specialistId ? spec?.specialistId._userId : spec?._id)}
               text="View Full"
             />
           </div>

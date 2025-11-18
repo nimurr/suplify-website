@@ -8,6 +8,7 @@ import { useBookNowSheduleWorkoutClassMutation, useGetAllScheduleWorkoutClassQue
 import moment from "moment";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import url from "@/redux/api/baseUrl";
 
 // Sample trainer data
 const trainer = {
@@ -35,6 +36,9 @@ const ScheduleCard = ({ schedule }) => {
           window.location.href = `${res?.data?.attributes?.url}`;
         }
       }
+      else {
+        toast.error(res?.message);
+      }
     } catch (error) {
       toast.error(error?.data?.message);
     }
@@ -42,7 +46,7 @@ const ScheduleCard = ({ schedule }) => {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div className="p-4">
+      <div className="p-4 flex flex-col justify-between h-full">
         {/* Video icon and workout title */}
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-2">
@@ -63,7 +67,7 @@ const ScheduleCard = ({ schedule }) => {
         {/* Date row */}
         <div className="mb-2">
           <div className="text-xs text-gray-600">Date</div>
-          <div className="text-sm font-medium">{schedule.scheduleDate}</div>
+          <div className="text-sm font-medium">{moment(schedule.scheduleDate).format('YYYY-MM-DD')}</div>
         </div>
 
         {/* Time row */}
@@ -80,7 +84,7 @@ const ScheduleCard = ({ schedule }) => {
 
         {/* Description */}
         <div className="text-xs text-gray-600 mb-4">
-          {schedule.description}
+          {schedule.description?.length > 300 ? `${schedule.description.slice(0, 300)}...` : schedule.description}
         </div>
 
         <div className="flex items-center justify-between my-3">
@@ -89,7 +93,9 @@ const ScheduleCard = ({ schedule }) => {
         </div>
 
         {
-          schedule?.latestBookingStatus == null || schedule?.latestPaymentStatus == "unpaid" ? (
+          // schedule?.latestBookingStatus == null || schedule?.latestPaymentStatus == "unpaid" ? (
+          // schedule?.latestBookingStatus == null || schedule?.latestPaymentStatus == "unpaid" || (schedule?.sessionType !== "private" && schedule?.totalPatientBookings !== 1) ? (
+          schedule?.status == "available" ? (
             <Button
               type="primary"
               danger
@@ -122,6 +128,8 @@ const WorkOutDetails = () => {
   const schedules = data?.data?.attributes?.result?.results;
   const specialistInfo = data?.data?.attributes?.specialistInfo;
 
+  console.log(schedules)
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading data...</div>;
 
@@ -138,7 +146,7 @@ const WorkOutDetails = () => {
           <div className="w-full bg-white p-2 rounded-lg md:w-1/4 lg:w-1/5">
             <div className="rounded-lg overflow-hidden">
               <img
-                src={specialistInfo?.profileImage?.imageUrl}
+                src={specialistInfo?.profileImage?.imageUrl?.includes('amazonaws') ? specialistInfo?.profileImage?.imageUrl : url + specialistInfo?.profileImage?.imageUrl}
                 alt={specialistInfo?.name}
                 className="w-full h-auto object-cover"
               />

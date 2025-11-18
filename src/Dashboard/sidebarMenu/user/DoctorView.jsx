@@ -5,6 +5,7 @@ import { useDoctorAppoinmentBookedMutation, useGetFullDataQuery } from '@/redux/
 import { LeftOutlined } from '@ant-design/icons';
 import { Calendar, Clock } from 'lucide-react';
 import moment from 'moment';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
@@ -45,10 +46,10 @@ export default function AppointmentScheduler({ doctorId }) {
 
   return (
     <div>
-      <h1 className='text-2xl font-semibold flex items-center gap-2 my-12'>
+      <Link href="/dashboard/doctor" className='text-2xl font-semibold flex items-center gap-2 my-12'>
         <LeftOutlined onClick={() => back()} className='cursor-pointer' />
         View Full Doctor
-      </h1>
+      </Link>
       <div className="bg-gray-50 min-h-screen lg:flex gap-4 p-6">
         {/* Header Section */}
         <div className="lg:w-[20%] mb-8">
