@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Button } from "antd";
 import { LeftOutlined } from "@ant-design/icons";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -18,8 +18,6 @@ const trainer = {
   description: "Lorem ipsum dolor sit amet consectetur. Massa risus eget justo vel urna sapien posuere. Mauris magna eratest vestibulum cum egestas etiam pulvinar orci."
 };
 
-
-
 // Schedule card component
 const ScheduleCard = ({ schedule }) => {
 
@@ -32,15 +30,15 @@ const ScheduleCard = ({ schedule }) => {
       const res = await bookNow(id).unwrap();
       console.log(res);
       if (res?.code == 200) {
-        toast.success(res?.message)
+        toast.success(res?.message);
         if (res?.data?.attributes?.url) {
           window.location.href = `${res?.data?.attributes?.url}`;
         }
       }
     } catch (error) {
-      toast.error(error?.data?.message)
+      toast.error(error?.data?.message);
     }
-  }
+  };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -80,8 +78,6 @@ const ScheduleCard = ({ schedule }) => {
           </div>
         </div>
 
-
-
         {/* Description */}
         <div className="text-xs text-gray-600 mb-4">
           {schedule.description}
@@ -91,7 +87,6 @@ const ScheduleCard = ({ schedule }) => {
           <p className="underline text-red-500 font-semibold">{schedule?.totalPatientBookings || "0"} Booked</p>
           <span className="bg-red-100 text-red-600 p-2 capitalize rounded-lg">{schedule?.sessionType || "Online"}</span>
         </div>
-
 
         {
           schedule?.latestBookingStatus == null || schedule?.latestPaymentStatus == "unpaid" ? (
@@ -107,7 +102,7 @@ const ScheduleCard = ({ schedule }) => {
           ) :
             <Link target="_blank" href={`${schedule.meetingLink}`}>
               <button
-                className="h-9 text-purple-700  "
+                className="h-9 text-purple-700"
               >
                 {schedule.meetingLink}
               </button>
@@ -116,33 +111,32 @@ const ScheduleCard = ({ schedule }) => {
 
       </div>
     </div>
-  )
+  );
 };
 
-export default function WorkOutDetails() {
-  const router = useRouter()
-  const perams = useSearchParams()
-  const specialistId = perams.get('specialistId')
-
-  const { data } = useGetAllScheduleWorkoutClassQuery({ specialistId });
+const WorkOutDetails = () => {
+  const router = useRouter();
+  const perams = useSearchParams();
+  const specialistId = perams.get('specialistId');
+  const { data, error, isLoading } = useGetAllScheduleWorkoutClassQuery({ specialistId });
   const schedules = data?.data?.attributes?.result?.results;
   const specialistInfo = data?.data?.attributes?.specialistInfo;
 
-  console.log(schedules);
-
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data...</div>;
 
   return (
     <div className="bg-gray-50 p-4 md:p-6">
       <h1 className='text-2xl font-semibold flex items-center gap-2 my-12'>
-        <LeftOutlined onClick={() => router.back()} className=' cursor-pointer' />
+        <LeftOutlined onClick={() => router.back()} className='cursor-pointer' />
         View Full Schedule
       </h1>
-      <div className=" mx-auto">
+      <div className="mx-auto">
         {/* Trainer info section */}
         <div className="flex flex-col md:flex-row gap-6 mb-6">
           {/* Trainer image */}
           <div className="w-full bg-white p-2 rounded-lg md:w-1/4 lg:w-1/5">
-            <div className=" rounded-lg overflow-hidden">
+            <div className="rounded-lg overflow-hidden">
               <img
                 src={specialistInfo?.profileImage?.imageUrl}
                 alt={specialistInfo?.name}
@@ -168,7 +162,7 @@ export default function WorkOutDetails() {
             </div>
 
             {/* Description section */}
-            <div className="  mt-4">
+            <div className="mt-4">
               <h3 className="font-semibold mb-2">Description</h3>
               <p className="text-sm text-gray-600">{specialistInfo?.profileId?.description?.length > 100 ? `${specialistInfo?.profileId?.description.slice(0, 100)}...` : specialistInfo?.profileId?.description}</p>
             </div>
@@ -192,4 +186,14 @@ export default function WorkOutDetails() {
       </div>
     </div>
   );
-}
+};
+
+const SuspenseWrapper = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <WorkOutDetails />
+    </Suspense>
+  );
+};
+
+export default SuspenseWrapper;
