@@ -1,11 +1,18 @@
-'use client';
+// 'use client';
 
 import DashboardHeader from '@/Dashboard/layout/Header';
 import Sidebar from '@/Dashboard/layout/Sidebar';
 import { ConfigProvider } from 'antd';
 import "./../globals.css";
 
+
+export const metadata = {
+  title: "Suplify Website | Dashboard",
+  description: "suplify-fitness",
+};
+
 export default function DashboardLayout({ children }) {
+
   return (
     <ConfigProvider>
       <div className="flex h-screen">
