@@ -92,10 +92,33 @@ const ScheduleCard = ({ schedule }) => {
           <span className="bg-red-100 text-red-600 p-2 capitalize rounded-lg">{schedule?.sessionType || "Online"}</span>
         </div>
 
+
         {
-          // schedule?.latestBookingStatus == null || schedule?.latestPaymentStatus == "unpaid" ? (
-          // schedule?.latestBookingStatus == null || schedule?.latestPaymentStatus == "unpaid" || (schedule?.sessionType !== "private" && schedule?.totalPatientBookings !== 1) ? (
-          schedule?.status == "available" ? (
+
+          schedule?.sessionType == "private" && !schedule?.hasPatientBooking ? (
+            <Button
+              type="primary"
+              danger
+              block
+              className="h-9"
+              onClick={handleBookNow}
+            >
+              Book Now
+            </Button>
+          ) :
+            schedule?.hasPatientBooking && schedule?.sessionType !== "group" && (
+              <Link Link target="_blank" href={`${schedule.meetingLink}`}>
+                <button
+                  className="h-9 text-purple-700"
+                >
+                  {schedule.meetingLink}
+                </button>
+              </Link>
+            )
+        }
+        {
+
+          schedule?.sessionType == "group" && !schedule?.hasPatientBooking && !schedule?.isBookedByPatient ? (
             <Button
               type="primary"
               danger
@@ -116,7 +139,7 @@ const ScheduleCard = ({ schedule }) => {
         }
 
       </div>
-    </div>
+    </div >
   );
 };
 
