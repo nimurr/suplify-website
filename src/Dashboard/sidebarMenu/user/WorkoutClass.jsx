@@ -110,6 +110,7 @@ const WorkoutPage = () => {
                   src={spec?.profileImage?.imageUrl.includes("amazonaws") ? spec?.profileImage?.imageUrl : url + spec?.profileImage?.imageUrl}
                   alt={spec.name}
                   width="100%"
+                  height={350}
                   style={{ objectFit: "cover", borderRadius: "8px" }}
                   preview={false}
                 /> :
@@ -118,6 +119,7 @@ const WorkoutPage = () => {
                   src={spec?.specialistId?.profileImage?.imageUrl.includes("amazonaws") ? spec?.specialistId?.profileImage?.imageUrl : url + spec?.specialistId?.profileImage?.imageUrl}
                   alt={spec.name}
                   width="100%"
+                  height={350}
                   style={{ objectFit: "cover", borderRadius: "8px" }}
                   preview={false}
                 />
