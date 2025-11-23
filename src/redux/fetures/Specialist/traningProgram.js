@@ -17,6 +17,13 @@ const traningProgram = apiSlice.injectEndpoints({
             }),
             providesTags: ["TrainingProgram"],
         }),
+        softDeleteTrainingProgram: builder.mutation({
+            query: (id) => ({
+                url: `/training-programs/softDelete/${id}`,
+                method: "PUT",
+            }),
+            invalidatesTags: ["TrainingProgram"],
+        }),
         updateTrainingProgram: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/training-programs/${id}`,
@@ -58,6 +65,7 @@ const traningProgram = apiSlice.injectEndpoints({
 export const {
     useCreateTrainingProgramMutation,
     useGetAllTrainingProgramQuery,
+    useSoftDeleteTrainingProgramMutation,
     useUpdateTrainingProgramMutation,
     useGetTrainingProgramByIdQuery,
     useDeleteTrainingProgramMutation,

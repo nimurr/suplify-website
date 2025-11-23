@@ -111,6 +111,7 @@ const SpecialistsPage = () => {
                   width="100%"
                   style={{ objectFit: "cover", borderRadius: "8px" }}
                   preview={false}
+                  className="max-h-[250px] min-h-[250px]"
                 /> :
                 <AntImage
                   // src={spec.specialistId?.profileImage?.imageUrl}
@@ -119,6 +120,7 @@ const SpecialistsPage = () => {
                   width="100%"
                   style={{ objectFit: "cover", borderRadius: "8px" }}
                   preview={false}
+                  className="max-h-[250px] min-h-[250px]"
                 />
             }
 

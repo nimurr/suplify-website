@@ -5,23 +5,49 @@ import { EditOutlined, ClockCircleOutlined, DollarOutlined, CalendarOutlined } f
 import Image from 'next/image';
 import CustomButton from '@/components/customComponent/CustomButton';
 import { useRouter } from 'next/navigation';
-import { useGetAllTrainingProgramQuery } from '@/redux/fetures/Specialist/traningProgram';
+import { useGetAllTrainingProgramQuery, useSoftDeleteTrainingProgramMutation } from '@/redux/fetures/Specialist/traningProgram';
 import Link from 'next/link';
 import { PiVideo } from "react-icons/pi";
+import { MdOutlineDeleteForever } from 'react-icons/md';
+import toast, { Toaster } from 'react-hot-toast';
 
 
 export default function TrainingPrograms() {
 
   const pageNumber = 1; // Example page number
 
-  const { data, isLoading } = useGetAllTrainingProgramQuery(pageNumber);
+  const { data, isLoading, refetch } = useGetAllTrainingProgramQuery(pageNumber);
   const programs = data?.data?.attributes?.results || [];
   console.log(programs);
 
   const router = useRouter()
 
+  const [deleteTrainingProgram] = useSoftDeleteTrainingProgramMutation();
+
+  const handleDeleteProgramItem = async (program) => {
+    console.log('Delete program:', program?._TrainingProgramId);
+    // Implement delete functionality here
+
+    try {
+      const res = await deleteTrainingProgram(program?._TrainingProgramId).unwrap();
+      console.log(res);
+      if (res?.code == 200) {
+        toast.success('Program deleted successfully');
+        refetch();
+      } else {
+        toast.error('Failed to delete program');
+      }
+    } catch (error) {
+      console.error('Failed to delete program:', error);
+      toast.error('Failed to delete program');
+    }
+
+
+  }
+
   return (
     <div className="p-6">
+      <Toaster />
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-gray-700 font-semibold text-base">Training Program : {programs?.length}</h3>
@@ -46,13 +72,14 @@ export default function TrainingPrograms() {
                 src={program?.attachments[0]?.attachment}
                 alt={program.programName}
                 width={280}
-                height={180}
-                className="rounded-t-md w-full rounded-lg p-2 object-cover"
+                height={280}
+                className="rounded-t-md w-full max-h-[250px] min-h-[250px] rounded-lg p-2 object-cover"
               />
             }
-            className="rounded-md shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200"
+            className="rounded-md shadow-sm relative border border-gray-200 hover:shadow-md transition-shadow duration-200"
             bodyStyle={{ padding: '12px' }}
           >
+            <button onClick={() => handleDeleteProgramItem(program)} className='absolute top-2 right-2 h-10 w-10 bg-white rounded-full flex items-center justify-center cursor-pointer'><MdOutlineDeleteForever className='text-2xl text-red-600' /></button>
             <h4 className="font-semibold text-[20px] capitalize text-gray-800 mb-2">{program.programName}</h4>
 
             <div className="flex items-center justify-between text-gray-600 text-sm gap-3 mb-1">
