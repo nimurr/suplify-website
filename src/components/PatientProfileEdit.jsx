@@ -30,6 +30,7 @@ const PatientProfileEdit = () => {
         ? fullUser?.profileImage?.imageUrl
         : url + fullUser?.profileImage?.imageUrl;
 
+
     useEffect(() => {
         if (fullUser) {
             form.setFieldsValue({
@@ -37,7 +38,9 @@ const PatientProfileEdit = () => {
                 email: fullUser.email,
                 address: fullUser.profileId.address,
                 description: fullUser.profileId.description,
-                protocolNames: fullUser.profileId.protocolNames || []  // Ensure this is an array
+                howManyPrograms: fullUser.profileId.howManyPrograms,
+                protocolNames: fullUser.profileId.protocolNames || []  // Ensure this is an array,
+
             });
 
             // Set the profile image if it's available
@@ -64,9 +67,9 @@ const PatientProfileEdit = () => {
         // Convert the protocolNames to an array if necessary
         const protocolNamesArray = values?.protocolNames?.map((protocol) => protocol.protocolName).filter(Boolean);
 
-        console.log(protocolNamesArray);
-
         const formData = new FormData();
+
+        // Append basic fields
         if (values.fullName) {
             formData.append("name", values.fullName);
         }
@@ -79,12 +82,18 @@ const PatientProfileEdit = () => {
         if (values.address) {
             formData.append("address", values.address);
         }
+        if (values.howManyPrograms) {
+            formData.append("howManyPrograms", values.howManyPrograms);
+        }
         if (values.description) {
             formData.append("description", values.description);
         }
+
+        // Append protocolNames as separate items
         if (protocolNamesArray?.length > 0) {
-            // Convert the array to a JSON string before appending it
-            formData.append("protocolNames", JSON.stringify(protocolNamesArray));
+            protocolNamesArray.forEach((protocolName) => {
+                formData.append("protocolNames[]", protocolName); // Note the use of '[]' to indicate an array
+            });
         }
 
         try {
@@ -99,6 +108,7 @@ const PatientProfileEdit = () => {
             router.push("/profile");
         }
     };
+
 
 
     // Validate image before upload (only jpg/png)
@@ -119,7 +129,7 @@ const PatientProfileEdit = () => {
     };
 
     return (
-        <div className="md:w-[70%] mx-auto md:py-24 px-4 md:px-8">
+        <div className="lg:w-[70%] mx-auto md:py-20 px-4 md:px-8">
             <Toaster />
             <h1 className="text-3xl md:text-4xl mt-5 font-bold text-green-700 text-center md:mb-8">
                 Edit Profile
@@ -166,6 +176,10 @@ const PatientProfileEdit = () => {
                     <Input disabled className="h-10" placeholder="Email" />
                 </Form.Item>
 
+                <Form.Item label="How Many Programs" name="howManyPrograms">
+                    <Input className="h-10" placeholder="How Many Programs" />
+                </Form.Item>
+
                 {fullUser?.role === "doctor" && (
                     <div>
                         <Form.Item label="Address " name="address">
@@ -187,6 +201,7 @@ const PatientProfileEdit = () => {
                         </Form.Item>
 
                         {/* Dynamic Protocol Names Input Fields */}
+                        <h2 className="font-semibold mb-2">Protocol Names</h2>
                         <Form.List
                             name="protocolNames"
                             initialValue={fullUser?.profileId.protocolNames || []}
@@ -199,7 +214,7 @@ const PatientProfileEdit = () => {
                                     },
                                 },
                             ]}
-                            className="flex items-center gap-5 flex-wrap"
+                            className="flex items-center gap-2 flex-wrap"
                         >
                             {(fields, { add, remove }) => (
                                 <>
@@ -209,7 +224,7 @@ const PatientProfileEdit = () => {
                                                 {...field}
                                                 name={[name, 'protocolName']}
                                                 fieldKey={[fieldKey, 'protocolName']}
-                                                rules={[{ required: true, message: 'Protocol name is required' }]}
+                                            // rules={[{ required: true, message: 'Protocol name is required' }]}
                                             >
                                                 <Input placeholder="Protocol Name" />
                                             </Form.Item>

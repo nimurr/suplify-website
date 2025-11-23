@@ -17,6 +17,7 @@ const SpecialistProgram = ({ id }) => {
   const { data: program, isLoading } = useGetTrainingProgramsQuery(id);
   const fullData = program?.data?.attributes?.result?.results;
   const specialistInfo = program?.data?.attributes?.specialistInfo;
+  console.log(specialistInfo)
 
   const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState(0);
