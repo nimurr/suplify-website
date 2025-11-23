@@ -288,7 +288,7 @@ const Page = () => {
                                     Cancel
                                 </button>
                                 <button type='submit' className="bg-red-700 py-2 px-6 rounded-xl text-white">
-                                    Create{isLoading ? '...' : 'Session'}
+                                    Create{isLoading ? 'ing...' : ' Info Video'}
                                 </button>
                             </div>
                         </form>
