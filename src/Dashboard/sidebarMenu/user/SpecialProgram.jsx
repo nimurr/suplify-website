@@ -72,6 +72,7 @@ const SpecialistProgram = ({ id }) => {
               alt={specialistInfo.name}
               width="100%"
               height={350}
+              className="max-h-[250px] min-h-[250px]"
               style={{ objectFit: "cover", borderRadius: "8px" }}
               preview={false}
             />
@@ -128,15 +129,15 @@ const SpecialistProgram = ({ id }) => {
                           alt="program"
                           onClick={() => handleProgramClick(item)}
                           src={item?.attachmentDetails[0]?.attachment}
-                          className="w-full object-cover rounded-t-md"
+                          className="w-full object-cover rounded-t-md max-h-[250px] min-h-[250px]"
                         />
                       }
                     // Handle program click to show modal
                     >
-                      <h3 className="font-semibold text-base mb-2">{item?.programName}</h3>
+                      <h3 className="font-semibold text-base mb-2">{item?.programName?.length > 100 ? `${item?.programName?.slice(0, 100)}...` : item?.programName}</h3>
 
                       <div className="flex items-center justify-between gap-5">
-                        <span className="text-xs text-gray-600">
+                        <span className="text-xs text-gray-600 flex items-center gap-1">
                           <Tooltip title="Sessions">
                             <CalendarOutlined className="text-gray-500 text-xl" />
                           </Tooltip>
@@ -149,7 +150,7 @@ const SpecialistProgram = ({ id }) => {
                         <Tooltip title="Duration">
                           <ClockCircleOutlined className="text-gray-500 text-xl" />
                         </Tooltip>
-                        <span className="text-xs text-gray-600 mr-3 font-semibold">{item?.durationInMonths}</span>
+                        <span className="text-xs text-gray-600 mr-3 font-semibold">{item?.durationInMonths} Month</span>
                       </div>
 
                       {item?.isPurchased === true ? (
@@ -197,7 +198,7 @@ const SpecialistProgram = ({ id }) => {
           {/* Assuming you have a video URL or source */}
           <div className="w-full">
             {
-              selectedProgram?.trailerContentDetails.length > 0 && (
+              selectedProgram?.trailerContentDetails.length > 0 ? (
                 <iframe
                   width="100%"
                   height="600"
@@ -207,7 +208,8 @@ const SpecialistProgram = ({ id }) => {
                   allowFullScreen
                   title="Program Video"
                 ></iframe>
-              )
+              ) :
+                <p className="text-center text-red-500 font-semibold">No Trailer Available</p>
             }
           </div>
         </div>

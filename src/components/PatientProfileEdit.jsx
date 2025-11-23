@@ -64,6 +64,9 @@ const PatientProfileEdit = () => {
         // Convert the protocolNames to an array if necessary
         const protocolNamesArray = values?.protocolNames?.map((protocol) => protocol.protocolName).filter(Boolean);
 
+        console.log(protocolNamesArray)
+        // return
+
         const formData = new FormData();
         if (values.fullName) {
             formData.append("name", values.fullName);
@@ -89,7 +92,7 @@ const PatientProfileEdit = () => {
             console.log(res)
             if (res?.code === 200) {
                 toast.success(res?.message);
-                router.push("/profile");
+                // router.push("/profile");
             }
         } catch (error) {
             console.log(error);

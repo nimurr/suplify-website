@@ -135,7 +135,7 @@ const SpecialistsPage = () => {
             </p>
 
             <CustomButton
-              onClick={() => ViewFull(spec?.specialistId?._userId)}
+              onClick={() => ViewFull(spec?.specialistId?._userId ? spec?.specialistId?._userId : spec?._id)}
               text="View Full"
             />
           </div>
