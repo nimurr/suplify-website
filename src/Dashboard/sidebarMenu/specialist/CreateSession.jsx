@@ -6,11 +6,13 @@ import { UploadOutlined, DeleteOutlined, PlusOutlined, InfoCircleOutlined } from
 import BackHeader from '@/components/customComponent/BackHeader';
 import { useCreateTrainingSessionMutation } from '@/redux/fetures/Specialist/traningProgram';
 import toast from 'react-hot-toast';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function CreateSession() {
   const [benefits, setBenefits] = useState([""]);
   const [form] = Form.useForm();
+
+  const navigate = useRouter();
 
   const addBenefit = () => {
     setBenefits([...benefits, '']);
@@ -65,8 +67,6 @@ export default function CreateSession() {
       return toast.error('Add Video Link');
     }
 
-
-
     try {
       const response = await createSession(fromData);
       console.log(response);
@@ -78,6 +78,7 @@ export default function CreateSession() {
       if (response?.data?.message) {
         toast.success(response?.data?.message);
         form.resetFields(); // Reset form fields on success
+        navigate.push(`/specialistDs/program/view?programId=${programId}&specialistId=${response?.data?.data?.attributes?.specialistId}`);
       }
     } catch (error) {
       console.log(error);
@@ -153,12 +154,12 @@ export default function CreateSession() {
               </div>
             </div>
 
-            <Form.Item
+            {/* <Form.Item
               label={<span className="font-medium">Video Link</span>}
               name="videoLink"
             >
               <Input placeholder="video Link" />
-            </Form.Item>
+            </Form.Item> */}
 
             {/* Session Name */}
             <Form.Item

@@ -62,56 +62,65 @@ export default function TrainingPrograms() {
       }
 
       {/* Cards grid */}
-      <div className="grid xl:grid-cols-5 border border-gray-200 p-5 rounded-md md:grid-cols-3 sm:grid-cols-2 gap-4">
-        {programs?.map((program, idx) => (
-          <Card
-            key={idx}
-            hoverable
-            cover={
-              <Image
-                src={program?.attachments[0]?.attachment}
-                alt={program.programName}
-                width={280}
-                height={280}
-                className="rounded-t-md w-full max-h-[250px] min-h-[250px] rounded-lg p-2 object-cover"
-              />
-            }
-            className="rounded-md shadow-sm relative border border-gray-200 hover:shadow-md transition-shadow duration-200"
-            bodyStyle={{ padding: '12px' }}
-          >
-            <button onClick={() => handleDeleteProgramItem(program)} className='absolute top-2 right-2 h-10 w-10 bg-white rounded-full flex items-center justify-center cursor-pointer'><MdOutlineDeleteForever className='text-2xl text-red-600' /></button>
-            <h4 className="font-semibold text-[20px] capitalize text-gray-800 mb-2">{program.programName}</h4>
+      {
+        programs?.length > 0 && (
+          <div className="grid xl:grid-cols-5 border border-gray-200 p-5 rounded-md md:grid-cols-3 sm:grid-cols-2 gap-4">
+            {programs?.map((program, idx) => (
+              <Card
+                key={idx}
+                hoverable
+                cover={
+                  <Image
+                    src={program?.attachments[0]?.attachment}
+                    alt={program.programName}
+                    width={280}
+                    height={280}
+                    className="rounded-t-md w-full max-h-[250px] min-h-[250px] rounded-lg p-2 object-cover"
+                  />
+                }
+                className="rounded-md shadow-sm relative border border-gray-200 hover:shadow-md transition-shadow duration-200"
+                bodyStyle={{ padding: '12px' }}
+              >
+                <button onClick={() => handleDeleteProgramItem(program)} className='absolute top-2 right-2 h-10 w-10 bg-white rounded-full flex items-center justify-center cursor-pointer'><MdOutlineDeleteForever className='text-2xl text-red-600' /></button>
+                <h4 className="font-semibold text-[20px] capitalize text-gray-800 mb-2">{program.programName}</h4>
 
-            <div className="flex items-center justify-between text-gray-600 text-sm gap-3 mb-1">
-              <div className='flex items-center gap-2'>
-                <PiVideo />
-                <span>{program.totalSessionCount} Sessions</span>
-              </div>
-              <span>${program.price}</span>
-            </div>
+                <div className="flex items-center justify-between text-gray-600 text-sm gap-3 mb-1">
+                  <div className='flex items-center gap-2'>
+                    <PiVideo />
+                    <span>{program.totalSessionCount} Sessions</span>
+                  </div>
+                  <span>${program.price}</span>
+                </div>
 
 
-            <div className="flex items-center text-gray-600 text-sm gap-3 mb-3">
-              <ClockCircleOutlined />
-              <span>{program.durationInMonths} Months</span>
-            </div>
-            <div className='flex items-center justify-between gap-4'>
-              <CustomButton
-                text='Edit'
-                onClick={() => router.push(`/specialistDs/program/edit-traning-program/${program._TrainingProgramId}?specialistId=${program.createdBy}`)}
-              />
+                <div className="flex items-center text-gray-600 text-sm gap-3 mb-3">
+                  <ClockCircleOutlined />
+                  <span>{program.durationInMonths} Months</span>
+                </div>
+                <div className='flex items-center justify-between gap-4'>
+                  <CustomButton
+                    text='Edit'
+                    onClick={() => router.push(`/specialistDs/program/edit-traning-program/${program._TrainingProgramId}?specialistId=${program.createdBy}`)}
+                  />
 
-              <CustomButton
-                text='View'
-                onClick={() => router.push(`/specialistDs/program/view?programId=${program._TrainingProgramId}&specialistId=${program.createdBy}`)}
+                  <CustomButton
+                    text='View'
+                    onClick={() => router.push(`/specialistDs/program/view?programId=${program._TrainingProgramId}&specialistId=${program.createdBy}`)}
 
-              />
+                  />
 
-            </div>
+                </div>
 
-          </Card>
-        ))}
-      </div>
+              </Card>
+            ))}
+          </div>
+        )
+      }
+      {
+        programs?.length === 0 && !isLoading && (
+          <p className='text-center text-xl font-semibold text-red-500'>No Training Programs Found</p>
+        )
+      }
     </div>
   );
 }
