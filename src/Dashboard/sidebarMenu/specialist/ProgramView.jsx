@@ -231,7 +231,7 @@ export default function ProgramView() {
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={null}
-        width={800} 
+        width={800}
       >
         <div className="relative" style={{ paddingBottom: "56.25%" }}>
           <iframe
@@ -241,7 +241,7 @@ export default function ProgramView() {
             title="Session Video"
             frameBorder="0"
             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen 
+            allowFullScreen
           ></iframe>
         </div>
       </Modal>
