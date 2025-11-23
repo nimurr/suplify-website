@@ -64,8 +64,7 @@ const PatientProfileEdit = () => {
         // Convert the protocolNames to an array if necessary
         const protocolNamesArray = values?.protocolNames?.map((protocol) => protocol.protocolName).filter(Boolean);
 
-        console.log(protocolNamesArray)
-        // return
+        console.log(protocolNamesArray);
 
         const formData = new FormData();
         if (values.fullName) {
@@ -84,12 +83,13 @@ const PatientProfileEdit = () => {
             formData.append("description", values.description);
         }
         if (protocolNamesArray?.length > 0) {
-            formData.append("protocolNames", protocolNamesArray);  // Send array of protocol names
+            // Convert the array to a JSON string before appending it
+            formData.append("protocolNames", JSON.stringify(protocolNamesArray));
         }
 
         try {
             const res = await updateProfile({ formData, id: userData.id }).unwrap();
-            console.log(res)
+            console.log(res);
             if (res?.code === 200) {
                 toast.success(res?.message);
                 // router.push("/profile");
@@ -99,6 +99,7 @@ const PatientProfileEdit = () => {
             router.push("/profile");
         }
     };
+
 
     // Validate image before upload (only jpg/png)
     const beforeImageUpload = (file) => {

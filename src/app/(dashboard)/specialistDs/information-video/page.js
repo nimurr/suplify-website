@@ -172,7 +172,7 @@ const Page = () => {
                                     <video
                                         className="w-full h-full rounded-lg"
                                         controls
-                                        autoPlay
+                                        // autoPlay
                                         muted
                                         poster={item.thumbnail[0].attachment} // Thumbnail image
                                     >
@@ -239,10 +239,10 @@ const Page = () => {
                                 />
                                 <p className="text-sm text-gray-500">MP4, MOV, or AVI up to 10MB</p>
                             </div>
-
-                            <p className="text-center text-gray-500 mb-5">OR</p>
-
                             {/* Link Input */}
+
+                            {/* <p className="text-center text-gray-500 mb-5">OR</p>
+
                             <div className="mb-5">
                                 <label className="block mb-2">Video Link</label>
                                 <input
@@ -252,7 +252,7 @@ const Page = () => {
                                     placeholder="Video Link"
                                     className="py-2 px-3 border-2 border-gray-300 rounded-xl w-full"
                                 />
-                            </div>
+                            </div> */}
 
                             {/* Title Input */}
                             <div className="mb-5">
