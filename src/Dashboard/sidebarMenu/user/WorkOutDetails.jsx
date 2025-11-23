@@ -9,15 +9,7 @@ import moment from "moment";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import url from "@/redux/api/baseUrl";
-
-// Sample trainer data
-const trainer = {
-  id: 1,
-  name: "Sakib Ahmed",
-  roles: ["Trainer", "Body trainer"],
-  image: "/images/trainer.png", // Replace with actual image path
-  description: "Lorem ipsum dolor sit amet consectetur. Massa risus eget justo vel urna sapien posuere. Mauris magna eratest vestibulum cum egestas etiam pulvinar orci."
-};
+ 
 
 // Schedule card component
 const ScheduleCard = ({ schedule }) => {
