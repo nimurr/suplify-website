@@ -9,7 +9,6 @@ import moment from "moment";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import url from "@/redux/api/baseUrl";
- 
 
 // Schedule card component
 const ScheduleCard = ({ schedule }) => {
