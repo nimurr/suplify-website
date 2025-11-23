@@ -11,9 +11,8 @@ const MessageHeader = () => {
     const { id } = useParams(); // Get chat ID from URL 
 
     const { data, isLoading } = useGetChatUserInfoQuery(id);
-    const fullUserInfo = data?.data?.attributes[0]?.userId
-
-
+    const fullUserInfo = data?.data?.attributes[0]?.userId;
+    
 
     return (
         <div>
