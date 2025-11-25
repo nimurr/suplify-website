@@ -13,7 +13,6 @@ const MessageHeader = () => {
     const { data, isLoading } = useGetChatUserInfoQuery(id);
     const fullUserInfo = data?.data?.attributes[0]?.userId;
     
-
     return (
         <div>
 
