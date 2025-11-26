@@ -6,6 +6,7 @@ import "./globals.css";
 import { ConfigProvider } from "antd";
 import Providers from "@/redux/Providers";
 import { Toaster } from "react-hot-toast";
+import { Suspense } from "react";
 
 
 const geistSans = Geist({
@@ -38,9 +39,11 @@ export default function RootLayout({ children }) {
           reverseOrder={false}
         />
         <Providers>
-          {/* <ProviderTheme> */}
+          <Suspense fallback={<div>Loading...</div>}>
+            {/* <ProviderTheme> */}
 
-          {children}
+            {children}
+          </Suspense>
 
           {/* </ProviderTheme> */}
         </Providers>
