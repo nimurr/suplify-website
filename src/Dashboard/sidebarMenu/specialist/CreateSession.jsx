@@ -29,6 +29,7 @@ export default function CreateSession() {
     newBenefits[index] = value;
     setBenefits(newBenefits);
   };
+  
 
   const searchParams = useSearchParams();
   const programId = searchParams.get('programId');
