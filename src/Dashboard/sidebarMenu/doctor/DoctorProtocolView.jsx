@@ -9,6 +9,7 @@ import { useAssignProtocolToPatientMutation, useAssignSpecialistPatientMutation,
 import toast, { Toaster } from "react-hot-toast";
 import Link from "next/link";
 import url from "@/redux/api/baseUrl";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const { TextArea } = Input;
 
@@ -16,9 +17,10 @@ const DoctorProtocolPage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [specialist, setSpecialist] = useState();
 
-  // Get patientId from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const patientId = urlParams.get("patientId");
+  const navigate = useRouter();
+
+  const searchParams = useSearchParams();
+  const patientId = searchParams.get("patientId"); // Extract patientId from search params
 
   // Fetch patient protocols and specialists using redux hooks
   const { data: patientData, isLoading: isPatientDataLoading, refetch } = useGetAllProtocalsByPatientIdQuery(patientId);
@@ -66,7 +68,7 @@ const DoctorProtocolPage = () => {
       const res = await assignProtocol(data);
       if (res?.data?.code == 200) {
         toast.success(res?.data?.message);
-        window.location.href = `/doctorDs/doctor-protocol/create-plane?protocolId=${res?.data?.data?.attributes?._protocolId}&patientId=${patientId}`;
+        navigate.push(`/doctorDs/doctor-protocol/create-plane?protocolId=${res?.data?.data?.attributes?._protocolId}&patientId=${patientId}`);
       } else {
         toast.error(res?.data?.message);
       }
