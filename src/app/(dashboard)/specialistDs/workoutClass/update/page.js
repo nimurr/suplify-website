@@ -1,12 +1,18 @@
 'use client';
 import { useGetSingleWorkoutClassQuery, useUpdateWorkoutClassMutation } from '@/redux/fetures/Specialist/workoutClass';
-import React, { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { use, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const Page = () => {
     // Get id from URL
-    const searchParams = new URLSearchParams(window.location.search);
+    // const searchParams = new URLSearchParams(window.location.search);
+    // const id = searchParams.get('id');
+
+    const searchParams = useSearchParams();
     const id = searchParams.get('id');
+
+    const navigate = useRouter();
 
     // Fetch workout class data
     const { data: single, refetch } = useGetSingleWorkoutClassQuery(id);
@@ -78,8 +84,9 @@ const Page = () => {
             if (response?.code === 200) {
                 toast.success(response?.message);
                 refetch();
+                navigate.push(`/specialistDs/workoutClass`);
 
-                window.location.href = `/specialistDs/workoutClass`; // Redirect after success
+                // window.location.href = `/specialistDs/workoutClass`; // Redirect after success
             }
         } catch (error) {
             console.log(error);
