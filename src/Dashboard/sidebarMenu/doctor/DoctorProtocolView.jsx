@@ -1,8 +1,8 @@
 'use client'
+
 import React, { useState, useEffect } from "react";
 import { Card, Button, Avatar, Input, Modal, Select } from "antd";
 import { EditOutlined } from "@ant-design/icons";
-import CustomButton from "@/components/customComponent/CustomButton";
 import BackHeader from "@/components/customComponent/BackHeader";
 import { FiPlusCircle } from "react-icons/fi";
 import { useAssignProtocolToPatientMutation, useAssignSpecialistPatientMutation, useGetAllProtocalsByPatientIdQuery, useGetAllSpacialistQuery } from "@/redux/fetures/doctor/doctor";
@@ -34,7 +34,6 @@ const DoctorProtocolPage = () => {
   const [assignProtocol] = useAssignProtocolToPatientMutation();
 
   useEffect(() => {
-    // You could trigger any data refetch or additional setup here
     if (!patientId) {
       console.log("No patientId found in URL");
     }
@@ -78,8 +77,6 @@ const DoctorProtocolPage = () => {
     }
   };
 
-
-
   return (
     <div>
       <Toaster />
@@ -87,32 +84,30 @@ const DoctorProtocolPage = () => {
 
       <div className="flex lg:flex-row flex-col gap-6 p-6 bg-gray-50 min-h-screen">
         {/* Left Sidebar */}
-        {
-          isPatientDataLoading ? (
-            <div>Loading...</div>
-          ) : (
-            <div className="bg-white rounded-lg shadow-md p-6 md:w-72 w-full flex flex-col">
-              <div className="flex items-center gap-3 mb-6">
-                <Avatar
-                  size={60}
-                  src={url + fullPatientData?.extraNote?.patientId?.profileImage?.imageUrl}
-                  alt="Mahmud"
-                />
-                <span className="font-semibold capitalize text-sm">{fullPatientData?.extraNote?.patientId?.name || "No name found"}</span>
-              </div>
-              <div className="mb-1 text-sm font-semibold">Extra Note</div>
-              <p className="text-xs text-gray-500 mb-4">
-                {fullPatientData?.extraNote?.extraNote || "No note found"}
-              </p>
-              <TextArea
-                rows={6}
-                placeholder="Type your note ..."
-                className="resize-none rounded-md border border-gray-300"
+        {isPatientDataLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-md p-6 md:w-72 w-full flex flex-col">
+            <div className="flex items-center gap-3 mb-6">
+              <Avatar
+                size={60}
+                src={url + fullPatientData?.extraNote?.patientId?.profileImage?.imageUrl}
+                alt="Mahmud"
               />
-              <button className="bg-red-600 text-white py-2 px-6 rounded-lg mt-3">Save</button>
+              <span className="font-semibold capitalize text-sm">{fullPatientData?.extraNote?.patientId?.name || "No name found"}</span>
             </div>
-          )
-        }
+            <div className="mb-1 text-sm font-semibold">Extra Note</div>
+            <p className="text-xs text-gray-500 mb-4">
+              {fullPatientData?.extraNote?.extraNote || "No note found"}
+            </p>
+            <TextArea
+              rows={6}
+              placeholder="Type your note ..."
+              className="resize-none rounded-md border border-gray-300"
+            />
+            <button className="bg-red-600 text-white py-2 px-6 rounded-lg mt-3">Save</button>
+          </div>
+        )}
 
         {/* Right Content */}
         <div className="flex-1 bg-white rounded-lg shadow-md p-6">
