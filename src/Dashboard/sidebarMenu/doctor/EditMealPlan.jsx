@@ -6,14 +6,17 @@ import { DeleteOutlined, PlusOutlined, InfoCircleOutlined, ArrowLeftOutlined } f
 import Link from 'next/link';
 import { useCreatePlaneMutation, useGetSinglePlaneQuery, useUpdatePlaneMutation } from '@/redux/fetures/doctor/createPlane';
 import toast, { Toaster } from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const { Title } = Typography;
 const { TextArea } = Input;
 
 export default function EditMealPlan() {
   // Get the ID from the URL params
-  const searchParams = new URLSearchParams(window.location.search);
+  // const searchParams = new URLSearchParams(window.location.search);
+  // const id = searchParams.get('id');
+
+  const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
   const navigate = useRouter();
