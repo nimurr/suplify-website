@@ -1,15 +1,23 @@
 'use client';
-import React, { useState, useRef,  } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Avatar, Button, Tag, List, Modal, Image } from "antd";
 import { CheckCircleOutlined, PlayCircleOutlined, CloseOutlined, LeftOutlined } from "@ant-design/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useGetFullPatientStatusDataForSpecialistQuery } from "@/redux/fetures/patient/specialist";
+import { Suspense } from 'react';
 
 export default function SpecialistProgramDetails() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
-  const programId = searchParams.get("programId");
+  const [id, setId] = useState(null);
+  const [programId, setProgramId] = useState(null);
+
+  useEffect(() => {
+    // This will ensure searchParams is only read on the client side
+    const searchParams = useSearchParams();
+    setId(searchParams.get("id"));
+    setProgramId(searchParams.get("programId"));
+  }, []);
+
   const [selectItem, setSelectItem] = useState(null);
 
   // Fetch data using the API
