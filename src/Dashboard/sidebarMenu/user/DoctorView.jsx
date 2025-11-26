@@ -1,5 +1,4 @@
 "use client"
-import CustomButton from '@/components/customComponent/customButton';
 import url from '@/redux/api/baseUrl';
 import { useDoctorAppoinmentBookedMutation, useGetFullDataQuery } from '@/redux/fetures/patient/patient';
 import { LeftOutlined } from '@ant-design/icons';
