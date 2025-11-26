@@ -1,14 +1,22 @@
 'use client'
 import { useCreatePlanByDocMutation, useCreatePlaneMutation } from '@/redux/fetures/doctor/createPlane';
 import { useAssignProtacoltoPatientMutation, useCreateSearchPlanMutation, useCreateSearchPlanQuery, useGetMyPlansQuery, useGetSingleProtocolQuery, useSearchPlaneQuery, useUpdateProtocolMutation } from '@/redux/fetures/doctor/doctor';
+import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { CiCirclePlus, CiEdit, CiSearch } from 'react-icons/ci';
 
 const Page = () => {
-    const searchParams = new URLSearchParams(window.location.search);
+
+    // const searchParams = new URLSearchParams(window.location.search);
+    // const protocolId = searchParams.get("protocolId");
+    // const patientId = searchParams.get("patientId");
+
+    const searchParams = useSearchParams();
     const protocolId = searchParams.get("protocolId");
-    const patientId = searchParams.get("patientId");
+    const patientId = searchParams.get("patientId"); // Extract patientId from search params
+
+
     const [selectedPlan, setSelectedPlan] = useState('mealPlan');
 
     const { data: myPlans } = useGetMyPlansQuery({ protocolId, patientId, selectedPlan });
