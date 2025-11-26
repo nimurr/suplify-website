@@ -1,6 +1,5 @@
 "use client";
 
-import CustomButton from "@/components/customComponent/customButton";
 import url from "@/redux/api/baseUrl";
 import { useGetAllOthersQuery, useGetAllYourDoctorsQuery } from "@/redux/fetures/patient/patient";
 import { Card, Button, Radio, Row, Col, Divider, Tabs, Image } from "antd";
@@ -118,11 +117,8 @@ export default function DoctorPage() {
                   <p className="text-gray-600 text-sm my-2">
                     {doc?.doctorId?.profileId?.description?.length > 60 ? doc?.doctorId?.profileId?.description.slice(0, 60) + "..." : doc?.doctorId?.profileId?.description || "No description available"}
                   </p>
-                  <CustomButton
-                    onClick={() => ViewFull(doc?.doctorId?._userId)}
-                    text="View Full"
-                    className="p-2"
-                  />
+                  <button className="py-2 px-8 bg-buttonColor text-white rounded" onClick={() => ViewFull(doc?.doctorId?._userId)}>View Full</button>
+
                 </div>
               </Card>
             ))}
@@ -153,11 +149,7 @@ export default function DoctorPage() {
                 <p className="text-gray-600 text-sm my-2">
                   {doc?.doctorId?.profileId?.description?.length > 60 ? doc?.doctorId?.profileId?.description.slice(0, 60) + "..." : doc?.doctorId?.profileId?.description || "No description available"}
                 </p>
-                <CustomButton
-                  onClick={() => ViewFull(doc._id)}
-                  text="View Full"
-                  className="p-2"
-                />
+                <button className="py-2 px-8 bg-buttonColor text-white rounded" onClick={() => ViewFull(doc._id)}>View Full</button>
               </Card>
             ))}
           </div>
