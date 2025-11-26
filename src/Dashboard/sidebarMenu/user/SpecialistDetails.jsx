@@ -63,7 +63,7 @@ export default function SpecialistProgramDetails() {
   }
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <div>
       <div className="bg-gray-50 p-4 md:p-8">
         <h1 className="text-2xl font-semibold flex items-center gap-2 my-12">
           <LeftOutlined onClick={() => router.back()} className="cursor-pointer" />
@@ -266,6 +266,6 @@ export default function SpecialistProgramDetails() {
           </div>
         </Modal>
       </div>
-    </Suspense>
+    </div>
   );
 }
