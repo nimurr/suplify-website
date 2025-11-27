@@ -63,7 +63,7 @@ export default function AppointmentScheduler({ doctorId }) {
 
             <div className="p-4 ">
               <h3 className="text-center font-semibold text-lg mb-1">{profile?.name}</h3>
-              <p className="text-center text-sm text-gray-500 mb-4">{profile?.address || "N/A"}</p>
+              <p className="text-center text-sm text-gray-500 mb-4">{profile?.profileId?.address || "N/A"}</p>
               <hr className="border-gray-200 mb-4" />
               <h4 className="font-semibold text-sm mb-2">Description</h4>
               <p className="text-sm text-gray-700 mb-6 leading-relaxed">
