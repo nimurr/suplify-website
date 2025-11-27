@@ -47,9 +47,9 @@ export default function SelectRole() {
             className="flex flex-col space-y-4 w-full"
           >
             <Radio.Button
-              value="member"
+              value="patient"
               className={`!rounded-md !border !h-14 !text-left !px-4 !flex !items-center !w-full ${
-                role === "member"
+                role === "patient"
                   ? "!border-red-500 !text-red-600 !bg-red-50"
                   : "!border-gray-300 !text-gray-700"
               }`}
@@ -57,14 +57,14 @@ export default function SelectRole() {
               <div className="flex items-center">
                 <div
                   className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
-                    role === "member" ? "border-red-500" : "border-gray-400"
+                    role === "patient" ? "border-red-500" : "border-gray-400"
                   }`}
                 >
-                  {role === "member" && (
+                  {role === "patient" && (
                     <div className="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
                   )}
                 </div>
-                <span className="font-medium">Member</span>
+                <span className="font-medium">Patient</span>
               </div>
             </Radio.Button>
 
