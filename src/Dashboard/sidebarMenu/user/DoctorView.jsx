@@ -53,15 +53,15 @@ export default function AppointmentScheduler({ doctorId }) {
         {/* Header Section */}
         <div className="lg:w-[20%] mb-8">
           <div className="rounded-lg shadow-md bg-white border border-gray-200 overflow-hidden font-sans">
-            <div className="relative w-full h-60">
+            <div className=" w-full h-72">
               <img
                 src={profile?.profileImage?.imageUrl.includes("amazonaws.com") ? profile?.profileImage?.imageUrl : url + profile?.profileImage?.imageUrl}
                 alt="doctor"
-                className="w-full"
+                className="w-full h-full "
               />
             </div>
 
-            <div className="p-4">
+            <div className="p-4 ">
               <h3 className="text-center font-semibold text-lg mb-1">{profile?.name}</h3>
               <p className="text-center text-sm text-gray-500 mb-4">{profile?.address || "N/A"}</p>
               <hr className="border-gray-200 mb-4" />
