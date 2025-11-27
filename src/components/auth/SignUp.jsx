@@ -12,10 +12,10 @@
 //   const [form] = Form.useForm();
 
 //   const onFinish = (values) => {
-    
+
 //     const fullData = {role, ...values}
 //     console.log(fullData)
-  
+
 //     // You can either pass data through query (not secure) or use state/localStorage
 //     // Here’s a basic example using route
 //     const queryParams = new URLSearchParams({
@@ -24,7 +24,7 @@
 //       password: values.password,
 //       role: role,
 //     });
-  
+
 //     router.push(`/auth/signup-nextpage?${queryParams.toString()}`);
 //   };
 
@@ -51,7 +51,7 @@
 // />
 
 
-       
+
 
 //           <Form
 //             form={form}
@@ -133,6 +133,8 @@ import { Button, Form, Input } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import BackHeader from '../customComponent/BackHeader';
+import { useSignUpMutation } from '@/redux/fetures/auth/signUp';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function Signup() {
   const [role, setRole] = useState("Member");
@@ -148,7 +150,10 @@ export default function Signup() {
 
   const [form] = Form.useForm();
 
-  const onFinish = (values) => {
+
+  const [register, { isLoading }] = useSignUpMutation();
+
+  const onFinish = async (values) => {
     const fullData = { role, ...values };
     console.log(fullData);
 
@@ -159,11 +164,41 @@ export default function Signup() {
       role: role,
     });
 
-    router.push(`/auth/signup-nextpage?${queryParams.toString()}`);
+    const formData = new FormData();
+    formData.append("role", role);
+    formData.append("email", values.email);
+    formData.append("name", values.name);
+    formData.append("password", values.password);
+
+    if (role !== 'patient') {
+      router.push(`/auth/signup-nextpage?${queryParams.toString()}`);
+    }
+
+    else {
+      try {
+
+        const res = await register(formData).unwrap();
+        console.log(res);
+        if (res?.code == 201) {
+          // console.log(res);
+          toast.success(res?.message)
+          router.push("/auth/signup-success");
+          message.success(res?.message || "Registration successful!");
+          // router.push(`/auth/login`);
+        }
+
+      } catch (error) {
+        console.error("Error during submission:", error);
+      }
+
+    }
+
+
   };
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-black via-black to-[#2e0a0a] px-6">
+      <Toaster />
       <div className="hidden md:flex items-center justify-center mr-12">
         <img src="/images/logo2.png" alt="Suplify Logo" />
       </div>

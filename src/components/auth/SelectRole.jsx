@@ -14,9 +14,13 @@ export default function SelectRole() {
   };
 
   const onSubmit = () => {
+
+
     if (role) {
       router.push(`/auth/signup?role=${role}`);
     }
+
+    
   };
 
   return (
@@ -48,17 +52,15 @@ export default function SelectRole() {
           >
             <Radio.Button
               value="patient"
-              className={`!rounded-md !border !h-14 !text-left !px-4 !flex !items-center !w-full ${
-                role === "patient"
+              className={`!rounded-md !border !h-14 !text-left !px-4 !flex !items-center !w-full ${role === "patient"
                   ? "!border-red-500 !text-red-600 !bg-red-50"
                   : "!border-gray-300 !text-gray-700"
-              }`}
+                }`}
             >
               <div className="flex items-center">
                 <div
-                  className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
-                    role === "patient" ? "border-red-500" : "border-gray-400"
-                  }`}
+                  className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${role === "patient" ? "border-red-500" : "border-gray-400"
+                    }`}
                 >
                   {role === "patient" && (
                     <div className="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
@@ -70,17 +72,15 @@ export default function SelectRole() {
 
             <Radio.Button
               value="doctor"
-              className={`!rounded-md !border !h-14 !text-left !px-4 !flex !items-center !w-full ${
-                role === "doctor"
+              className={`!rounded-md !border !h-14 !text-left !px-4 !flex !items-center !w-full ${role === "doctor"
                   ? "!border-red-500 !text-red-600 !bg-red-50"
                   : "!border-gray-300 !text-gray-700"
-              }`}
+                }`}
             >
               <div className="flex items-center">
                 <div
-                  className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
-                    role === "doctor" ? "border-red-500" : "border-gray-400"
-                  }`}
+                  className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${role === "doctor" ? "border-red-500" : "border-gray-400"
+                    }`}
                 >
                   {role === "doctor" && (
                     <div className="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
@@ -92,17 +92,15 @@ export default function SelectRole() {
 
             <Radio.Button
               value="specialist"
-              className={`!rounded-md !border !h-14 !text-left !px-4 !flex !items-center !w-full ${
-                role === "specialist"
+              className={`!rounded-md !border !h-14 !text-left !px-4 !flex !items-center !w-full ${role === "specialist"
                   ? "!border-red-500 !text-red-600 !bg-red-50"
                   : "!border-gray-300 !text-gray-700"
-              }`}
+                }`}
             >
               <div className="flex items-center">
                 <div
-                  className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
-                    role === "specialist" ? "border-red-500" : "border-gray-400"
-                  }`}
+                  className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${role === "specialist" ? "border-red-500" : "border-gray-400"
+                    }`}
                 >
                   {role === "specialist" && (
                     <div className="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
