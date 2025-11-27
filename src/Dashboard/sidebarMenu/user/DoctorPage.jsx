@@ -77,6 +77,8 @@ export default function DoctorPage() {
   const { data: data2 } = useGetAllOthersQuery()
   const othersFullData = data2?.data?.attributes?.results;
 
+  console.log(othersFullData)
+
 
   const ViewFull = (id) => {
     if (data?.data?.additionalResponse?.subscriptionType == 'none' || data2?.data?.additionalResponse?.subscriptionType == 'none') {
@@ -147,7 +149,7 @@ export default function DoctorPage() {
               >
                 <h3 className="font-semibold text-lg mb-1">{doc?.name}</h3>
                 <p className="text-gray-600 text-sm my-2">
-                  {doc?.doctorId?.profileId?.description?.length > 60 ? doc?.doctorId?.profileId?.description.slice(0, 60) + "..." : doc?.doctorId?.profileId?.description || "No description available"}
+                  {doc?.profile?.description?.length > 60 ? doc?.profile?.description.slice(0, 60) + "..." : doc?.profile?.description || "No description available"}
                 </p>
                 <button className="py-2 px-8 bg-buttonColor text-white rounded" onClick={() => ViewFull(doc._id)}>View Full</button>
               </Card>
