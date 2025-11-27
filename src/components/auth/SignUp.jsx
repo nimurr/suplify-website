@@ -182,9 +182,9 @@ export default function Signup() {
         if (res?.code == 201) {
           // console.log(res);
           toast.success(res?.message)
-          router.push("/auth/signup-success");
+          // router.push("/auth/signup-success");
           message.success(res?.message || "Registration successful!");
-          // router.push(`/auth/login`);
+          router.push(`/auth/login`);
         }
 
       } catch (error) {

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
 import { IoEyeOutline } from "react-icons/io5";
 import { useGetAllOrdersQuery } from '@/redux/fetures/patient/order';
-import getUser from '@/utils/user';
+
 
 
 // Your columns configuration
@@ -61,18 +61,9 @@ const columns = [
 
 const CompositionEvent = () => {
 
-    const [user, setUser] = useState(null);
-
-    useEffect(() => {
-        const currentUser = getUser();  // Call the function here
-        console.log("full user here :-", currentUser);
-        setUser(currentUser);
-    }, []);
-
-    const id = user?.id;
 
 
-    const { data } = useGetAllOrdersQuery(id);
+    const { data } = useGetAllOrdersQuery();
     const fullData = data?.data?.attributes?.results || [];
 
     console.log(fullData);

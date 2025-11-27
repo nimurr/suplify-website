@@ -3,8 +3,8 @@ import { apiSlice } from "../../api/apiSlice";
 const order = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAllOrders: builder.query({
-            query: (userId) => ({
-                url: `/orders/paginate?userId=${userId}`,
+            query: () => ({
+                url: `/orders/paginate/for-user`,
                 method: 'GET',
             }),
             providesTags: ['Order']
