@@ -84,7 +84,7 @@ const WorkoutSpecialistClass = () => {
                   <div className="flex justify-between items-center">
                     <p className="text-xl font-semibold">{item?.scheduleName}</p>
                     <p className="text-lg flex items-center gap-2 font-semibold text-red-600">
-                      ${item?.price} 
+                      ${item?.price}
                       {/* <span className="line-through text-gray-500">$200</span> */}
                     </p>
                   </div>
