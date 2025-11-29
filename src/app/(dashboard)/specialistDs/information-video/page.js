@@ -59,7 +59,7 @@ const Page = () => {
         }
     };
 
-    const [createInformationVideo, { isLoading }] = useCreateInformationVideoMutation();
+    const [createInformationVideo, { isLoading, refetch: refetchCreate }] = useCreateInformationVideoMutation();
 
     // Handle form submission
     const handleSubmitCreateSession = async (e) => {
@@ -78,19 +78,26 @@ const Page = () => {
             const response = await createInformationVideo(formData); // your API call
             console.log(response);
             refetch();
+            refetchCreate();
+            setModalOpen(false);
 
             if (response?.error?.data?.message) {
                 toast.error(response?.error?.data?.message);
                 refetch();
+                refetchCreate();
             }
             if (response?.data?.message) {
                 toast.success(response?.data?.message);
-                setModalOpen(false); // Close modal
                 refetch();
+                setTimeout(() => {
+                    refetchCreate();
+                    setModalOpen(false); // Close modal
+                }, 100);
             }
         } catch (error) {
             console.log(error?.data);
-            toast.error(error?.data?.message || "Something went wrong!");
+            toast.error(error?.data?.message);
+            setModalOpen(false);
         }
     };
 
@@ -153,7 +160,7 @@ const Page = () => {
                 loading && <h2 className='text-2xl font-semibold text-center'>Loading...</h2>
             }
 
-            <div className='grid xl:grid-cols-5 md:grid-cols-3 grid-cols-2 my-5 gap-5'>
+            <div className='grid xl:grid-cols-5 md:grid-cols-3 grid-cols-2 my-5 items-start gap-5'>
                 {filteredData?.map((item, index) => {
                     return (
                         <div onClick={() => handleEdit(item)} className='border-2 border-gray-300 rounded-xl p-3' key={index}>
