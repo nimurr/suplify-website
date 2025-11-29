@@ -190,14 +190,14 @@ const Page = () => {
 
             {/* Duration Input */}
             <div style={{ marginBottom: '20px' }}>
-                <label htmlFor="duration" style={{ display: 'block', marginBottom: '8px' }}>Duration *</label>
+                <label htmlFor="duration" style={{ display: 'block', marginBottom: '8px' }}>Duration * (In Months)</label>
                 <input
                     type="number"
                     id="duration"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
                     min="1"
-                    placeholder="Enter duration"
+                    placeholder="Enter duration In Months"
                     style={{ padding: '10px', width: '100%', borderRadius: '8px' }}
                 />
             </div>

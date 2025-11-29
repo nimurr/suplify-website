@@ -101,7 +101,7 @@ export default function ProgramView() {
               : programs?.specialistInfo?.profileId?.description}
           </Paragraph>
 
-          <div className="w-full space-y-2 text-sm">
+          {/* <div className="w-full space-y-2 text-sm">
             <div className="flex justify-between">
               <Text>Programs</Text>
               <InputNumber min={0} max={100} defaultValue={programs?.specialistInfo?.profileId?.howManyPrograms} size="small" />
@@ -110,7 +110,7 @@ export default function ProgramView() {
 
           <button className="bg-red-600 hover:bg-primary-dark text-white font-bold py-3 px-6 rounded-lg transition gap-2 w-full text-center flex items-center justify-center" type="primary" block >
             Save
-          </button>
+          </button> */}
         </div>
 
         {/* Middle Panel: Sessions List */}
@@ -125,7 +125,7 @@ export default function ProgramView() {
               </p>
             </div>
             <div>
-              <Link href={`/specialistDs/program/create-session?programId=${programId}`} className="text-xs ml-2 bg-red-600 hover:bg-primary-dark text-white font-bold py-3 px-6 rounded-lg transition flex items-center gap-2"><GoPlus className="text-2xl" /> Create Session</Link>
+              <Link href={`/specialistDs/program/create-session?programId=${programId}&specialistId=${specialistId}`} className="text-xs ml-2 bg-red-600 hover:bg-primary-dark text-white font-bold py-3 px-6 rounded-lg transition flex items-center gap-2"><GoPlus className="text-2xl" /> Create Session</Link>
             </div>
           </div>
 
@@ -233,7 +233,7 @@ export default function ProgramView() {
         footer={null}
         width={800}
       >
-        <div className="relative" style={{ paddingBottom: "56.25%" }}>
+        <div className="relative" >
           <iframe
             width="100%"
             height="500"
