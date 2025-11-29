@@ -1,11 +1,12 @@
 'use client'
 
 import { useCreatePlanByDocMutation, useCreatePlaneMutation } from '@/redux/fetures/doctor/createPlane';
-import { useAssignProtacoltoPatientMutation, useCreateSearchPlanMutation, useCreateSearchPlanQuery, useGetMyPlansQuery, useGetSingleProtocolQuery, useSearchPlaneQuery, useUpdateProtocolMutation } from '@/redux/fetures/doctor/doctor';
+import { useAssignProtacoltoPatientMutation, useCreateSearchPlanMutation, useCreateSearchPlanQuery, useDeleteAssignPlanMutation, useGetMyPlansQuery, useGetSingleProtocolQuery, useSearchPlaneQuery, useUpdateProtocolMutation } from '@/redux/fetures/doctor/doctor';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState, Suspense } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { CiCirclePlus, CiEdit, CiSearch } from 'react-icons/ci';
+import { MdOutlineDeleteForever } from 'react-icons/md';
 
 const Page = () => {
     const searchParams = useSearchParams();
@@ -13,7 +14,7 @@ const Page = () => {
     const patientId = searchParams.get("patientId"); // Extract patientId from search params
 
     const [selectedPlan, setSelectedPlan] = useState('mealPlan');
-    const { data: myPlans } = useGetMyPlansQuery({ protocolId, patientId, selectedPlan });
+    const { data: myPlans, refetch } = useGetMyPlansQuery({ protocolId, patientId, selectedPlan });
     const [myAllPlans, setMyAllPlans] = useState([]);
     const { data } = useGetSingleProtocolQuery(protocolId);
     const mealPlanData = data?.data?.attributes?.results[0] || [];
@@ -33,7 +34,9 @@ const Page = () => {
         if (mealPlanData?.name) {
             setMealPlanName(mealPlanData?.name);
         }
+        refetch();
         setMyAllPlans(myPlans?.data?.attributes?.results);
+
     }, [mealPlanData, myPlans]);
 
     const handleEdit = () => {
@@ -136,6 +139,10 @@ const Page = () => {
 
     const handleSearchNow = async () => {
         setSearchTitle(search);
+
+        // setTimeout(() => {
+        //     window.location.reload();
+        // }, 1000);
     };
 
     // Filter myAllPlans based on selectedPlan
@@ -151,9 +158,29 @@ const Page = () => {
             console.log(res);
             if (res?.data?.code === 200) {
                 toast.success(res?.data?.message);
+                refetch();
             }
         } catch (error) {
             toast.error(error?.data?.message || "Failed to assign plan");
+        }
+    };
+
+    const [deleteAssignPlan] = useDeleteAssignPlanMutation();
+
+    const handleDeleteAssignItem = async (planId) => {
+        console.log(planId)
+        try {
+            const res = await deleteAssignPlan({ id: planId?._planByDoctorId });
+            console.log(res);
+            if (res?.data?.code === 200) {
+                toast.success(res?.data?.message);
+                refetch();
+            }
+            else {
+                toast.error(res?.error?.data?.message);
+            }
+        } catch (error) {
+            toast.error(error?.data?.message || "Failed to delete assign plan");
         }
     };
 
@@ -232,8 +259,11 @@ const Page = () => {
                     <h2 className='mt-5 font-semibold py-1 border-b'>My Assigned Plans</h2>
                     {filteredPlans?.map((item, index) => (
                         <div key={index} className="flex capitalize justify-between p-2 rounded bg-slate-50 my-2">
-                            <h3>{item?.title}</h3>
-                            <p>{item?.totalKeyPoints} key points</p>
+                            <h3>{index + 1}- {item?.title}</h3>
+                            <p className='flex items-center gap-2'>{item?.totalKeyPoints} key points
+
+                                <button className='' onClick={() => handleDeleteAssignItem(item)}><MdOutlineDeleteForever className='text-2xl' /></button>
+                            </p>
                         </div>
                     ))}
                 </div>

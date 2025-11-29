@@ -1,8 +1,7 @@
 "use client"
 // pages/training-programs.tsx
-import { Button, Card } from 'antd';
+import { Card } from 'antd';
 import { EditOutlined, ClockCircleOutlined, DollarOutlined, CalendarOutlined } from '@ant-design/icons';
-import Image from 'next/image';
 import CustomButton from '@/components/customComponent/CustomButton';
 import { useRouter } from 'next/navigation';
 import { useGetAllTrainingProgramQuery, useSoftDeleteTrainingProgramMutation } from '@/redux/fetures/Specialist/traningProgram';
@@ -10,6 +9,7 @@ import Link from 'next/link';
 import { PiVideo } from "react-icons/pi";
 import { MdOutlineDeleteForever } from 'react-icons/md';
 import toast, { Toaster } from 'react-hot-toast';
+import url from '@/redux/api/baseUrl';
 
 
 export default function TrainingPrograms() {
@@ -70,13 +70,11 @@ export default function TrainingPrograms() {
                 key={idx}
                 hoverable
                 cover={
-                  <Image
-                    src={program?.attachments[0]?.attachment}
-                    alt={program.programName}
-                    width={280}
-                    height={280}
-                    className="rounded-t-md w-full max-h-[250px] min-h-[250px] rounded-lg p-2 object-cover"
+                  <img
+                    alt="example"
+                    src={program?.attachments[0]?.attachment?.includes('amazonaws') ? program?.attachments[0]?.attachment : url + program?.attachments[0]?.attachment}
                   />
+
                 }
                 className="rounded-md shadow-sm relative border border-gray-200 hover:shadow-md transition-shadow duration-200"
                 bodyStyle={{ padding: '12px' }}
