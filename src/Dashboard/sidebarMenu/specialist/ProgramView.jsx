@@ -162,7 +162,7 @@ export default function ProgramView() {
                         // go this route edit-session
                         onClick={() => router.push(`/specialistDs/program/edit-session?sessionId=${session._TrainingSessionId}&programId=${programId}`)}
                         size="small"
-                        className="flex justify-end"
+                        className="flex justify-end h-8 w-14"
                         danger
                         type="default"
                       >
@@ -216,7 +216,7 @@ export default function ProgramView() {
                 size="small"
                 danger
                 type="default"
-                className="mt-auto h-14"
+                className="mt-auto !h-10 !py-2"
               >
                 Edit
               </Button>
