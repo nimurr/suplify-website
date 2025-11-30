@@ -3,7 +3,7 @@ import url from "./baseUrl";
 
 export const apiSlice = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({ 
+  baseQuery: fetchBaseQuery({
     baseUrl: `${url}/api/v1`,
     prepareHeaders: (headers, { getState }) => {
       const token = localStorage.getItem("token");
