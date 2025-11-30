@@ -30,13 +30,13 @@ const AppFooter = () => {
                 <Link href="#" className="!text-white hover:text-white">
                   Home
                 </Link>
-                <Link href="#" className="!text-white hover:text-white">
+                <Link href="/store" className="!text-white hover:text-white">
                   Store
                 </Link>
-                <Link href="#" className="!text-white hover:text-white">
-                  Consultation
+                <Link href="/informational-video" className="!text-white hover:text-white">
+                  Informational Video
                 </Link>
-                <Link href="#" className="!text-white hover:text-white">
+                <Link href="/training-program" className="!text-white hover:text-white">
                   Training Program
                 </Link>
               </div>

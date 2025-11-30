@@ -7,6 +7,7 @@ import Link from "next/link";
 import BackHeader from "@/components/customComponent/BackHeader";
 import { useSpacialistPatientByIdQuery, useSpacialistPotentialPatientQuery } from "@/redux/fetures/Specialist/specialist";
 import url from "@/redux/api/baseUrl";
+import { useSearchParams } from "next/navigation";
 
 // Sample data for protocols
 const protocolsData = [
@@ -58,8 +59,10 @@ const ProtocolCard = ({ protocol, selectedId, patientId }) => (
 );
 
 export default function ViewMember() {
-  const patientId =
-    typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("patientId") : null;
+  // const patientId =
+  // typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("patientId") : null;
+  const routes = useSearchParams();
+  const patientId = routes.get("patientId");
 
   // Fetch patient data using patientId
   const { data: patientData, isLoading: isPatientLoading } = useSpacialistPatientByIdQuery(patientId);
