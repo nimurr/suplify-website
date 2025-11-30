@@ -1,11 +1,11 @@
 'use client'
 
 import React, { useState, useEffect } from "react";
-import { Card, Button, Avatar, Input, Modal, Select } from "antd";
+import { Card, Button, Avatar, Input, Modal, Select, Form } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import BackHeader from "@/components/customComponent/BackHeader";
 import { FiPlusCircle } from "react-icons/fi";
-import { useAssignProtocolToPatientMutation, useAssignSpecialistPatientMutation, useGetAllProtocalsByPatientIdQuery, useGetAllSpacialistQuery } from "@/redux/fetures/doctor/doctor";
+import { useAssignProtocolToPatientMutation, useAssignSpecialistPatientMutation, useExtraNoteCreateMutation, useGetAllProtocalsByPatientIdQuery, useGetAllSpacialistQuery } from "@/redux/fetures/doctor/doctor";
 import toast, { Toaster } from "react-hot-toast";
 import Link from "next/link";
 import url from "@/redux/api/baseUrl";
@@ -25,8 +25,11 @@ const DoctorProtocolPage = () => {
   const { data: patientData, isLoading: isPatientDataLoading, refetch } = useGetAllProtocalsByPatientIdQuery(patientId);
   const { data: specialistData, isLoading: isSpecialistDataLoading } = useGetAllSpacialistQuery(patientId);
 
+
   const fullPatientData = patientData?.data?.attributes || [];
   const fullSpecialistData = specialistData?.data?.attributes || [];
+
+  // console.log(patientData)
 
   // Mutation for assigning protocol to patient
   const [assignSpecialist] = useAssignSpecialistPatientMutation();
@@ -76,6 +79,34 @@ const DoctorProtocolPage = () => {
     }
   };
 
+  const [createExtranote] = useExtraNoteCreateMutation();
+  const [extraNoteModalVisible, setExtraNoteModalVisible] = useState('');
+
+
+  const submitExtraNote = async () => {
+
+    const data = {
+      extraNote: extraNoteModalVisible,
+    };
+
+    console.log(data)
+
+    try {
+      const res = await createExtranote({ data, id: patientId });
+      console.log(res)
+
+      if (res?.data?.code == 200) {
+        toast.success(res?.data?.message);
+        refetch();
+      } else if (error) {
+        toast.error(res?.error?.data?.message);
+      }
+    } catch (error) {
+      console.error("Error creating new protocol:", error);
+      toast.error("Failed to create protocol");
+    }
+  };
+
   return (
     <div>
       <Toaster />
@@ -99,12 +130,17 @@ const DoctorProtocolPage = () => {
             <p className="text-xs text-gray-500 mb-4">
               {fullPatientData?.extraNote?.extraNote || "No note found"}
             </p>
-            <TextArea
-              rows={6}
-              placeholder="Type your note ..."
-              className="resize-none rounded-md border border-gray-300"
-            />
-            <button className="bg-red-600 text-white py-2 px-6 rounded-lg mt-3">Save</button>
+            <Form onFinish={submitExtraNote}>
+              <TextArea
+                rows={6}
+                defaultValue={fullPatientData?.extraNote?.extraNote}
+                placeholder="Type your note ..."
+                name="extranote"
+                className="resize-none rounded-md border border-gray-300"
+                onChange={(e) => setExtraNoteModalVisible(e.target.value)}
+              />
+              <button type="submit" className="bg-red-600 text-white py-2 px-6 rounded-lg mt-3">Save</button>
+            </Form>
           </div>
         )}
 

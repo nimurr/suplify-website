@@ -35,6 +35,13 @@ const doctor = apiSlice.injectEndpoints({
                 method: "GET"
             }),
         }),
+        extraNoteCreate: builder.mutation({
+            query: ({ data, id }) => ({
+                url: `/doctor-patients/update-extra-note?patientId=${id}`,
+                method: "PUT",
+                body: data
+            })
+        }),
         // comment : assign protocol to patient
         assignProtocolToPatient: builder.mutation({
             query: (data) => ({
@@ -183,6 +190,7 @@ export const {
     useGetUpcommingSchedulesQuery,
     useGetAllProtocalsQuery,
     useGetAllProtocalsByPatientIdQuery,
+    useExtraNoteCreateMutation,
     useAssignProtocolToPatientMutation,
 
     useGetSingleProtocolQuery,
