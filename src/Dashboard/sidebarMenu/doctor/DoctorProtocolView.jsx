@@ -18,7 +18,6 @@ const DoctorProtocolPage = () => {
   const [specialist, setSpecialist] = useState();
 
   const navigate = useRouter();
-
   const searchParams = useSearchParams();
   const patientId = searchParams.get("patientId"); // Extract patientId from search params
 
