@@ -55,7 +55,7 @@ const SendOtp = () => {
   };
 
   return (
-    <div className="flex justify-center items-center lg:min-h-[700px] bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen px-5 bg-gray-100">
       <Toaster />
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-[500px]">
         <h1 className="text-2xl font-bold mb-6 text-center">Verify Email</h1>
