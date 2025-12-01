@@ -186,9 +186,13 @@ export default function Signup() {
 
           router.push(`/auth/sendOtp?email=${values.email}&path=${res?.data?.attributes?.verificationToken}&email=${values.email}`);
         }
+        else {
+          toast.error(res?.data?.message);
+        }
 
       } catch (error) {
         console.error("Error during submission:", error);
+        toast.error(error?.data?.message);
         message.error(error?.data?.message);
       }
 

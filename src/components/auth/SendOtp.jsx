@@ -46,9 +46,12 @@ const SendOtp = () => {
         toast.success(res?.message);
         router.push(`/auth/login`);
       }
+      else {
+        toast.error(res?.data?.message || "Something went wrong ! Please try again");
+      }
     } catch (error) {
       console.log(error);
-      setEror(error?.data?.message)
+      setEror(error?.data?.message || "Something went wrong ! Please try again");
       // setError(error?.data?.message);
     }
 
@@ -57,7 +60,7 @@ const SendOtp = () => {
   return (
     <div className="flex justify-center items-center min-h-screen px-5 bg-gray-100">
       <Toaster />
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-[500px]">
+      <div className="bg-white p-8 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.2)] w-full max-w-[500px]">
         <h1 className="text-2xl font-bold mb-6 text-center">Verify Email</h1>
         <p className="text-center mb-6">
           Please enter the OTP . We have sent you in your email.
