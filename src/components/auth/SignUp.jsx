@@ -129,7 +129,7 @@
 // }
 
 
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import BackHeader from '../customComponent/BackHeader';
@@ -155,7 +155,6 @@ export default function Signup() {
 
   const onFinish = async (values) => {
     const fullData = { role, ...values };
-    console.log(fullData);
 
     const queryParams = new URLSearchParams({
       name: values.name,
@@ -184,11 +183,13 @@ export default function Signup() {
           toast.success(res?.message)
           // router.push("/auth/signup-success");
           message.success(res?.message || "Registration successful!");
-          router.push(`/auth/login`);
+
+          router.push(`/auth/sendOtp?email=${values.email}&path=${res?.data?.attributes?.verificationToken}&email=${values.email}`);
         }
 
       } catch (error) {
         console.error("Error during submission:", error);
+        message.error(error?.data?.message);
       }
 
     }
