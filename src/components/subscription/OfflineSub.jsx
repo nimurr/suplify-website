@@ -46,7 +46,7 @@ const OfflineSub = () => {
         <div className="w-full mt-10">
             {fullData.map((plan, idx) => (
 
-                <div className=" grid text-left  grid-cols-1 sm:grid-cols-2 items-start md:grid-cols-3 gap-6">
+                <div className=" grid text-left  grid-cols-1 md:grid-cols-2 items-start lg:grid-cols-3 gap-6">
 
                     {plan.subscriptionType === 'standard' && (
                         <div className=" p-6 bg-gray-100 shadow-sm rounded-lg">

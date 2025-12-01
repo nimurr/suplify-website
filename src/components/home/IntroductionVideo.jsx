@@ -18,7 +18,7 @@ const IntroductionVideo = () => {
   return (
     <div>
       <Header size="medium" className=" text-center mt-5"> Introduction </Header>
-      <div className="relative w-[60%] mt-12 mx-auto">
+      <div className="relative md:w-[60%] md:mt-12 mt-5 mx-auto">
 
         {/* Video Container */}
         <div className="relative  bg-black rounded-lg overflow-hidden">

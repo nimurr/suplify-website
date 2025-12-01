@@ -46,7 +46,7 @@ const AppFooter = () => {
               </Col>
 
               {/* Contact Form Column */}
-              <Col xs={24} sm={12} md={10} lg={10} xl={10}>
+              {/* <Col xs={24} sm={12} md={10} lg={10} xl={10}>
                 <Text className="text-white font-medium text-base mb-4 block">Need help?</Text>
                 <div className="mb-4">
                   <Text className="text-gray-300 block mb-2">Email Us</Text>
@@ -62,7 +62,7 @@ const AppFooter = () => {
                 >
                   Send
                 </Button>
-              </Col>
+              </Col> */}
             </Row>
 
             <Divider className="border-gray-700 my-4" />
