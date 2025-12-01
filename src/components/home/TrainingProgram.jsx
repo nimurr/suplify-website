@@ -4,16 +4,16 @@ import Image from 'next/image'; // Import Next.js Image component
 
 const TrainingProgram = () => {
   return (
-    <div className="py-16 mb-16 bg-[#FFF5F7]">
+    <div className=" bg-[#FFF5F7]">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-       
-        <div className="flex justify-center">
-          <div className="relative w-[570px] md:h-[730px] h-[600px] overflow-hidden">
+
+        <div className="flex justify-center mt-10">
+          <div className="relative">
             <Image
-              src="/images/workout.png" // Replace with your image path
+              src="/images/bg-remove-for-landingPage.png"
               alt="Workout Class"
-              layout="fill"
-              objectFit="cover"
+              width={700}
+              height={500}
             />
           </div>
         </div>
