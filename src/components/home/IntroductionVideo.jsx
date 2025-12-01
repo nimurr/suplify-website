@@ -21,7 +21,7 @@ const IntroductionVideo = () => {
       <div className="relative w-[60%] mt-12 mx-auto">
 
         {/* Video Container */}
-        <div className="relative bg-black rounded-lg overflow-hidden">
+        <div className="relative  bg-black rounded-lg overflow-hidden">
           {fullData ? (
             <div key={fullData} className="relative overflow-hidden ">
               <video autoPlay controls className="rounded-lg border-2 border-[#eee] w-full mx-auto h-auto">

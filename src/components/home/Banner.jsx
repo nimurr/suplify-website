@@ -131,16 +131,26 @@ export default function Banner() {
             </button>
 
             {/* Video Container */}
-            <div className="relative bg-black rounded-lg overflow-hidden">
+            <div className="relative min-h-[70vh] flex items-center justify-center bg-black rounded-lg overflow-hidden">
               {fullData ? (
                 <div key={fullData} className="relative overflow-hidden ">
                   <video autoPlay controls className="rounded-lg border-2 border-[#eee] w-full mx-auto h-auto">
                     <source src={fullData} type="video/mp4" />
                     Your browser does not support the video tag.
-                  </video> 
+                  </video>
                 </div>
               ) : (
-                <p className="text-center text-gray-500">No video selected. Please upload a video.</p>
+                <div class="mx-auto w-full rounded-md border border-blue-300 p-4">
+                  <div class="flex animate-pulse space-x-4">
+                    <div class="flex-1 space-y-5 py-1">
+                      {
+                        [...Array(16)].map((index) => (
+                          <div class="h-2 rounded bg-gray-200"></div>
+                        ))
+                      }
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           </div>
