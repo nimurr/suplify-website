@@ -130,6 +130,7 @@ import { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Button } from 'antd'
 import getUser from '@/utils/user'
+import toast, { Toaster } from 'react-hot-toast'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -159,8 +160,13 @@ export default function Navbar() {
   // const userRole = 'user';
   const userRole = "specialist";
   // const userRole = 'doctor';
+  const [user, setUser] = useState(null);
 
-  const user = getUser();
+  useEffect(() => {
+    const user = getUser();
+    setUser(user);
+    console.log(user);
+  }, []);
 
   // const user = JSON.parse(localStorage.getItem('user'));
 
@@ -177,9 +183,18 @@ export default function Navbar() {
     router.push(route);
   };
 
+  const handleLogoutRemove = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    toast.success('Logout successful');
+    setUser(null)
+    router.push('/');
+  };
+
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${showBlackBg ? 'bg-black/90 py-3' : 'bg-transparent py-4'}`}>
+      <Toaster />
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Logo/Brand - Left side */}
@@ -215,20 +230,37 @@ export default function Navbar() {
           {/* CTA Buttons - Right side */}
           <div className="hidden md:flex items-center md:gap-3 gap-1">
             {user ? (
-              <Button
-                onClick={handleDashboardClick}
-                style={{
-                  background: 'linear-gradient(to right, #3b82f6, #22c55e)',
-                  border: '1px solid white',
-                  color: 'white',
-                  padding: '8px 16px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s ease',
-                }}
-              >
-                Dashboard
-              </Button>
+              <div className='flex items-center gap-2'>
+                <Button
+                  onClick={handleDashboardClick}
+                  style={{
+                    background: 'linear-gradient(to right, #3b82f6, #22c55e)',
+                    border: '1px solid white',
+                    color: 'white',
+                    padding: '8px 16px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s ease',
+                  }}
+                >
+                  Dashboard
+                </Button>
+                <Button
+                  onClick={handleLogoutRemove}
+                  style={{
+                    background: 'linear-gradient(to right, #3b82f6, #22c55e)',
+                    border: '1px solid white',
+                    color: 'white',
+                    padding: '8px 16px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s ease',
+                  }}
+                >
+                  Logout
+                </Button>
+              </div>
+
             ) : (
               <div className="hidden md:flex items-center space-x-4">
                 {/* <Link 
