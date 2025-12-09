@@ -320,7 +320,7 @@ export default function Navbar() {
             <Link href="/pricing" className={`${pathname === '/pricing' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
               Pricing
             </Link>
-            <div className="pt-4 border-t border-white/20">
+            <div className=" ">
               {user ? (
                 <Button
                   onClick={handleDashboardClick}
@@ -337,16 +337,10 @@ export default function Navbar() {
                   Dashboard
                 </Button>
               ) : (
-                <div className="hidden md:flex items-center space-x-4">
-                  {/* <Link 
-                href="/" 
-                className="text-white hover:text-primary transition font-medium"
-              >
-                Sign Up
-              </Link> */}
+                <div className="flex items-center space-x-4">
                   <Link
                     href="/auth/login"
-                    className="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-6 rounded-full transition"
+                    className="bg-primary w-full text-center hover:bg-primary-dark text-white font-bold py-2 px-6 rounded-full transition"
                   >
                     Login
                   </Link>

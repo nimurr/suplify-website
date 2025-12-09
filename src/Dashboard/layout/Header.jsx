@@ -93,9 +93,7 @@ export default function DashboardHeader({ collapsed }) {
   ];
 
   const [userData, setUserData] = useState({})
-  useEffect(() => {
-    setUserData(JSON.parse(localStorage.getItem("user")))
-  }, [])
+
   const { data: user } = useGetUserProfileQuery(userData.id)
   const fullUser = user?.data?.attributes;
 
@@ -103,7 +101,17 @@ export default function DashboardHeader({ collapsed }) {
     ? fullUser?.profileImage?.imageUrl
     : url + fullUser?.profileImage?.imageUrl;
 
-  // console.log(fullUser);
+  useEffect(() => {
+    setUserData(JSON.parse(localStorage.getItem("user")))
+
+    if (!fullUser) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/';
+    }
+
+  }, [])
+
 
   return (
     <div className=''>
