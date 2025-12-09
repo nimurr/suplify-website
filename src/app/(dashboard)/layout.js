@@ -10,7 +10,7 @@ import { Suspense } from 'react';
 export const metadata = {
   title: "Suplify Website | Dashboard",
   description: "suplify-fitness",
-};
+}; 
 
 export default function DashboardLayout({ children }) {
 
