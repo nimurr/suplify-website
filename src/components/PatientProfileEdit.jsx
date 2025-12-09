@@ -105,6 +105,7 @@ const PatientProfileEdit = () => {
             }
         } catch (error) {
             console.log(error);
+            toast.error(error?.data?.message || "Something went wrong ! Please try again");
             router.push("/profile");
         }
     };
