@@ -104,11 +104,13 @@ export default function DashboardHeader({ collapsed }) {
   useEffect(() => {
     setUserData(JSON.parse(localStorage.getItem("user")))
 
-    if (!fullUser) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/';
-    }
+    console.log(fullUser)
+
+    // if (!fullUser) {
+    //   localStorage.removeItem('token');
+    //   localStorage.removeItem('user');
+    //   window.location.href = '/';
+    // }
 
   }, [])
 

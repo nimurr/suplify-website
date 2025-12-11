@@ -44,7 +44,7 @@ const OfflineSub = () => {
 
     return (
         <div className="w-full mt-10">
-            {fullData.map((plan, idx) => (
+            {fullData?.map((plan, idx) => (
 
                 <div className=" grid text-left  grid-cols-1 md:grid-cols-2 items-start lg:grid-cols-3 gap-6">
 

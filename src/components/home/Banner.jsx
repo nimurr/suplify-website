@@ -144,8 +144,8 @@ export default function Banner() {
                   <div class="flex animate-pulse space-x-4">
                     <div class="flex-1 space-y-5 py-1">
                       {
-                        [...Array(16)].map((index) => (
-                          <div class="h-2 rounded bg-gray-200"></div>
+                        [...Array(16)]?.map((index) => (
+                          <div key={index} class="h-2 rounded bg-gray-200"></div>
                         ))
                       }
                     </div>

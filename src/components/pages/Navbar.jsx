@@ -137,7 +137,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
-  const isHomePage = pathname === '/'
+  const isHomePage = pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
