@@ -1,5 +1,4 @@
 // 'use client';
-
 import DashboardHeader from '@/Dashboard/layout/Header';
 import Sidebar from '@/Dashboard/layout/Sidebar';
 import { ConfigProvider } from 'antd';
