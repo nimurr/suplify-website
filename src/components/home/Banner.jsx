@@ -191,10 +191,10 @@ export default function Banner() {
               Free Trial {isLoading && "..."}
             </button>
             <Link
-              href="/visit"
+              href="/store"
               className="bg-transparent hover:bg-white/10 text-white font-bold py-3 px-6 border-2 border-white rounded-full transition"
             >
-              Visit Steve
+              Visit Store
             </Link>
           </div>
           <p className="text-white mt-8 text-sm md:text-base">

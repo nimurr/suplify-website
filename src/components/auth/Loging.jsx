@@ -27,7 +27,7 @@ export default function Login() {
         localStorage.setItem("user", JSON.stringify(res?.data?.attributes?.userWithoutPassword));
         localStorage.setItem("token", res?.data?.attributes?.tokens?.accessToken);
         if (res?.data?.attributes?.userWithoutPassword?.role == "admin") {
-          console.log("admin login ")
+
           localStorage.removeItem('user');
           localStorage.removeItem('token');
           toast.error("You Can't Login Here");
