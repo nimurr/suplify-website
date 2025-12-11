@@ -24,9 +24,17 @@ export default function Login() {
       const res = await login(values).unwrap();
       console.log(res);
       if (res?.code == 200) {
-        toast.success(res?.message || "Login successful!");
         localStorage.setItem("user", JSON.stringify(res?.data?.attributes?.userWithoutPassword));
         localStorage.setItem("token", res?.data?.attributes?.tokens?.accessToken);
+        if (res?.data?.attributes?.userWithoutPassword?.role == "admin") {
+          console.log("admin login ")
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          toast.error("You Can't Login Here");
+          router.push(`/`);
+          return
+        }
+        toast.success(res?.message || "Login successful!");
 
         if (res?.data?.attributes?.userWithoutPassword?.role === "specialist") {
           router.push(`/specialistDs/members?role=${res?.data?.attributes?.userWithoutPassword?.role}`);
@@ -37,6 +45,8 @@ export default function Login() {
         else if (res?.data?.attributes?.userWithoutPassword?.role === "doctor") {
           router.push(`/doctorDs/upcoming-schedule?role=${res?.data?.attributes?.userWithoutPassword?.role}`);
         }
+
+
       }
     } catch (error) {
       console.error("Login failed:", error);
