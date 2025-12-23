@@ -1,5 +1,5 @@
 
 
-const socketUrl = 'https://newsheakh6735.sobhoy.com';
+const socketUrl = 'ws.suplify.life';
 
 export default socketUrl;
