@@ -7,6 +7,7 @@ import { ConfigProvider } from "antd";
 import Providers from "@/redux/Providers";
 import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
+import { SocketProvider } from "@/context/SocketContext";
 
 
 const geistSans = Geist({
@@ -42,7 +43,9 @@ export default function RootLayout({ children }) {
           <Suspense fallback={<div>Loading...</div>}>
             {/* <ProviderTheme> */}
 
-            {children}
+            <SocketProvider >
+              {children}
+            </SocketProvider>
           </Suspense>
 
           {/* </ProviderTheme> */}
