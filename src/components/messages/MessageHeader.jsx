@@ -12,7 +12,7 @@ const MessageHeader = () => {
 
     const { data, isLoading } = useGetChatUserInfoQuery(id);
     const fullUserInfo = data?.data?.attributes[0]?.userId;
-    
+
     return (
         <div>
 
@@ -36,7 +36,7 @@ const MessageHeader = () => {
                     ) :
                         <div className='flex items-center gap-2 p-5 '>
                             <div className=" bg-gray-500 w-10 rounded-full h-10 ">
-                                <img className="bg-gray-200 w-10 rounded-full h-10 " src={fullUserInfo?.profileImage?.imageUrl.includes("amazonaws") ? fullUserInfo?.profileImage?.imageUrl : url  + fullUserInfo?.profileImage?.imageUrl ? fullUserInfo?.profileImage?.imageUrl : "https://cdn4.vectorstock.com/i/1000x1000/96/43/avatar-photo-default-user-icon-picture-face-vector-48139643.jpg"} alt="" />
+                                <img className="bg-gray-200 w-10 rounded-full h-10 " src={fullUserInfo?.profileImage?.imageUrl.includes("amazonaws") ? fullUserInfo?.profileImage?.imageUrl : url + fullUserInfo?.profileImage?.imageUrl ? fullUserInfo?.profileImage?.imageUrl : "https://cdn4.vectorstock.com/i/1000x1000/96/43/avatar-photo-default-user-icon-picture-face-vector-48139643.jpg"} alt="" />
 
                             </div>
 
