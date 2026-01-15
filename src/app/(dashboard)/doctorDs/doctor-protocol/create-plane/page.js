@@ -288,6 +288,32 @@ const Page = () => {
                                 />
                             </div>
                             <div className="mb-4">
+                                <label className="block text-sm font-medium mb-2" htmlFor="planName">Link *</label>
+                                <input
+                                    type="text"
+                                    id="link"
+                                    name="link"
+                                    value={newMealPlan.link}
+                                    onChange={handleInputChange}
+                                    className="border border-gray-300 rounded p-2 w-full"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium mb-2" htmlFor="planName">Image *</label>
+                                <input
+                                    type="file"
+                                    id="image"
+                                    name="image"
+                                    // onChange={handleImageChange}
+                                    className="border border-gray-300 rounded p-2 w-full"
+                                    required
+                                />
+                            </div>
+
+
+
+                            <div className="mb-4">
                                 <label className="block text-sm font-medium mb-2" htmlFor="keyPoints">Key Points *</label>
                                 {newMealPlan.keyPoints.map((keyPoint, index) => (
                                     <div key={index} className="flex gap-2 mb-2">
