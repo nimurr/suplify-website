@@ -38,6 +38,12 @@ export default function MealPlanProtocol() {
       _DoctorPlanId: '11223',
       type: 'lifeStyleChanges'
     },
+    {
+      id: '5',
+      title: 'Lab Test',
+      _DoctorPlanId: '11223',
+      type: 'labTest'
+    },
   ];
 
   const { data: planeData, isLoading } = useGetAllPlanThisUserByIdQuery({ protocalId: id, type: planType });
@@ -108,7 +114,11 @@ export default function MealPlanProtocol() {
               bodyStyle={{ padding: '1rem' }}
               title={<h3 className="font-semibold text-xl">{plan.title}</h3>}
             >
-              <div className='flex items-start gap-2 flex-wrap'>
+              <h2 className='mb-2 font-semibold'>{
+                planType === 'labTest' && 'Lab Results'
+              }</h2>
+              <div className='flex items-start gap-2 flex-wrap mb-5'>
+
                 {
                   plan?.attachments.map((item, i) => (
                     <Image key={i} className='max-w-20 rounded-md border h-auto overflow-hidden' src={item?.attachment} alt="" />

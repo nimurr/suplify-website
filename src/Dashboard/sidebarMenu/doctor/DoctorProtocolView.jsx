@@ -10,6 +10,7 @@ import toast, { Toaster } from "react-hot-toast";
 import Link from "next/link";
 import url from "@/redux/api/baseUrl";
 import { useRouter, useSearchParams } from "next/navigation";
+import BookLabTest from "./BookLabTest";
 
 const { TextArea } = Input;
 
@@ -147,7 +148,7 @@ const DoctorProtocolPage = () => {
         {/* Right Content */}
         <div className="flex-1 bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2>All Protocol</h2>
+            <h2 className="text-xl font-semibold">All Protocol</h2>
             <div className="flex gap-2">
               <button
                 disabled
@@ -185,6 +186,10 @@ const DoctorProtocolPage = () => {
               ))}
             </div>
           )}
+          <div className="mt-5 ">
+            <BookLabTest />
+          </div>
+
         </div>
       </div>
 
