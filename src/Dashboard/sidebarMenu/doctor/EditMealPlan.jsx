@@ -81,8 +81,6 @@ export default function EditMealPlan() {
       return toast.error('Please fill all required fields');
     }
 
-    console.log(formData.keyPoints)
-
     const submissionData = new FormData();
     submissionData.append('planType', formData.planType);
     submissionData.append('title', formData.planName);

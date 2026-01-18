@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import CustomButton from '@/components/customComponent/CustomButton';
 import { useCreatePlaneMutation, useGetAllPlanesQuery } from '@/redux/fetures/doctor/createPlane';
 import { FiPlus } from 'react-icons/fi';
+import Link from 'next/link';
 
 const { Title, Text } = Typography;
 
@@ -26,6 +27,7 @@ export default function ProtocolsAndMealPlans() {
     { key: '1', slNo: 1, type: 'mealPlan', planName: 'Meal plan', keyPoint: 2 },
     { key: '2', slNo: 2, type: 'workOut', planName: 'Workout', keyPoint: 2 },
     { key: '3', slNo: 3, type: 'suppliment', planName: 'Supplement', keyPoint: 2 },
+    { key: '3', slNo: 3, type: 'labTest', planName: 'Lab Test', keyPoint: 2 },
     { key: '4', slNo: 4, type: 'lifeStyleChanges', planName: 'Lifestyle changes', keyPoint: 2 }
   ];
 
@@ -97,10 +99,17 @@ export default function ProtocolsAndMealPlans() {
             allPlane?.map((plan) => (
               <Card key={plan.id} className="shadow-sm" bodyStyle={{ padding: '1rem' }}>
                 <div className="mb-1">
-                  <Text className='capitalize' strong>{plan.title}</Text>
+                  <Text className='capitalize' strong>{plan.title?.slice(0, 100)}</Text>
                 </div>
-                <div className="mb-3">
-                  <Text className="text-gray-500 capitalize">Key Points: {plan.totalKeyPoints}</Text>
+
+                <div className='my-5'>
+                  <Text className="text-gray-500 capitalize ">{plan?.description?.slice(0, 600)}</Text>
+                </div>
+                <div className='mb-2'>
+                  {
+                    plan?.link &&
+                    <Link href={plan?.link} className="text-blue-500 ">Go to Link</Link>
+                  }
                 </div>
                 <Button
                   onClick={() => router.push(`/doctorDs/create-plan/edit-mealPlan?id=${plan._DoctorPlanId}`)}

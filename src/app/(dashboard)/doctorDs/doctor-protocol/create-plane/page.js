@@ -13,6 +13,7 @@ import {
     useUpdateProtocolMutation
 } from '@/redux/fetures/doctor/doctor';
 import { Image } from 'antd';
+import Link from 'next/link';
 
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -232,7 +233,7 @@ const Page = () => {
                     </button>
                 )}
 
-                {['mealPlan', 'workOut', 'suppliment', 'lifeStyleChanges'].map((t, i) => (
+                {['mealPlan', 'workOut', 'suppliment', 'lifeStyleChanges', 'labTest'].map((t, i) => (
                     <div
                         key={t}
                         onClick={() => setSelectedPlan(t)}
@@ -286,11 +287,16 @@ const Page = () => {
                 {filteredPlans?.map((item, i) => (
                     <div key={i} className="flex justify-between bg-gray-100 p-5 rounded-md my-2">
                         <div className='flex gap-10 items-start '>
-                            <div className='!w-14 min-h-14 bg-gray-200 rounded-md'>
+                            <div className='!w-14 min-h-14 min-w-14 bg-gray-200 rounded-md'>
                                 {
+                                    item?.attachments.map((item, i) => (
+                                        <Image key={i} className='min-w-14 rounded-md border h-auto overflow-hidden' src={item?.attachment} alt="" />
+                                    ))
+                                }
+                                {/* {
                                     item?.attachments[0]?.attachment &&
                                     <Image className='min-w-14 rounded-md border h-auto overflow-hidden' src={item?.attachments[0]?.attachment} alt="" />
-                                }
+                                } */}
                             </div>
                             <div className='lg:min-w-[80%] mx-auto'>
                                 <span className='font-semibold capitalize'>{item?.title}</span>
@@ -299,7 +305,7 @@ const Page = () => {
                                 <span className=' capitalize'>{item?.description}</span>
                                 <br />
                                 <br />
-                                <span className='text-blue-600 text-xs'>{item?.link || 'No Link'}</span>
+                                <Link href={item?.link} target='_blank' className='text-blue-600 text-xs'>{item?.link || 'No Link'}</Link>
                             </div>
                         </div>
                         <div className='w-14'>
