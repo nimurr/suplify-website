@@ -284,15 +284,15 @@ const Page = () => {
                 <h2 className="mt-4 font-bold">My Assigned Plans</h2>
 
                 {filteredPlans?.map((item, i) => (
-                    <div key={i} className="flex justify-between bg-gray-50 p-5 my-2">
-                        <div className='flex gap-2 items-start '>
+                    <div key={i} className="flex justify-between bg-gray-100 p-5 rounded-md my-2">
+                        <div className='flex gap-10 items-start '>
                             <div className='!w-14 min-h-14 bg-gray-200 rounded-md'>
                                 {
                                     item?.attachments[0]?.attachment &&
-                                    <Image className='!w-14 rounded-md border h-auto overflow-hidden' src={item?.attachments[0]?.attachment} alt="" />
+                                    <Image className='min-w-14 rounded-md border h-auto overflow-hidden' src={item?.attachments[0]?.attachment} alt="" />
                                 }
                             </div>
-                            <div className='w-3/4 mx-auto'>
+                            <div className='lg:min-w-[80%] mx-auto'>
                                 <span className='font-semibold capitalize'>{item?.title}</span>
                                 <br />
                                 <br />
@@ -302,10 +302,12 @@ const Page = () => {
                                 <span className='text-blue-600 text-xs'>{item?.link || 'No Link'}</span>
                             </div>
                         </div>
-                        <MdOutlineDeleteForever
+                       <div className='w-14'>
+                         <MdOutlineDeleteForever
                             className="cursor-pointer text-xl w-14 text-red-600"
                             onClick={() => handleDeleteAssignItem(item)}
                         />
+                       </div>
                     </div>
                 ))}
             </div>
