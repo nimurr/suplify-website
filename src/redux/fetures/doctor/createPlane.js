@@ -12,7 +12,7 @@ const createPlane = apiSlice.injectEndpoints({
         }),
         updatePlane: builder.mutation({
             query: ({ submissionData, id }) => ({
-                url: `/doctor-plans/update/${id}`,
+                url: `/doctor-plans/v2/${id}`,
                 method: "PUT",
                 body: submissionData,
             }),

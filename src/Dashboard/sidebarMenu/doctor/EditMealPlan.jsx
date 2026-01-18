@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Form, Input, Button, Typography, Tooltip, Select } from 'antd';
-import { DeleteOutlined, PlusOutlined, InfoCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Typography, Tooltip, Select, Upload } from 'antd';
+import { DeleteOutlined, PlusOutlined, InfoCircleOutlined, ArrowLeftOutlined, UploadOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import { useCreatePlaneMutation, useGetSinglePlaneQuery, useUpdatePlaneMutation } from '@/redux/fetures/doctor/createPlane';
+import { useGetSinglePlaneQuery, useUpdatePlaneMutation } from '@/redux/fetures/doctor/createPlane';
 import toast, { Toaster } from 'react-hot-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -12,240 +12,215 @@ const { Title } = Typography;
 const { TextArea } = Input;
 
 export default function EditMealPlan() {
-  // Get the ID from the URL params
-  // const searchParams = new URLSearchParams(window.location.search);
-  // const id = searchParams.get('id');
-
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
+  const router = useRouter();
 
-  const navigate = useRouter();
+  // Fetch the existing plan data
+  const { data, refetch } = useGetSinglePlaneQuery(id);
+  const mainData = data?.data?.attributes?.results[0] || {};
 
-  // Fetch data using id
-  const { data } = useGetSinglePlaneQuery(id);
-  const mainData = data?.data?.attributes?.results[0] || {}; // Safe check for data
-
-  // State management for form fields
+  // Form state
   const [formData, setFormData] = useState({
-    planType: '',    // Plan Type: mealPlan, lifeStyleChanges, etc.
-    title: '',       // Title of the plan
-    description: '', // Description of the plan
-    keyPoints: []    // Dynamic key points array
+    planType: 'mealPlan', // default to avoid backend errors
+    planName: '',
+    link: '',
+    description: '',
+    keyPoints: [''],
+    image: null
   });
 
-  // Set initial values for form data once the mainData is available
+  // Set initial values once data is fetched
   useEffect(() => {
     if (mainData) {
       setFormData({
-        planType: mainData.planType || '',
-        title: mainData.title || '',
+        planType: mainData.planType || 'mealPlan',
+        planName: mainData.title || '',
+        link: mainData.link || '',
         description: mainData.description || '',
-        keyPoints: mainData.keyPoints || [],
+        keyPoints: mainData.keyPoints?.length ? mainData.keyPoints : [''],
+        image: null // keep image null; user can upload new one
       });
     }
   }, [mainData]);
 
-  // Handle adding a new key point
-  const addKeyPoint = () => {
-    setFormData((prevState) => ({
-      ...prevState,
-      keyPoints: [...prevState.keyPoints, ''],
-    }));
-  };
+  const [updatePlane] = useUpdatePlaneMutation();
 
-  // Handle removing a key point
+  // KeyPoints handlers
+  const addKeyPoint = () => setFormData(prev => ({ ...prev, keyPoints: [...prev.keyPoints, ''] }));
   const removeKeyPoint = (index) => {
-    const updatedKeyPoints = [...formData.keyPoints];
-    updatedKeyPoints.splice(index, 1);
-    setFormData((prevState) => ({
-      ...prevState,
-      keyPoints: updatedKeyPoints,
-    }));
+    const updated = [...formData.keyPoints];
+    updated.splice(index, 1);
+    setFormData(prev => ({ ...prev, keyPoints: updated }));
   };
-
-  // Handle change for key points
   const handleKeyPointChange = (value, index) => {
-    const updatedKeyPoints = [...formData.keyPoints];
-    updatedKeyPoints[index] = value;
-    setFormData((prevState) => ({
-      ...prevState,
-      keyPoints: updatedKeyPoints,
-    }));
+    const updated = [...formData.keyPoints];
+    updated[index] = value;
+    setFormData(prev => ({ ...prev, keyPoints: updated }));
   };
 
-  // Handle form field change (for title, description)
+  // Input change handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  const handleSelectChange = (value) => setFormData(prev => ({ ...prev, planType: value }));
+
+  // Image handler
+  const handleImageChange = (file) => {
+    setFormData(prev => ({ ...prev, image: file }));
+    return false; // prevent auto-upload
   };
 
-  // Handle the Select dropdown change
-  const handleSelectChange = (value) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      planType: value,
-    }));
-  };
-
-  const [createPlane, { isLoading }] = useUpdatePlaneMutation();
-
-  // Submit the form
+  // Form submission
   const onFinish = async () => {
-    // Format data for submission
-    const submissionData = {
-      planType: formData.planType,
-      title: formData.title,
-      description: formData.description,
-      keyPoints: formData.keyPoints,
-    };
+    if (!['mealPlan', 'workOut', 'suppliment', 'lifeStyleChanges'].includes(formData.planType)) {
+      return toast.error('Please select a valid plan type');
+    }
+    if (!formData.planName || !formData.description || formData.keyPoints.some(k => !k.trim())) {
+      return toast.error('Please fill all required fields');
+    }
 
-    console.log('Updated Meal Plan:', submissionData);
+    console.log(formData.keyPoints)
+
+    const submissionData = new FormData();
+    submissionData.append('planType', formData.planType);
+    submissionData.append('title', formData.planName);
+    submissionData.append('link', formData.link);
+    submissionData.append('description', formData.description);
+    formData.keyPoints.forEach((point) => {
+      submissionData.append('keyPoints[]', point);
+    });
+
+    if (formData.image) submissionData.append('attachments', formData.image);
 
     try {
-      const res = await createPlane({ submissionData, id });  // Send the form data
-      console.log(res);
+      const res = await updatePlane({ submissionData, id });
+
       if (res?.data?.code === 200) {
-        toast.success(res?.data?.message);
-        navigate.push('/doctorDs/create-plan');
-        setFormData({
-          planType: '',
-          title: '',
-          description: '',
-          keyPoints: [],
-        });
+        toast.success(res.data.message);
+        refetch();
+        setTimeout(() => router.push('/doctorDs/create-plan'), 1000);
+      } else {
+        toast.error(res?.error?.data?.message || 'Failed to update plan');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to update meal plan');
+    } catch {
+      toast.error('Failed to update plan');
     }
   };
 
-  // Check if the form is valid (all fields must be filled)
   const isFormValid =
-    formData.title &&
+    formData.planName &&
     formData.planType &&
     formData.description &&
-    formData.keyPoints.every((point) => point.trim() !== '');
+    formData.keyPoints.every(k => k.trim() !== '');
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <Toaster />
-      <Link href="/doctorDs/create-plan" className="mr-4">
-        <Button icon={<ArrowLeftOutlined />} className="flex items-center">
-          Back
-        </Button>
+      <Link href="/doctorDs/create-plan">
+        <Button icon={<ArrowLeftOutlined />} className="mb-4 flex items-center">Back</Button>
       </Link>
       <Title level={2} className="mb-6 text-center">Edit Meal Plan</Title>
-      <div className="border-t border-gray-200 mb-6"></div>
 
-      <Form
-        layout="vertical"
-        onFinish={onFinish}
-        requiredMark="optional"
-      >
-        {/* Plan Title */}
-        <Form.Item
-          name="title"
-          className="mb-6"
-        >
-          <label className="block text-sm font-medium mb-2">
-            Title
-          </label>
+      <Form layout="vertical" onFinish={onFinish} requiredMark="optional">
+
+        {/* Plan Name */}
+        <Form.Item label="Plan Name" className="mb-4">
           <Input
-            name="title"
-            value={formData.title} // Bound to state
+            name="planName"
+            value={formData.planName}
             onChange={handleInputChange}
-            placeholder="LifeStyle Changes One By Doctor"
-            className="rounded py-2"
+            placeholder="Enter plan name"
+          />
+        </Form.Item>
+
+        {/* Link */}
+        <Form.Item label="Link" className="mb-4">
+          <Input
+            name="link"
+            value={formData.link}
+            onChange={handleInputChange}
+            placeholder="Enter plan link"
           />
         </Form.Item>
 
         {/* Plan Type */}
-        <Form.Item
-          name="planType"
-          className="mb-6"
-        >
-          <label className="block text-sm font-medium mb-2">
-            Plan Type
-          </label>
+        <Form.Item label="Plan Type" className="mb-4">
           <Select
-            value={formData.planType} // Bound to state
+            value={formData.planType}
             onChange={handleSelectChange}
-            className="rounded py-2 h-14"
           >
             <Select.Option value="mealPlan">Meal Plan</Select.Option>
             <Select.Option value="workOut">Workout</Select.Option>
-            <Select.Option value="suppliment">Suppliment</Select.Option>
+            <Select.Option value="suppliment">Supplement</Select.Option>
             <Select.Option value="lifeStyleChanges">Lifestyle Changes</Select.Option>
           </Select>
         </Form.Item>
 
         {/* Key Points */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">
-            Key Points
-          </label>
-
-          {formData.keyPoints.map((point, index) => (
-            <div key={index} className="flex items-center mb-3">
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Key Points</label>
+          {formData.keyPoints.map((kp, idx) => (
+            <div key={idx} className="flex items-center mb-2">
               <Input
-                value={point}
-                onChange={(e) => handleKeyPointChange(e.target.value, index)}
-                placeholder="Enter key point"
-                className="rounded py-2 flex-grow"
+                value={kp}
+                onChange={(e) => handleKeyPointChange(e.target.value, idx)}
+                placeholder={`Key Point ${idx + 1}`}
               />
               <Button
                 type="text"
                 icon={<DeleteOutlined />}
-                onClick={() => removeKeyPoint(index)}
-                className="ml-2 text-red-500 hover:text-red-700 focus:outline-none"
+                onClick={() => removeKeyPoint(idx)}
                 disabled={formData.keyPoints.length === 1}
               />
             </div>
           ))}
-
-          <Button
-            type="dashed"
-            onClick={addKeyPoint}
-            className="w-full mt-2 rounded flex items-center justify-center"
-            icon={<PlusOutlined />}
-          >
-            Add new
-          </Button>
+          <Button type="dashed" onClick={addKeyPoint} icon={<PlusOutlined />} className="w-full mt-2">Add new</Button>
         </div>
 
         {/* Description */}
-        <Form.Item
-          name="description"
-          className="mb-6"
-        >
-          <label className="block text-sm font-medium mb-2">
+        <Form.Item label={
+          <span>
             Description
-          </label>
+            <Tooltip title="Provide details about this plan">
+              <InfoCircleOutlined className="ml-1" />
+            </Tooltip>
+          </span>
+        } className="mb-4">
           <TextArea
             name="description"
-            value={formData.description} // Bound to state
+            value={formData.description}
             onChange={handleInputChange}
-            placeholder="Enter description about the key point"
             rows={4}
-            className="rounded"
+            placeholder="Enter description"
           />
         </Form.Item>
 
-        {/* Submit Button */}
+        {/* Image Upload */}
+        <Form.Item label="Image" className="mb-4">
+          <Upload
+            beforeUpload={handleImageChange}
+            maxCount={1}
+            accept="image/*"
+            showUploadList={formData.image ? [{ name: formData.image.name }] : false}
+          >
+            <Button icon={<UploadOutlined />}>Upload Image</Button>
+          </Upload>
+        </Form.Item>
+
+        {/* Submit */}
         <Form.Item>
           <Button
             type="primary"
             htmlType="submit"
-            className="bg-red-600 hover:bg-red-700 border-red-600 w-full py-2 font-semibold h-auto rounded"
-            disabled={!isFormValid} // Disable submit button if the form is not valid
+            className="w-full bg-red-600 hover:bg-red-700"
+            disabled={!isFormValid}
           >
             Update
           </Button>
         </Form.Item>
+
       </Form>
     </div>
   );
