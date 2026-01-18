@@ -1,9 +1,21 @@
 'use client'
 
-import { useCreatePlanByDocMutation, useCreatePlaneMutation } from '@/redux/fetures/doctor/createPlane';
-import { useAssignProtacoltoPatientMutation, useCreateSearchPlanMutation, useCreateSearchPlanQuery, useDeleteAssignPlanMutation, useGetMyPlansQuery, useGetSingleProtocolQuery, useSearchPlaneQuery, useUpdateProtocolMutation } from '@/redux/fetures/doctor/doctor';
+import {
+    useCreatePlanByDocMutation
+} from '@/redux/fetures/doctor/createPlane';
+
+import {
+    useAssignProtacoltoPatientMutation,
+    useDeleteAssignPlanMutation,
+    useGetMyPlansQuery,
+    useGetSingleProtocolQuery,
+    useSearchPlaneQuery,
+    useUpdateProtocolMutation
+} from '@/redux/fetures/doctor/doctor';
+import { Image } from 'antd';
+
 import { useSearchParams } from 'next/navigation';
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { CiCirclePlus, CiEdit, CiSearch } from 'react-icons/ci';
 import { MdOutlineDeleteForever } from 'react-icons/md';
@@ -11,346 +23,352 @@ import { MdOutlineDeleteForever } from 'react-icons/md';
 const Page = () => {
     const searchParams = useSearchParams();
     const protocolId = searchParams.get("protocolId");
-    const patientId = searchParams.get("patientId"); // Extract patientId from search params
+    const patientId = searchParams.get("patientId");
 
     const [selectedPlan, setSelectedPlan] = useState('mealPlan');
-    const { data: myPlans, refetch } = useGetMyPlansQuery({ protocolId, patientId, selectedPlan });
+
+    const { data: myPlans, refetch } = useGetMyPlansQuery({
+        protocolId,
+        patientId,
+        selectedPlan
+    });
+
     const [myAllPlans, setMyAllPlans] = useState([]);
+
     const { data } = useGetSingleProtocolQuery(protocolId);
-    const mealPlanData = data?.data?.attributes?.results[0] || [];
+    const mealPlanData = data?.data?.attributes?.results[0] || {};
+
     const [isEditing, setIsEditing] = useState(false);
     const [mealPlanName, setMealPlanName] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+
     const [newMealPlan, setNewMealPlan] = useState({
+        image: null,
+        link: '',
         planName: '',
-        planType: '',
         keyPoints: [''],
         description: ''
     });
 
     const [search, setSearch] = useState('');
+    const [searchTitle, setSearchTitle] = useState('');
+
+    const { data: searchData, isLoading } = useSearchPlaneQuery({
+        type: selectedPlan,
+        title: searchTitle
+    });
+
+    const fullData = searchData?.data?.attributes?.results || [];
 
     useEffect(() => {
         if (mealPlanData?.name) {
-            setMealPlanName(mealPlanData?.name);
+            setMealPlanName(mealPlanData.name);
         }
-        refetch();
-        setMyAllPlans(myPlans?.data?.attributes?.results);
-
+        setMyAllPlans(myPlans?.data?.attributes?.results || []);
     }, [mealPlanData, myPlans]);
 
-    const handleEdit = () => {
-        setIsEditing(true);
-    };
-
+    /* ---------------- UPDATE PROTOCOL NAME ---------------- */
     const [updateProtocol] = useUpdateProtocolMutation();
+
+    const handleEdit = () => setIsEditing(true);
+
     const handleSave = async () => {
-        const data = { name: mealPlanName };
         try {
-            const res = await updateProtocol({ protocolId, data });
+            const res = await updateProtocol({
+                protocolId,
+                data: { name: mealPlanName }
+            });
+
             if (res?.data?.code === 200) {
-                toast.success(res?.data?.message);
+                toast.success(res.data.message);
                 setIsEditing(false);
             } else {
                 toast.error(res?.data?.message);
             }
-        } catch (error) {
-            toast.error(error?.data?.message || "Failed to update protocol");
+        } catch {
+            toast.error("Failed to update protocol");
         }
     };
 
-    const toggleModal = () => {
-        setIsModalOpen(!isModalOpen);
-    };
-
+    /* ---------------- INPUT HANDLERS ---------------- */
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNewMealPlan((prevState) => ({
-            ...prevState,
-            [name]: value
-        }));
+        setNewMealPlan(prev => ({ ...prev, [name]: value }));
     };
 
     const handleKeyPointChange = (index, value) => {
-        const updatedKeyPoints = [...newMealPlan.keyPoints];
-        updatedKeyPoints[index] = value;
-        setNewMealPlan((prevState) => ({
-            ...prevState,
-            keyPoints: updatedKeyPoints
-        }));
+        const updated = [...newMealPlan.keyPoints];
+        updated[index] = value;
+        setNewMealPlan(prev => ({ ...prev, keyPoints: updated }));
     };
 
     const addKeyPoint = () => {
-        setNewMealPlan((prevState) => ({
-            ...prevState,
-            keyPoints: [...prevState.keyPoints, '']
+        setNewMealPlan(prev => ({
+            ...prev,
+            keyPoints: [...prev.keyPoints, '']
         }));
     };
 
     const removeKeyPoint = (index) => {
-        const updatedKeyPoints = newMealPlan.keyPoints.filter((_, i) => i !== index);
-        setNewMealPlan((prevState) => ({
-            ...prevState,
-            keyPoints: updatedKeyPoints
+        setNewMealPlan(prev => ({
+            ...prev,
+            keyPoints: prev.keyPoints.filter((_, i) => i !== index)
         }));
     };
 
-    const [createPlane] = useCreatePlanByDocMutation();
-    const handleCreateMealPlan = async (e) => {
-        e.preventDefault();
-        if (!selectedPlan) return toast.error("Please select a plan type");
-
-        const data = {
-            title: newMealPlan.planName,
-            planType: selectedPlan,
-            keyPoints: newMealPlan.keyPoints,
-            description: newMealPlan.description,
-            protocolId: protocolId,
-            patientId: patientId
-        };
-
-        try {
-            const res = await createPlane(data);
-            console.log(res);
-            if (res?.data?.code === 200) {
-                toast.success(res?.data?.message);
-                toggleModal(); // Close the modal after submission
-            } else {
-                toast.error(res?.data?.message);
-            }
-        } catch (error) {
-            toast.error(error?.data?.message || "Failed to create meal plan");
-        }
+    const handleImageChange = (e) => {
+        setNewMealPlan(prev => ({
+            ...prev,
+            image: e.target.files[0]
+        }));
     };
 
-    const [searchTitle, setSearchTitle] = useState('');
+    /* ---------------- CREATE PLAN (FIXED) ---------------- */
+    const [createPlane] = useCreatePlanByDocMutation();
 
-    const { data: searchData, isLoading } = useSearchPlaneQuery({ type: selectedPlan, title: searchTitle });
-    const fullData = searchData?.data?.attributes?.results || [];
+    const handleCreateMealPlan = async (e) => {
+        e.preventDefault();
 
-    console.log(fullData);
-
-    const handleSearch = (value) => {
         if (!selectedPlan) {
             return toast.error("Please select a plan type");
         }
-        setSearch(value);
-    };
 
-    const handleSearchNow = async () => {
-        setSearchTitle(search);
+        if (!newMealPlan.planName || !newMealPlan.image) {
+            return toast.error("All fields are required");
+        }
 
-        // setTimeout(() => {
-        //     window.location.reload();
-        // }, 1000);
-    };
-
-    // Filter myAllPlans based on selectedPlan
-    const filteredPlans = myAllPlans?.filter(plan => plan?.planType === selectedPlan);
-
-    const [assignPlan] = useAssignProtacoltoPatientMutation();
-
-    const handleAssginPlan = async (planId) => {
-        console.log(planId?._DoctorPlanId);
+        const formData = new FormData();
+        formData.append("title", newMealPlan.planName);
+        formData.append("planType", selectedPlan);
+        formData.append("link", newMealPlan.link);
+        formData.append("description", newMealPlan.description);
+        formData.append("protocolId", protocolId);
+        formData.append("patientId", patientId);
+        formData.append("keyPoints", JSON.stringify(newMealPlan.keyPoints));
+        formData.append("attachments", newMealPlan.image);
 
         try {
-            const res = await assignPlan({ doctorPlanId: planId?._DoctorPlanId, patientId: patientId, protocolId: protocolId });
-            console.log(res);
+            const res = await createPlane(formData);
+
             if (res?.data?.code === 200) {
-                toast.success(res?.data?.message);
+                toast.success(res.data.message);
+                setIsModalOpen(false);
                 refetch();
+
+                setNewMealPlan({
+                    image: null,
+                    link: '',
+                    planName: '',
+                    keyPoints: [''],
+                    description: ''
+                });
+            } else {
+                toast.error(res?.data?.message);
             }
-        } catch (error) {
-            toast.error(error?.data?.message || "Failed to assign plan");
+        } catch {
+            toast.error("Failed to create plan");
         }
     };
 
+    /* ---------------- ASSIGN / DELETE ---------------- */
+    const [assignPlan] = useAssignProtacoltoPatientMutation();
     const [deleteAssignPlan] = useDeleteAssignPlanMutation();
 
-    const handleDeleteAssignItem = async (planId) => {
-        console.log(planId)
-        try {
-            const res = await deleteAssignPlan({ id: planId?._planByDoctorId });
-            console.log(res);
-            if (res?.data?.code === 200) {
-                toast.success(res?.data?.message);
-                refetch();
-            }
-            else {
-                toast.error(res?.error?.data?.message);
-            }
-        } catch (error) {
-            toast.error(error?.data?.message || "Failed to delete assign plan");
+    const handleAssginPlan = async (item) => {
+        const res = await assignPlan({
+            doctorPlanId: item?._DoctorPlanId,
+            patientId,
+            protocolId
+        });
+
+        if (res?.data?.code === 200) {
+            toast.success(res.data.message);
+            refetch();
         }
     };
 
-    return (
+    const handleDeleteAssignItem = async (item) => {
+        const res = await deleteAssignPlan({
+            id: item?._planByDoctorId
+        });
 
+        if (res?.data?.code === 200) {
+            toast.success(res.data.message);
+            refetch();
+        }
+    };
+
+    const filteredPlans = myAllPlans.filter(
+        plan => plan?.planType === selectedPlan
+    );
+
+    return (
         <div className="flex lg:flex-row flex-col py-10">
             <Toaster />
-            {/* Left Sidebar */}
-            <div className="lg:w-1/4 bg-white p-4 border border-gray-100 rounded-lg">
-                <h2 className="text-xl font-bold flex items-center gap-3 cursor-pointer">
+
+            {/* LEFT SIDEBAR */}
+            <div className="lg:w-1/4 bg-white p-4 border rounded-lg">
+                <h2 className="text-xl font-bold flex gap-2 items-center">
                     {isEditing ? (
                         <input
-                            type="text"
                             value={mealPlanName}
                             onChange={(e) => setMealPlanName(e.target.value)}
-                            className="border-b-2 w-full border-gray-300 focus:outline-none"
+                            className="border-b w-full"
                         />
                     ) : (
-                        <>{mealPlanData?.name || mealPlanName} <CiEdit onClick={handleEdit} /></>
-                    )}
-                    {isEditing && (
-                        <button className="xl:px-4 xl:py-2 p-1 bg-blue-500 text-white rounded-lg mt-4" onClick={handleSave}>Save</button>
+                        <>
+                            {mealPlanName}
+                            <CiEdit onClick={handleEdit} />
+                        </>
                     )}
                 </h2>
-                {/* Plan Types */}
-                {['mealPlan', 'workOut', 'suppliment', 'lifeStyleChanges'].map((planType, index) => (
-                    <div
-                        key={planType}
-                        onClick={() => setSelectedPlan(planType)}
-                        className={`py-2 px-5 rounded-lg capitalize cursor-pointer my-2 flex items-center gap-5 hover:bg-gray-100 ${selectedPlan === planType ? 'bg-gray-100' : ''}`}
+
+                {isEditing && (
+                    <button
+                        onClick={handleSave}
+                        className="mt-2 px-3 py-1 bg-blue-500 text-white rounded"
                     >
-                        <div className="text-sm font-semibold">{index + 1}</div>
-                        <div className="rounded mt-1 w-full">{planType}</div>
+                        Save
+                    </button>
+                )}
+
+                {['mealPlan', 'workOut', 'suppliment', 'lifeStyleChanges'].map((t, i) => (
+                    <div
+                        key={t}
+                        onClick={() => setSelectedPlan(t)}
+                        className={`p-2 my-2 cursor-pointer rounded ${selectedPlan === t ? 'bg-gray-100' : ''}`}
+                    >
+                        {i + 1}. {t}
                     </div>
                 ))}
             </div>
 
-            {/* Right Content */}
+            {/* RIGHT CONTENT */}
             <div className="lg:w-3/4 p-8">
-                <div className="flex justify-between items-center">
-                    <h3 className="text-2xl font-semibold capitalize">{selectedPlan}</h3>
-                    <button className="px-4 py-2 bg-red-600 text-white rounded-lg flex items-center gap-2" onClick={toggleModal}>
-                        <CiCirclePlus className='text-2xl' /> Create New
+                <div className="flex justify-between">
+                    <h3 className="text-2xl capitalize">{selectedPlan}</h3>
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-red-600 flex items-center gap-2 text-white px-4 py-2 rounded"
+                    >
+                        <CiCirclePlus className='text-xl' /> Create New
                     </button>
                 </div>
-                <div className="mt-4">
-                    <div className="text-sm font-medium">Description</div>
-                    <p className='text-sm text-gray-500'>Search for meal plans that you already created</p>
-                    <div className='flex items-center justify-between gap-3 my-2'>
-                        <div className="w-full relative">
-                            <input
-                                type="text"
-                                onChange={(e) => handleSearch(e.target.value)}
-                                className="py-2 px-10 border border-gray-200 rounded w-full"
-                                placeholder="Search for plans"
-                            />
-                            <CiSearch className="absolute text-[#b8b8b8] top-2 text-2xl left-2" />
-                        </div>
-                        <button onClick={handleSearchNow} className='py-3 px-5 bg-blue-600 text-white rounded-lg '>Search</button>
-                    </div>
-                </div>
-                <div className="mt-4">
-                    {isLoading && <p className='text-center my-2'>Loading...</p>}
-                    {
-                        fullData?.length !== 0 &&
-                        <div className="my-4">
-                            <h2 className='font-semibold py-1 border-b flex gap-2 items-center'>Search Result <p className='font-normal'>(Select a plan to assign to this patient.)</p></h2>
-                            {fullData?.map((item, index) => (
-                                <div key={index} onClick={() => handleAssginPlan(item)} className="flex cursor-pointer capitalize justify-between p-2 rounded bg-slate-50 my-2">
-                                    <h3>{item?.title}</h3>
-                                    <p>{item?.totalKeyPoints} key points</p>
-                                </div>
-                            ))}
-                        </div>
-                    }
-                    <h2 className='mt-5 font-semibold py-1 border-b'>My Assigned Plans</h2>
-                    {filteredPlans?.map((item, index) => (
-                        <div key={index} className="flex capitalize justify-between p-2 rounded bg-slate-50 my-2">
-                            <h3>{index + 1}- {item?.title}</h3>
-                            <p className='flex items-center gap-2'>{item?.totalKeyPoints} key points
 
-                                <button className='' onClick={() => handleDeleteAssignItem(item)}><MdOutlineDeleteForever className='text-2xl' /></button>
-                            </p>
-                        </div>
-                    ))}
+                <div className="my-4 flex items-center gap-2">
+                    <input
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="border p-2 w-full"
+                        placeholder="Search plans"
+                    />
+                    <button
+                        onClick={() => setSearchTitle(search)}
+                        className=" bg-blue-500 px-4 py-2 text-white rounded"
+                    >
+                        Search
+                    </button>
                 </div>
+
+                {isLoading && <p>Loading...</p>}
+
+                {fullData.map((item) => (
+                    <div
+                        key={item._DoctorPlanId}
+                        onClick={() => handleAssginPlan(item)}
+                        className="p-2 bg-gray-50 my-2 cursor-pointer"
+                    >
+                        {item.title}
+                    </div>
+                ))}
+
+                <h2 className="mt-4 font-bold">My Assigned Plans</h2>
+
+                {filteredPlans?.map((item, i) => (
+                    <div key={i} className="flex justify-between bg-gray-50 p-5 my-2">
+                        <div className='flex gap-2 items-start '>
+                            <div className='!w-14 min-h-14 bg-gray-200 rounded-md'>
+                                {
+                                    item?.attachments[0]?.attachment &&
+                                    <Image className='!w-14 rounded-md border h-auto overflow-hidden' src={item?.attachments[0]?.attachment} alt="" />
+                                }
+                            </div>
+                            <div className='w-3/4 mx-auto'>
+                                <span className='font-semibold capitalize'>{item?.title}</span>
+                                <br />
+                                <br />
+                                <span className=' capitalize'>{item?.description}</span>
+                                <br />
+                                <br />
+                                <span className='text-blue-600 text-xs'>{item?.link || 'No Link'}</span>
+                            </div>
+                        </div>
+                        <MdOutlineDeleteForever
+                            className="cursor-pointer text-xl w-14 text-red-600"
+                            onClick={() => handleDeleteAssignItem(item)}
+                        />
+                    </div>
+                ))}
             </div>
 
-            {/* Modal for Creating New Plan */}
+            {/* MODAL */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[999999] bg-gray-600 bg-opacity-50 px-10 flex justify-center items-center">
-                    <div className="bg-white p-8 rounded-lg lg:w-1/3 w-full">
-                        <h3 className="text-2xl font-semibold mb-4">Create New Plan</h3>
-                        <form onSubmit={handleCreateMealPlan}>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2" htmlFor="planName">Plan Name *</label>
-                                <input
-                                    type="text"
-                                    id="planName"
-                                    name="planName"
-                                    value={newMealPlan.planName}
-                                    onChange={handleInputChange}
-                                    className="border border-gray-300 rounded p-2 w-full"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2" htmlFor="planName">Link *</label>
-                                <input
-                                    type="text"
-                                    id="link"
-                                    name="link"
-                                    value={newMealPlan.link}
-                                    onChange={handleInputChange}
-                                    className="border border-gray-300 rounded p-2 w-full"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2" htmlFor="planName">Image *</label>
-                                <input
-                                    type="file"
-                                    id="image"
-                                    name="image"
-                                    // onChange={handleImageChange}
-                                    className="border border-gray-300 rounded p-2 w-full"
-                                    required
-                                />
-                            </div>
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[99999]">
+                    <form
+                        onSubmit={handleCreateMealPlan}
+                        className="bg-white p-6 rounded w-full max-w-md"
+                    >
+                        <input
+                            name="planName"
+                            placeholder="Plan Name"
+                            value={newMealPlan.planName}
+                            onChange={handleInputChange}
+                            className="border p-2 w-full mb-2"
+                        />
 
+                        <input
+                            name="link"
+                            placeholder="Link"
+                            value={newMealPlan.link}
+                            onChange={handleInputChange}
+                            className="border p-2 w-full mb-2"
+                        />
 
+                        <input
+                            type="file"
+                            onChange={handleImageChange}
+                            className="mb-2"
+                        />
 
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2" htmlFor="keyPoints">Key Points *</label>
-                                {newMealPlan.keyPoints.map((keyPoint, index) => (
-                                    <div key={index} className="flex gap-2 mb-2">
-                                        <input
-                                            type="text"
-                                            name="keyPoints"
-                                            value={keyPoint}
-                                            onChange={(e) => handleKeyPointChange(index, e.target.value)}
-                                            className="border border-gray-300 rounded p-2 w-full"
-                                            required
-                                        />
-                                        <button type="button" onClick={() => removeKeyPoint(index)} className="text-red-500">Remove</button>
-                                    </div>
-                                ))}
-                                <button type="button" onClick={addKeyPoint} className="text-blue-500">Add Key Point</button>
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2" htmlFor="description">Description *</label>
-                                <textarea
-                                    id="description"
-                                    name="description"
-                                    value={newMealPlan.description}
-                                    onChange={handleInputChange}
-                                    className="border border-gray-300 rounded p-2 w-full"
-                                    required
-                                />
-                            </div>
-                            <div className="flex justify-between">
-                                <button type="button" className="px-4 py-2 bg-gray-500 text-white rounded-lg" onClick={toggleModal}>Cancel</button>
-                                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg">Add New</button>
-                            </div>
-                        </form>
-                    </div>
+                        {newMealPlan.keyPoints.map((kp, i) => (
+                            <input
+                                key={i}
+                                value={kp}
+                                onChange={(e) => handleKeyPointChange(i, e.target.value)}
+                                className="border p-2 w-full mb-2"
+                                placeholder={`Key point ${i + 1}`}
+                            />
+                        ))}
+
+                        <button type="button" onClick={addKeyPoint} className="text-blue-500 mb-2">
+                            + Add Key Point
+                        </button>
+
+                        <textarea
+                            name="description"
+                            placeholder="Description"
+                            value={newMealPlan.description}
+                            onChange={handleInputChange}
+                            className="border p-2 w-full mb-2"
+                        />
+
+                        <button className="bg-blue-500 text-white px-4 py-2 rounded w-full">
+                            Create Plan
+                        </button>
+                    </form>
                 </div>
             )}
         </div>
     );
-}
+};
 
 export default Page;

@@ -34,7 +34,7 @@ const createPlane = apiSlice.injectEndpoints({
         }),
         createPlanByDoc: builder.mutation({
             query: (data) => ({
-                url: "/plan-by-doc",
+                url: "/plan-by-doc/v2",
                 method: "POST",
                 body: data,
             }),
