@@ -302,12 +302,12 @@ const Page = () => {
                                 <span className='text-blue-600 text-xs'>{item?.link || 'No Link'}</span>
                             </div>
                         </div>
-                       <div className='w-14'>
-                         <MdOutlineDeleteForever
-                            className="cursor-pointer text-xl w-14 text-red-600"
-                            onClick={() => handleDeleteAssignItem(item)}
-                        />
-                       </div>
+                        <div className='w-14'>
+                            <MdOutlineDeleteForever
+                                className="cursor-pointer text-xl w-14 text-red-600"
+                                onClick={() => handleDeleteAssignItem(item)}
+                            />
+                        </div>
                     </div>
                 ))}
             </div>
