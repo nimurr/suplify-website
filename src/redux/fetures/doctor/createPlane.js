@@ -4,7 +4,7 @@ const createPlane = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         createPlane: builder.mutation({
             query: (data) => ({
-                url: "/doctor-plans",
+                url: "/doctor-plans/v2",
                 method: "POST",
                 body: data,
             }),

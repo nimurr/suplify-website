@@ -68,7 +68,7 @@ export default function ProtocolsAndMealPlans() {
             onClick={() => router.push('/doctorDs/create-plan/added-mealPlan')}
             className="bg-red-600 hover:bg-red-700 text-white font-medium gap-2 py-2 px-4 rounded flex items-center"
           >
-            <FiPlus /> Create Plane
+            <FiPlus /> Create Plan
           </button>
         </div>
       </div>
