@@ -97,14 +97,17 @@ const WorkoutSpecialistClass = () => {
 
                   {/* Start Date and Platform */}
                   <div className="grid grid-cols-2 gap-4 text-base text-gray-600 mb-4">
-                    <p><strong>Start Date:</strong> {moment(item?.startTime).format('DD MMM YYYY')}</p>
+                    <p><strong>Start Date:</strong> {moment(item?.scheduleType === 'repeat' ? item?.repeatRule?.startDate
+                      : item?.startTime).format('DD MMM YYYY')}</p>
                     <p className='capitalize'><strong>Platform:</strong> {item?.typeOfLink || 'N/A'}</p>
                   </div>
 
                   {/* Start and End Time */}
                   <div className="grid grid-cols-2 gap-4 text-base text-gray-600 mb-4">
-                    <p><strong>Start Time:</strong> {moment(item?.startTime).format('hh:mm A')}</p>
-                    <p><strong>End Time:</strong> {moment(item?.endTime).format('hh:mm A')}</p>
+                    <p><strong>Start Time:</strong> {moment(item?.scheduleType === 'repeat' ? item?.repeatRule?.startDate
+                      : item?.startTime).format('hh:mm A')}</p>
+                    <p><strong>End Time:</strong> {moment(item?.scheduleType === 'repeat' ? item?.repeatRule?.endDate
+                      : item?.endDate).format('hh:mm A')}</p>
                   </div>
 
                   {/* Description */}
@@ -121,7 +124,7 @@ const WorkoutSpecialistClass = () => {
                   <span className='mt-2 block text-red-600 font-semibold'>{item?.bookingCount} Booked</span>
 
                   <Link href={`${item?.meetingLink}`} className="text-base underline flex items-center cursor-pointer gap-2 text-purple-700  mb-4">
-                    <IoDocumentTextOutline className='text-xl'/> Go to Meeting Link
+                    <IoDocumentTextOutline className='text-xl' /> Go to Meeting Link
                   </Link>
 
                 </div>
