@@ -204,7 +204,7 @@ const Page = () => {
     );
 
     return (
-        <div className="flex lg:flex-row flex-col py-10">
+        <div className="flex lg:flex-row flex-col items-start py-10">
             <Toaster />
 
             {/* LEFT SIDEBAR */}
@@ -369,9 +369,14 @@ const Page = () => {
                             className="border p-2 w-full mb-2"
                         />
 
-                        <button className="bg-blue-500 text-white px-4 py-2 rounded w-full">
-                            Create Plan
-                        </button>
+                        <div className='flex items-center justify-center gap-2'>
+                            <button type="button" onClick={() => setIsModalOpen(false)} className=" text-white bg-red-500 px-4 py-2 rounded w-full border">
+                                Cancel
+                            </button>
+                            <button className="bg-blue-500 text-white px-4 py-2 rounded w-full">
+                                Create Plan
+                            </button>
+                        </div>
                     </form>
                 </div>
             )}

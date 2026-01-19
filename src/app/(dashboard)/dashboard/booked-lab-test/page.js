@@ -119,7 +119,7 @@ const Page = () => {
                             <th className="py-3 px-4 text-sm font-semibold">Test Name</th>
                             <th className="py-3 px-4 text-sm font-semibold">Appointment Date</th>
                             <th className="py-3 px-4 text-sm font-semibold">Result Uploaded</th>
-                            <th className="py-3 px-4 text-sm font-semibold">Address</th>
+                            {/* <th className="py-3 px-4 text-sm font-semibold">Address</th> */}
                             <th className="py-3 px-4 text-sm font-semibold">Transaction Id</th>
                             <th className="py-3 px-4 text-sm font-semibold">Payment Status</th>
                             <th className="py-3 px-4 text-sm font-semibold">Booking Status</th>
@@ -130,26 +130,25 @@ const Page = () => {
                         {currentData?.map((test, index) => (
                             <tr key={index} className="border-b border-[#ececec] hover:bg-[#fff4f4]">
                                 <td className="py-3 px-4 text-gray-700 text-sm">{test._LabTestBookingId}</td>
-                                <td className="py-3 px-4 text-gray-700 text-sm">{test.category}</td>
+                                <td className="py-3 px-4 text-gray-700 text-sm">{test.labTestId?.name}</td>
                                 <td className="py-3 px-4 text-gray-700 text-sm">{moment(test.appointmentDate).format('dddd, MMMM Do YYYY')}</td>
                                 <td className={
                                     `py-3 px-4 text-gray-700 text-center text-sm font-semibold 
                                             ${test.isResultUploaded && 'text-[green] '
                                     || test.isResultUploaded && 'text-[red] '}`
                                 }>{test.uploadedResults[0]?.attachment ? 'Uploaded ' : 'Not Uploaded'}</td>
-                                <td className="py-3 px-4 text-gray-700 text-sm">{test.address}</td>
+                                {/* <td className="py-3 px-4 text-gray-700 text-sm">{test.address}</td> */}
                                 <td className="py-3 px-4 text-gray-700 text-sm">{test.paymentTransactionId}</td>
                                 <td className="py-3 px-4 text-gray-700 text-sm">{test.paymentStatus}</td>
                                 <td className="py-3 px-4 text-sm font-medium">
                                     <span
                                         className={
-                                            test.status === 'Delivered' && 'text-[green]'
-                                            || test.status === 'Pending' && 'text-[orange]'
-                                            || test.status === 'Canceled' && 'text-[red]'
+                                            `py-3 capitalize px-4 text-gray-700 text-center text-sm font-semibold 
+                                        ${test?.status === 'completed' && 'text-[green]'
+                                            || test?.status === 'pending' && 'text-[orange]'
+                                            || test?.status === 'canceled' && 'text-[red]'}`
                                         }
-                                    >
-                                        {test.status}
-                                    </span>
+                                    >{test?.status}</span>
                                 </td>
                                 <td className="py-3 px-4 text-center">
                                     <IoEyeOutline
@@ -239,8 +238,21 @@ const Page = () => {
 
                             </div>
                             <hr />
+
+                            <div className="flex items-start justify-between flex-wrap gap-5 my-2">
+                                <h2><strong>Status</strong></h2>
+                                <span
+                                    className={
+                                        `py-3 capitalize px-4 text-gray-700 text-center text-sm font-semibold 
+                                        ${selectedTest?.status === 'completed' && 'text-[green]'
+                                        || selectedTest?.status === 'pending' && 'text-[orange]'
+                                        || selectedTest?.status === 'canceled' && 'text-[red]'}`
+                                    }
+                                >{selectedTest?.status}</span>
+                            </div>
+                            <hr />
                             {
-                                selectedTest.isResultUploaded &&
+                                selectedTest?.isResultUploaded &&
                                 <div>
                                     <div>
                                         <p className="flex items-center gap-2 justify-between">
@@ -261,19 +273,7 @@ const Page = () => {
                                 </div>
                             }
 
-                            <div className="flex items-start justify-between flex-wrap gap-5">
-                                <h2><strong>Status</strong></h2>
-                                <select
-                                    defaultValue={selectedTest.status}
-                                    onChange={handleStatusChange}  // Handle the change event
-                                    className="border border-[#eee] bg-[#e88c31] text-primaryBg outline-none focus:right-0 px-8 py-1.5 rounded-lg"
-                                    name="status"
-                                >
-                                    <option value="Pending">Pending</option>
-                                    <option value="Delivered">Delivered</option>
-                                    <option value="Canceled">Canceled</option>
-                                </select>
-                            </div>
+
 
                             {/* <div>
                                 <input onChange={handleImageChange} type="file" name="image" id="" />
