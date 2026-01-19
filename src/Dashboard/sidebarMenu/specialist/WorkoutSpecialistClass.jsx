@@ -70,8 +70,8 @@ const WorkoutSpecialistClass = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {
-              fullData?.results.map((item, index) => (
-                <div className="space-y-5 border border-gray-200 rounded-md p-6 bg-white shadow-lg hover:shadow-xl transition-all duration-300">
+              fullData?.results?.map((item, index) => (
+                <div key={index} className="space-y-5 border border-gray-200 rounded-md p-6 bg-white shadow-lg hover:shadow-xl transition-all duration-300">
                   {/* Icon Placeholder */}
                   <div className="mb-4 flex items-start justify-between gap-5 ">
                     <LuMonitorPlay className="text-6xl text-gray-800" />
@@ -98,7 +98,7 @@ const WorkoutSpecialistClass = () => {
                   {/* Start Date and Platform */}
                   <div className="grid grid-cols-2 gap-4 text-base text-gray-600 mb-4">
                     <p><strong>Start Date:</strong> {moment(item?.startTime).format('DD MMM YYYY')}</p>
-                    <p className='capitalize'><strong>Platform:</strong> {item?.typeOfLink}</p>
+                    <p className='capitalize'><strong>Platform:</strong> {item?.typeOfLink || 'N/A'}</p>
                   </div>
 
                   {/* Start and End Time */}
@@ -115,13 +115,13 @@ const WorkoutSpecialistClass = () => {
                   {/* Booking Info */}
                   <div className="flex justify-between items-center mb-4">
                     <p className={` text-xl font-semibold underline capitalize ${item?.status === 'available' ? 'text-green-600' : 'text-red-600'}`}>{item?.status}</p>
-                    <tag className={`text-base font-semibold  px-2 py-1 rounded-md capitalize ${item?.sessionType !== 'private' ? 'bg-green-200 text-green-600' : 'bg-red-200 text-red-600'}`}>{item?.sessionType}</tag>
+                    <p className={`text-base font-semibold  px-2 py-1 rounded-md capitalize ${item?.sessionType !== 'private' ? 'bg-green-200 text-green-600' : 'bg-red-200 text-red-600'}`}>{item?.sessionType}</p>
                   </div>
 
                   <span className='mt-2 block text-red-600 font-semibold'>{item?.bookingCount} Booked</span>
 
-                  <Link href={item?.meetingLink} className="text-xl flex items-center cursor-pointer gap-2 text-purple-700  mb-4">
-                    <IoDocumentTextOutline /> {item?.meetingLink?.slice(0, 40) + '...'}
+                  <Link href={`${item?.meetingLink}`} className="text-base underline flex items-center cursor-pointer gap-2 text-purple-700  mb-4">
+                    <IoDocumentTextOutline className='text-xl'/> Go to Meeting Link
                   </Link>
 
                 </div>
@@ -130,6 +130,7 @@ const WorkoutSpecialistClass = () => {
             {/* Workout Session Card */}
 
           </div>
+
 
         </div>
       </div>

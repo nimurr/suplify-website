@@ -9,9 +9,16 @@ const workoutClass = apiSlice.injectEndpoints({
             }),
             providesTags: ["WorkoutClass"],
         }),
+        getAllHospots: builder.query({
+            query: () => ({
+                url: "/hotspot",
+                method: "GET",
+            }),
+            providesTags: ["WorkoutClass"],
+        }),
         createWorkoutClass: builder.mutation({
             query: (data) => ({
-                url: "/workout-schedules",
+                url: "/workout-schedules/v2",
                 method: "POST",
                 body: data,
             }),
@@ -35,4 +42,9 @@ const workoutClass = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useGetAllWorkoutClassQuery, useCreateWorkoutClassMutation, useUpdateWorkoutClassMutation, useGetSingleWorkoutClassQuery } = workoutClass;
+export const {
+    useGetAllWorkoutClassQuery,
+    useGetAllHospotsQuery,
+    useCreateWorkoutClassMutation,
+    useUpdateWorkoutClassMutation,
+    useGetSingleWorkoutClassQuery } = workoutClass;
