@@ -12,6 +12,7 @@ import {
 import { useBookedNowLabTestMutation } from '@/redux/fetures/landing/landing';
 import toast from 'react-hot-toast';
 import moment from 'moment';
+import { useRouter } from 'next/navigation';
 
 const { Title, Text } = Typography;
 
@@ -19,50 +20,73 @@ const Page = () => {
     // id get from url params if needed in future
     const queryParams = new URLSearchParams(window.location.search);
     const labTestId = queryParams.get('id');
+    const navigate = useRouter();
 
     const [form] = Form.useForm();
     const [booklabtest] = useBookedNowLabTestMutation();
 
     // ✅ SUBMIT FUNCTION
-   const handleBookNow = async (values) => {
-    const date = moment(values.date);
+    const handleBookNow = async (values) => {
 
-    const startTime = date
-        .clone()
-        .hour(values.timeFrom.hour())
-        .minute(values.timeFrom.minute())
-        .second(0)
-        .utc()
-        .format('YYYY-MM-DDTHH:mm:ss');
+        // HTML date input → YYYY-MM-DD
+        const date = moment(values.date, 'YYYY-MM-DD');
 
-    const endTime = date
-        .clone()
-        .hour(values.timeTo.hour())
-        .minute(values.timeTo.minute())
-        .second(0)
-        .utc()
-        .format('YYYY-MM-DDTHH:mm:ss');
+        // ✅ Appointment date (UTC midnight)
+        const appointmentDate = moment
+            .utc({
+                year: date.year(),
+                month: date.month(),
+                day: date.date(),
+                hour: 0,
+                minute: 0,
+                second: 0,
+            })
+            .format('YYYY-MM-DDTHH:mm:ss[Z]');
 
-    const payload = {
-        labTestId,
-        appointmentDate: date.toISOString(), // keep Z
-        startTime, // NO Z
-        endTime,   // NO Z
-        address: values.address,
-        city: values.city,
-        state: values.state,
-        zipCode: values.zipCode,
+        // ✅ KEEP LOCAL TIME (NO UTC CONVERSION)
+        const startTime = date
+            .clone()
+            .hour(values.timeFrom.hour())
+            .minute(values.timeFrom.minute())
+            .second(0)
+            .format('YYYY-MM-DDTHH:mm:ss');
+
+        const endTime = date
+            .clone()
+            .hour(values.timeTo.hour())
+            .minute(values.timeTo.minute())
+            .second(0)
+            .format('YYYY-MM-DDTHH:mm:ss');
+
+        const payload = {
+            labTestId,
+            appointmentDate,
+            startTime, // ✅ SAME DATE
+            endTime,   // ✅ SAME DATE
+            address: values.address,
+            city: values.city,
+            state: values.state,
+            zipCode: values.zipCode,
+        };
+
+        console.log('✅ FINAL PAYLOAD:', payload);
+
+        try {
+            const res = await booklabtest(payload).unwrap();
+     
+            if (res?.code !== 200) {
+                throw new Error(res?.message || "Failed to book lab test");
+            }
+            else {
+                navigate.push('/store');
+                toast.success(res?.message || "Lab test booked successfully");
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error(error?.data?.message || "Failed to book lab test");
+        }
     };
 
-    console.log('✅ FINAL PAYLOAD:', payload);
-
-    try {
-        await booklabtest(payload).unwrap();
-        toast.success("Lab test booked successfully");
-    } catch (error) {
-        toast.error(error?.data?.message || "Failed to book lab test");
-    }
-};
 
 
     return (
@@ -87,8 +111,9 @@ const Page = () => {
                             name="date"
                             rules={[{ required: true, message: 'Select date' }]}
                         >
-                            <DatePicker className="w-full h-11" />
+                            <Input type="date" className="w-full h-11" />
                         </Form.Item>
+
 
                         <Form.Item
                             label="Time Range"
