@@ -56,11 +56,19 @@ const specialist = apiSlice.injectEndpoints({
                 url: `/workout-schedules/bookings/${id}`,
                 method: "POST",
             }),
-        })
+        }),
+
+        hireSpacialist: builder.mutation({
+            query: (data) => ({
+                url: `/hire-specialist`,
+                method: "POST",
+                body: data,
+            }),
+        }),
 
     }),
 });
 
 
 
-export const { useGetSpecialistQuery, useGetAlldoctorPatientsProtacolQuery, useGetAllSuggestionByProtocalIdQuery, useGetAllSpecialistPatientsPaginateQuery, useGetAllSpecialistPatientsPaginateOthersQuery, useGetTrainingProgramsQuery, useGetFullPatientStatusDataForSpecialistQuery, useGetAllScheduleWorkoutClassQuery , useBookNowSheduleWorkoutClassMutation} = specialist;
+export const { useGetSpecialistQuery, useGetAlldoctorPatientsProtacolQuery, useGetAllSuggestionByProtocalIdQuery, useGetAllSpecialistPatientsPaginateQuery, useGetAllSpecialistPatientsPaginateOthersQuery, useGetTrainingProgramsQuery, useGetFullPatientStatusDataForSpecialistQuery, useGetAllScheduleWorkoutClassQuery, useBookNowSheduleWorkoutClassMutation, useHireSpacialistMutation } = specialist;

@@ -6,18 +6,22 @@ import { ClockCircleOutlined, CalendarOutlined, LeftOutlined, LaptopOutlined } f
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CustomButton from "@/components/customComponent/CustomButton";
-import { useGetTrainingProgramsQuery } from "@/redux/fetures/patient/specialist";
+import { useGetTrainingProgramsQuery, useHireSpacialistMutation } from "@/redux/fetures/patient/specialist";
 import { IoPaperPlaneSharp } from "react-icons/io5";
 import url from "@/redux/api/baseUrl";
 import { useCreateNewChatMutation } from "@/redux/fetures/messaging/createChat";
 import toast, { Toaster } from "react-hot-toast";
+import { FaUserPlus } from "react-icons/fa6";
 
 const SpecialistProgram = ({ id }) => {
+
 
   const { data: program, isLoading } = useGetTrainingProgramsQuery(id);
   const fullData = program?.data?.attributes?.result?.results;
   const specialistInfo = program?.data?.attributes?.specialistInfo;
-  console.log(specialistInfo)
+
+
+  const [hireSpecialist] = useHireSpacialistMutation();
 
   const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -43,9 +47,26 @@ const SpecialistProgram = ({ id }) => {
         router.push(`/chat/${res?.data?.attributes?._conversationId}`);
       }
     } catch (error) {
+      console.log(error)
       toast.error(error?.data?.message);
     }
   };
+
+  const handleUserHired = async () => {
+    const data = {
+      specialistId: id
+    }
+    try {
+      const res = await hireSpecialist(data).unwrap();
+      console.log(res)
+      if (res?.code === 200) {
+        toast.success(res?.message);
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error?.data?.message);
+    }
+  }
 
   // Open the modal with full details
   const handleProgramClick = (program) => {
@@ -98,6 +119,8 @@ const SpecialistProgram = ({ id }) => {
             </div>
 
             <button onClick={handleCreatNewMessage} className=" py-2 w-full bg-red-600 text-white rounded-md flex items-center justify-center gap-2"><IoPaperPlaneSharp className="text-2xl" /> Message </button>
+
+            <button onClick={handleUserHired} className=" py-2 w-full bg-green-600 mt-3 text-white rounded-md flex items-center justify-center gap-2"><FaUserPlus className="text-2xl" /> Hire </button>
           </div>
         )
       }
