@@ -106,6 +106,7 @@ import ProductCard from './ProductCard';
 import ProductDetail from './ProductDetail';
 import { productData } from './productData';
 import LabDetail from './LabDetail';
+import ProductCardForLabTest from './ProductCardForLabTest';
 
 const LabTestPage = ({ products }) => {
   const fullData = products[0]?.products;
@@ -136,7 +137,7 @@ const LabTestPage = ({ products }) => {
 
           <div className="grid grid-cols-1  lg:grid-cols-4 gap-4">
             {fullData?.map(product => (
-              <ProductCard key={product.id} product={product} onViewDetails={handleViewDetails} />
+              <ProductCardForLabTest key={product.id} product={product} onViewDetails={handleViewDetails} />
             ))}
           </div>
         </>
