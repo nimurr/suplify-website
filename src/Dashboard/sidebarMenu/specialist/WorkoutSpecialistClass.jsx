@@ -160,7 +160,7 @@ import { MdOutlineDeleteForever } from 'react-icons/md';
 const { p, Text, Paragraph } = Typography;
 
 const WorkoutSpecialistClass = () => {
-
+ 
   const { data , refetch } = useGetAllWorkoutClassQuery();
   const fullData = data?.data?.attributes;
   console.log(fullData);
