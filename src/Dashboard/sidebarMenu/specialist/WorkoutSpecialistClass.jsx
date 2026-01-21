@@ -146,23 +146,43 @@
 
 'use client'
 import React from 'react';
-import { Button, Card, Typography, Space, Image } from 'antd';
+import { Button, Card, Typography, Space, Image, message } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { LuMonitorPlay } from 'react-icons/lu';
 import { IoDocumentTextOutline } from 'react-icons/io5';
-import { useGetAllWorkoutClassQuery } from '@/redux/fetures/Specialist/workoutClass';
+import { useGetAllWorkoutClassQuery, useDeleteWorkoutClassMutation } from '@/redux/fetures/Specialist/workoutClass';
 import url from '@/redux/api/baseUrl';
 import moment from 'moment/moment';
 import Link from 'next/link';
 import { FaRegEdit } from 'react-icons/fa';
+import { MdOutlineDeleteForever } from 'react-icons/md';
 
 const { p, Text, Paragraph } = Typography;
 
 const WorkoutSpecialistClass = () => {
 
-  const { data } = useGetAllWorkoutClassQuery();
+  const { data , refetch } = useGetAllWorkoutClassQuery();
   const fullData = data?.data?.attributes;
   console.log(fullData);
+  const [deleteHospots] = useDeleteWorkoutClassMutation();
+
+  const deleteHospotsItem = async (id) => {
+    try {
+      const response = await deleteHospots(id).unwrap();
+      console.log('Delete response:', response);
+      if (response?.code === 200) {
+        refetch();
+        message.success('Hotspot deleted successfully');
+      } else {
+        message.error('Failed to delete hotspot');
+      }
+
+      // Optionally, you can add logic to refresh the list or show a success message
+    } catch (error) {
+      console.error('Error deleting hotspot:', error);
+      message.error('An error occurred while deleting the hotspot');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -215,9 +235,12 @@ const WorkoutSpecialistClass = () => {
               >
                 <div className="mb-4 flex items-start justify-between gap-5">
                   <LuMonitorPlay className="text-6xl text-gray-800" />
-                  <Link href={`/specialistDs/workoutClass/update?id=${item?._id}`}>
-                    <FaRegEdit className="text-green-500 text-4xl cursor-pointer" />
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => deleteHospotsItem(item?._id)}><MdOutlineDeleteForever className="text-red-500 text-3xl cursor-pointer" /></button>
+                    <Link href={`/specialistDs/workoutClass/update?id=${item?._id}`}>
+                      <FaRegEdit className="text-green-500 text-3xl cursor-pointer" />
+                    </Link>
+                  </div>
                 </div>
 
                 <div className="flex justify-between items-center">
@@ -234,10 +257,10 @@ const WorkoutSpecialistClass = () => {
                       <strong>Start Date:</strong> {moment(item.scheduleDate).format('DD MMM YYYY')}
                     </p>
                     <p className='flex items-center justify-between my-2'>
-                      <strong>Start Time:</strong> {moment(item.repeatRule.startDate).format('hh:mm A')}
+                      <strong>Start Time:</strong> {moment(item.repeatRule.startDate).format('DD MMM YYYY hh:mm A')}
                     </p>
                     <p className='flex items-center justify-between my-2'>
-                      <strong>End Time:</strong> {moment(item.repeatRule.endDate).format('hh:mm A')}
+                      <strong>End Time:</strong> {moment(item.repeatRule.endDate).format('DD MMM YYYY ')}
                     </p>
                     <p className='flex items-center justify-between my-2'>
                       <strong>Duration (weeks):</strong> {item.repeatRule.durationWeeks}
@@ -257,11 +280,20 @@ const WorkoutSpecialistClass = () => {
 
                 {item.hotspot && (
                   <div className="text-gray-600 mb-4">
-                    <p>
-                      <strong>Hotspot:</strong> {item.hotspot.address}
+                    <hr />
+                    <p className='flex items-center justify-between my-2'>
+                      <strong>Hotspot Name:</strong> {item.hotspot.name}
+                    </p>
+                    <p className='flex items-center justify-between my-2'>
+                      <strong>Hotspot Address:</strong> {item.hotspot.address}
                     </p>
                     <br />
-                    <Image className='' width={100} height={100} src={item.hotspot.attachments?.attachment?.includes('amazonaws') ? item.hotspot.attachments?.attachment : (url + item.hotspot.attachments?.attachment)} alt="" />
+                    {
+                      item.hotspot.attachments?.attachment && (
+                        <Image className='' width={100} height={100} src={item.hotspot.attachments?.attachment?.includes('amazonaws') ? item.hotspot.attachments?.attachment : (url + item.hotspot.attachments?.attachment)} alt="" />
+                      )
+                    }
+                    <hr />
                   </div>
                 )}
 
@@ -275,16 +307,18 @@ const WorkoutSpecialistClass = () => {
 
 
                 {item.classType === 'online' && (
-                  <div className="text-gray-600 mb-4">
-                    <p>
+                  <div className="text-gray-600 mb-4 ">
+                    <hr />
+                    <p className='flex items-center justify-between my-2'>
                       <strong>Platform:</strong> {item.typeOfLink || 'N/A'}
                     </p>
                     <Link
                       href={item.meetingLink}
-                      className="text-base underline flex mt-2 items-center cursor-pointer gap-2 text-purple-700"
+                      className="text-base py-2 underline flex mt-2 items-center cursor-pointer gap-2 text-purple-700"
                     >
                       <IoDocumentTextOutline className="text-xl" /> Go to Meeting Link
                     </Link>
+                    <hr />
                   </div>
                 )}
 
