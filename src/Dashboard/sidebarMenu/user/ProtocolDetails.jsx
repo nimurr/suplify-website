@@ -1,8 +1,9 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Table, Typography } from 'antd';
+import { Card, Button, Table, Typography, Image } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useGetAllPlanThisUserByIdQuery } from '@/redux/fetures/patient/protocal';
+import Link from 'next/link';
 
 const { Title, Text } = Typography;
 
@@ -36,6 +37,12 @@ export default function MealPlanProtocol() {
       title: 'LifeStyle Changes',
       _DoctorPlanId: '11223',
       type: 'lifeStyleChanges'
+    },
+    {
+      id: '5',
+      title: 'Lab Test',
+      _DoctorPlanId: '11223',
+      type: 'labTest'
     },
   ];
 
@@ -107,6 +114,17 @@ export default function MealPlanProtocol() {
               bodyStyle={{ padding: '1rem' }}
               title={<h3 className="font-semibold text-xl">{plan.title}</h3>}
             >
+              <h2 className='mb-2 font-semibold'>{
+                planType === 'labTest' && 'Lab Results'
+              }</h2>
+              <div className='flex items-start gap-2 flex-wrap mb-5'>
+
+                {
+                  plan?.attachments.map((item, i) => (
+                    <Image key={i} className='max-w-20 rounded-md border h-auto overflow-hidden' src={item?.attachment} alt="" />
+                  ))
+                }
+              </div>
               <div className="mb-3">
                 <Text className="text-gray-500">{plan.description}</Text>
               </div>
@@ -119,6 +137,7 @@ export default function MealPlanProtocol() {
                   ))}
                 </ul>
               </div>
+              <Link href={plan?.link} target='_blank' className='text-blue-600 mb-2 underline inline-block text-xs'>Go To Link</Link>
 
               <div className="flex justify-between items-center">
                 <Text className="font-semibold text-sm">Total Key Points: {plan.totalKeyPoints}</Text>

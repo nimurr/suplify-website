@@ -18,7 +18,7 @@ import { RiExchangeDollarLine, RiVideoDownloadLine } from "react-icons/ri";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CiCreditCard1, CiDollar } from "react-icons/ci";
+import { CiBookmarkCheck, CiCreditCard1, CiDollar } from "react-icons/ci";
 import { IoBookmarksOutline } from "react-icons/io5";
 import getUser from "@/utils/user";
 
@@ -93,12 +93,12 @@ export default function Sidebar() {
         label: "Subscription",
         path: "/dashboard/subscription",
       },
-      // {
-      //   key: "/chat",
-      //   icon: <TiMessageTyping />,
-      //   label: "Message",
-      //   path: "/chat",
-      // },
+      {
+        key: "/dashboard/booked-lab-test",
+        icon: <CiBookmarkCheck />,
+        label: "Booked Lab Test",
+        path: "/dashboard/booked-lab-test",
+      },
       // {
       //   key: "/dashboard/message",
       //   icon: <TiMessageTyping />,

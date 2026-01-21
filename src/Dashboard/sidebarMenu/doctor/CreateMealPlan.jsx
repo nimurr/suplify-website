@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Form, Input, Button, Typography, Tooltip, Select } from 'antd';
-import { DeleteOutlined, PlusOutlined, InfoCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Typography, Tooltip, Select, Upload } from 'antd';
+import { DeleteOutlined, PlusOutlined, InfoCircleOutlined, ArrowLeftOutlined, UploadOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { useCreatePlaneMutation } from '@/redux/fetures/doctor/createPlane';
 import toast, { Toaster } from 'react-hot-toast';
@@ -13,151 +13,141 @@ const { TextArea } = Input;
 
 export default function CreateMealPlan() {
   const [form] = Form.useForm();
-  const [keyPoints, setKeyPoints] = useState(['']); // Explicit typing for keyPoints state
 
-  // State to hold the form data
+  // Default planType to 'mealPlan' to avoid undefined error
   const [formData, setFormData] = useState({
-    planType: '',   // Plan Type: mealPlan, lifeStyleChanges, etc.
-    title: '',      // Title of the plan
-    description: '', // Description of the plan
-    keyPoints: [''],  // Dynamic key points array
+    planType: 'mealPlan',   
+    planName: '',     
+    link: '',
+    description: '',
+    keyPoints: [''],
+    image: null
   });
 
-  // Handle adding a new key point
-  const addKeyPoint = () => {
-    setFormData(prevState => ({
-      ...prevState,
-      keyPoints: [...prevState.keyPoints, ''],
-    }));
-  };
+  const router = useRouter();
+  const [createPlane] = useCreatePlaneMutation();
 
-  // Handle removing a key point
+  // Key Points handlers
+  const addKeyPoint = () => setFormData(prev => ({ ...prev, keyPoints: [...prev.keyPoints, ''] }));
   const removeKeyPoint = (index) => {
-    const updatedKeyPoints = [...formData.keyPoints];
-    updatedKeyPoints.splice(index, 1);
-    setFormData(prevState => ({
-      ...prevState,
-      keyPoints: updatedKeyPoints,
-    }));
+    const updated = [...formData.keyPoints];
+    updated.splice(index, 1);
+    setFormData(prev => ({ ...prev, keyPoints: updated }));
   };
-
-  // Handle change for key points
   const handleKeyPointChange = (value, index) => {
-    const updatedKeyPoints = [...formData.keyPoints];
-    updatedKeyPoints[index] = value;
-    setFormData(prevState => ({
-      ...prevState,
-      keyPoints: updatedKeyPoints,
-    }));
+    const updated = [...formData.keyPoints];
+    updated[index] = value;
+    setFormData(prev => ({ ...prev, keyPoints: updated }));
   };
 
-  // Handle change for other form fields
+  // Other input handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
-
-  // Handle the Select dropdown change
   const handleSelectChange = (value, name) => {
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const [createPlane, { isLoading }] = useCreatePlaneMutation();
+  // Image handler
+  const handleImageChange = (file) => {
+    setFormData(prev => ({ ...prev, image: file }));
+    return false; // Prevent auto-upload
+  };
 
-  const route = useRouter();
-
-  // Submit the form
+  // Form submission
   const onFinish = async () => {
-    // Submit the formData in the desired format
-    const submissionData = {
-      planType: formData.planType,
-      title: formData.title,      // Title field
-      description: formData.description, // Description field
-      keyPoints: formData.keyPoints,  // Key points array
-    };
+    // Safety check for valid planType
+    if (!['mealPlan','workOut','suppliment','lifeStyleChanges'].includes(formData.planType)) {
+      return toast.error('Please select a valid plan type');
+    }
 
-    console.log(submissionData);  // This will log the data in the desired format
+    // Validate required fields
+    if (!formData.planName || !formData.description || formData.keyPoints.some(k => !k.trim())) {
+      return toast.error('Please fill all required fields');
+    }
+
+    console.log(formData.planType)
+
+    const submissionData = new FormData();
+    submissionData.append('planType', formData.planType);
+    submissionData.append('title', formData.planName);
+    submissionData.append('link', formData.link);
+    submissionData.append('description', formData.description);
+    submissionData.append('keyPoints', JSON.stringify(formData.keyPoints));
+    if (formData.image) submissionData.append('attachments', formData.image);
 
     try {
-      const res = await createPlane(submissionData);  // Send the form data
+      const res = await createPlane(submissionData);
+      console.log(res);
 
-      if (res?.data?.code == 200) {
-        toast.success(res?.data?.message)
-        formData.planType = '';
-        formData.title = '';
-        formData.description = '';
-        formData.keyPoints = [''];
-        setTimeout(() => {
-          route.push('/doctorDs/create-plan');
-        }, 1000);
-      }
-      else {
-        console.log(res?.error?.data);
-        toast.error(res?.error?.data?.message)
-      }
+      if (res?.data?.code === 200) {
+        toast.success(res.data.message);
 
-    } catch (error) {
-      console.log('Error:', error);
-      toast.error('Failed to create meal plan');
+        // Reset form
+        setFormData({
+          planType: 'mealPlan',
+          planName: '',
+          link: '',
+          description: '',
+          keyPoints: [''],
+          image: null
+        });
+        form.resetFields();
+
+        // Navigate back after 1 second
+        setTimeout(() => router.push('/doctorDs/create-plan'), 1000);
+      } else {
+        toast.error(res?.error?.data?.message || 'Failed to create plan');
+      }
+    } catch {
+      toast.error('Failed to create plan');
     }
   };
 
-  // Check if the form is valid (all fields must be filled)
-  const isFormValid = formData.title && formData.planType && formData.description && formData.keyPoints.every(point => point.trim() !== '');
+  // Check if form is valid for submit button
+  const isFormValid = formData.planName &&
+                      formData.planType &&
+                      formData.description &&
+                      formData.keyPoints.every(k => k.trim() !== '');
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <Toaster />
-      <Link href="/doctorDs/create-plan" className="mr-4">
-        <Button icon={<ArrowLeftOutlined />} className="flex items-center">
-          Back
-        </Button>
-      </Link>
-      <Title level={2} className="mb-6 text-center">Create Plan</Title>
-      <div className="border-t border-gray-200 mb-6"></div>
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish} // On form submission
-        requiredMark="optional" // Optional mark for non-required fields
-      >
-        {/* Plan Title */}
-        <Form.Item
-          name="title" // The key should be 'title' to match your format
-          className="mb-6"
-        >
-          <label className="block text-sm font-medium mb-2">
-            Title
-          </label>
+      <Link href="/doctorDs/create-plan">
+        <Button icon={<ArrowLeftOutlined />} className="mb-4 flex items-center">Back</Button>
+      </Link>
+
+      <Title level={2} className="mb-6 text-center">Create Plan</Title>
+
+      <Form form={form} layout="vertical" onFinish={onFinish} requiredMark="optional">
+
+        {/* Plan Name */}
+        <Form.Item label="Plan Name" className="mb-4">
           <Input
-            name="title"
-            value={formData.title}
+            name="planName"
+            value={formData.planName}
             onChange={handleInputChange}
-            placeholder="Enter plan title"
-            className="rounded py-2"
+            placeholder="Enter plan name"
+          />
+        </Form.Item>
+
+        {/* Link */}
+        <Form.Item label="Link" className="mb-4">
+          <Input
+            name="link"
+            value={formData.link}
+            onChange={handleInputChange}
+            placeholder="Enter plan link"
           />
         </Form.Item>
 
         {/* Plan Type */}
-        <Form.Item
-          name="planType" // The key should be 'planType' to match your format
-          className="mb-6"
-        >
-          <label className="block text-sm font-medium mb-2">
-            Plan Type
-          </label>
+        <Form.Item label="Plan Type" className="mb-4">
           <Select
             placeholder="Select plan type"
-            className="rounded py-2 h-14"
             value={formData.planType}
-            defaultValue='mealPlan'
             onChange={(value) => handleSelectChange(value, 'planType')}
           >
             <Select.Option value="mealPlan">Meal Plan</Select.Option>
@@ -168,73 +158,68 @@ export default function CreateMealPlan() {
         </Form.Item>
 
         {/* Key Points */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">
-            Key Points
-          </label>
-
-          {formData.keyPoints.map((point, index) => (
-            <div key={index} className="flex items-center mb-3">
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Key Points</label>
+          {formData.keyPoints.map((kp, idx) => (
+            <div key={idx} className="flex items-center mb-2">
               <Input
-                value={point}
-                onChange={(e) => handleKeyPointChange(e.target.value, index)}
-                placeholder="Enter key point"
-                className="rounded py-2 flex-grow"
+                value={kp}
+                onChange={(e) => handleKeyPointChange(e.target.value, idx)}
+                placeholder={`Key Point ${idx + 1}`}
               />
               <Button
                 type="text"
                 icon={<DeleteOutlined />}
-                onClick={() => removeKeyPoint(index)}
-                className="ml-2 text-red-500 hover:text-red-700 focus:outline-none"
+                onClick={() => removeKeyPoint(idx)}
                 disabled={formData.keyPoints.length === 1}
               />
             </div>
           ))}
-
-          <Button
-            type="dashed"
-            onClick={addKeyPoint}
-            className="w-full mt-2 rounded flex items-center justify-center"
-            icon={<PlusOutlined />}
-          >
-            Add new
-          </Button>
+          <Button type="dashed" onClick={addKeyPoint} icon={<PlusOutlined />} className="w-full mt-2">Add new</Button>
         </div>
 
         {/* Description */}
-        <Form.Item
-          label={
-            <span>
-              Description
-              <Tooltip title="Provide details about this meal plan">
-                <InfoCircleOutlined className="ml-1" />
-              </Tooltip>
-            </span>
-          }
-          name="description"
-          className="mb-6"
-        >
+        <Form.Item label={
+          <span>
+            Description
+            <Tooltip title="Provide details about this plan">
+              <InfoCircleOutlined className="ml-1" />
+            </Tooltip>
+          </span>
+        } className="mb-4">
           <TextArea
             name="description"
             value={formData.description}
             onChange={handleInputChange}
-            placeholder="Enter description"
             rows={4}
-            className="rounded"
+            placeholder="Enter description"
           />
         </Form.Item>
 
-        {/* Submit Button */}
+        {/* Image Upload */}
+        <Form.Item label="Image" className="mb-4">
+          <Upload
+            beforeUpload={handleImageChange}
+            maxCount={1}
+            accept="image/*"
+            showUploadList={formData.image ? [{ name: formData.image.name }] : false}
+          >
+            <Button icon={<UploadOutlined />}>Upload Image</Button>
+          </Upload>
+        </Form.Item>
+
+        {/* Submit */}
         <Form.Item>
           <Button
             type="primary"
             htmlType="submit"
-            className="bg-red-600 hover:bg-red-700 border-red-600 w-full py-2 font-semibold h-auto rounded"
-            disabled={!isFormValid} // Disable submit button if the form is not valid
+            className="w-full bg-red-600 hover:bg-red-700"
+            disabled={!isFormValid}
           >
             Create
           </Button>
         </Form.Item>
+
       </Form>
     </div>
   );

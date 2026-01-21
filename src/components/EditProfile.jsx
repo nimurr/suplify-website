@@ -93,7 +93,7 @@ const EditProfile = () => {
             fileList={imageFileList}
             maxCount={1}
             showUploadList={{ showRemoveIcon: true }}
-            // no action prop means no auto upload
+          // no action prop means no auto upload
           >
             {imageFileList.length >= 1 ? null : (
               <div>
@@ -122,6 +122,8 @@ const EditProfile = () => {
         >
           <Input placeholder="Email" />
         </Form.Item>
+
+
 
         <Form.Item label="Company" name="company">
           <Input placeholder="Company" />
