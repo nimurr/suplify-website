@@ -466,8 +466,8 @@ const PatientProfileEdit = () => {
                 )}
 
                 <Form.Item className="flex justify-between gap-2 mt-8">
-                    <Button className="h-10" onClick={handleBack}>Back to Profile</Button>
-                    <Button type="primary" htmlType="submit" className="h-10">Save Changes</Button>
+                    <button className="h-10 ml-2 py-2 px-8 bg-gray-600 text-white rounded-lg" onClick={handleBack}>Back to Profile</button>
+                    <button className="h-10 ml-2 py-2 px-8 bg-blue-500 text-white rounded-lg" type="submit" htmlType="submit" >Save Changes</button>
                 </Form.Item>
             </Form>
         </div>
