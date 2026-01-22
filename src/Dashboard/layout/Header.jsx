@@ -97,6 +97,8 @@ export default function DashboardHeader({ collapsed }) {
   const { data: user } = useGetUserProfileQuery(userData.id)
   const fullUser = user?.data?.attributes;
 
+  console.log(user?.data?.additionalResponse?.unreadConversationCount) 
+
   const imageUrl = fullUser?.profileImage?.imageUrl.includes("amazonaws.com")
     ? fullUser?.profileImage?.imageUrl
     : url + fullUser?.profileImage?.imageUrl;
@@ -144,8 +146,11 @@ export default function DashboardHeader({ collapsed }) {
 
         {/* User profile */}
         <div className="mr-6 flex items-center gap-2">
-          <Link href="/chat" className='w-10 cursor-pointer h-10 bg-red-600 text-white flex items-center justify-center rounded-lg'>
+          <Link href="/chat" className='w-10 cursor-pointer relative h-10 bg-red-600 text-white flex items-center justify-center rounded-lg'>
             <AiOutlineMessage className='text-2xl font-semibold' />
+            <span className='absolute -top-1 -right-1 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs'>
+              {user?.data?.additionalResponse?.unreadConversationCount > 9 ? '9+' : user?.data?.additionalResponse?.unreadConversationCount || 0}
+            </span>
           </Link>
           <Link href="/notification" className='w-10 cursor-pointer h-10 bg-red-600 text-white flex items-center justify-center rounded-lg'>
             <IoNotifications className='text-2xl font-semibold' />
