@@ -97,7 +97,7 @@ export default function DashboardHeader({ collapsed }) {
   const { data: user } = useGetUserProfileQuery(userData.id)
   const fullUser = user?.data?.attributes;
 
-  console.log(user?.data?.additionalResponse?.unreadConversationCount) 
+  console.log(user?.data) 
 
   const imageUrl = fullUser?.profileImage?.imageUrl.includes("amazonaws.com")
     ? fullUser?.profileImage?.imageUrl

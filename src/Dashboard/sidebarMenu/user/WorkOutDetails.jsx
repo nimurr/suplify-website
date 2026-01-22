@@ -14,6 +14,7 @@ import url from "@/redux/api/baseUrl";
 const ScheduleCard = ({ schedule }) => {
 
   const [bookNow] = useBookNowSheduleWorkoutClassMutation();
+  console.log(schedule)
 
   const id = schedule._id;
 

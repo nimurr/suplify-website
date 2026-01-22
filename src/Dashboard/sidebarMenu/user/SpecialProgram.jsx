@@ -20,6 +20,7 @@ const SpecialistProgram = ({ id }) => {
   const fullData = program?.data?.attributes?.result?.results;
   const specialistInfo = program?.data?.attributes?.specialistInfo;
 
+  console.log(specialistInfo)
 
   const [hireSpecialist] = useHireSpacialistMutation();
 
@@ -117,9 +118,14 @@ const SpecialistProgram = ({ id }) => {
               {specialistInfo?.profileId?.howManyPrograms}
               <span>Programs</span>
             </div>
+            <div>
+              <span className='font-semibold block'>  Book a Session with</span>
+              <Link href={`${specialistInfo?.profileId?.externalLink}`} target="_blank" className="text-sm w-full block text-blue-500 border border-blue-500 break-all p-2 rounded-lg mt-2 hover:!font-semibold text-center">
+                {specialistInfo?.profileId?.externalLink.slice(0, 25)}...
+              </Link>
+            </div>
 
-            <button onClick={handleCreatNewMessage} className=" py-2 w-full bg-red-600 text-white rounded-md flex items-center justify-center gap-2"><IoPaperPlaneSharp className="text-2xl" /> Message </button>
-
+            <button onClick={handleCreatNewMessage} className=" py-2 mt-3 w-full bg-red-600 text-white rounded-md flex items-center justify-center gap-2"><IoPaperPlaneSharp className="text-2xl" /> Message </button>
             <button onClick={handleUserHired} className=" py-2 w-full bg-green-600 mt-3 text-white rounded-md flex items-center justify-center gap-2"><FaUserPlus className="text-2xl" /> Hire </button>
           </div>
         )
