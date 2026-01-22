@@ -333,7 +333,6 @@ const PatientProfileEdit = () => {
     const [updateProfile] = useEditProfileMutation();
 
     const onFinish = async (values) => {
-        const protocolNamesArray = values.protocolNames?.map(p => p.protocolName).filter(Boolean);
 
         const formData = new FormData();
         formData.append("name", values.fullName);
@@ -344,8 +343,11 @@ const PatientProfileEdit = () => {
         formData.append("description", values.description || "");
         formData.append("howManyPrograms", values.howManyPrograms || "");
 
-        if (protocolNamesArray.length > 0) {
-            protocolNamesArray.forEach(name => formData.append("protocolNames[]", name));
+        if (values.protocolNames) {
+            const protocolNamesArray = values.protocolNames?.map(p => p.protocolName).filter(Boolean);
+            if (protocolNamesArray?.length > 0) {
+                protocolNamesArray.forEach(name => formData.append("protocolNames[]", name));
+            }
         }
 
         try {
