@@ -1,120 +1,129 @@
 "use client";
 
-import socketUrl from "@/utils/socket";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
+import { initSocket } from "@/utils/socket-io";
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+    useCallback,
+    useRef,
+} from "react";
 
 const SocketContext = createContext(null);
 
+export const useSocket = () => {
+    const context = useContext(SocketContext);
+    if (!context) {
+        throw new Error("useSocket must be used within a SocketProvider");
+    }
+    return context;
+};
+
 export const SocketProvider = ({ children }) => {
+    const [socket, setSocket] = useState(null);
+    const [isConnected, setIsConnected] = useState(false);
+    const [isConnecting, setIsConnecting] = useState(false);
+    const reconnectAttempts = useRef(0);
+    const maxReconnectAttempts = 5;
     const socketRef = useRef(null);
 
-    const [connected, setConnected] = useState(false);
-    const [onlineUsers, setOnlineUsers] = useState([]);
-    const [typingUser, setTypingUser] = useState(null);
-    const [messages, setMessages] = useState([]);
-
-    // Get user safely
-    let userId = null;
-    if (typeof window !== "undefined") {
-        const user = localStorage.getItem("user");
-        if (user) {
-            userId = JSON.parse(user)?.id;
+    const connect = useCallback(() => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        if (!token) {
+            console.warn("No access token available for socket connection");
+            return;
         }
-    }
 
-    // 🔹 INITIAL SOCKET CONNECTION
+        // Use ref to check connection status to avoid dependency issues
+        if (socketRef.current?.connected || isConnecting) {
+            console.log("Socket already connected or connecting");
+            return;
+        }
+
+        setIsConnecting(true);
+
+        try {
+            const socketInstance = initSocket(token);
+            socketRef.current = socketInstance;
+            setSocket(socketInstance);
+
+            socketInstance.on("connect", () => {
+                console.log("Socket connected:", socketInstance.id);
+                setIsConnected(true);
+                setIsConnecting(false);
+                reconnectAttempts.current = 0;
+            });
+
+            socketInstance.on("disconnect", (reason) => {
+                console.log("Socket disconnected:", reason);
+                setIsConnected(false);
+
+                // Auto-reconnect logic
+                if (reason === "io server disconnect" || reason === "transport close") {
+                    if (reconnectAttempts.current < maxReconnectAttempts) {
+                        reconnectAttempts.current++;
+                        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
+                        console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts.current})`);
+                        setTimeout(() => {
+                            connect();
+                        }, delay);
+                    } else {
+                        console.error("Max reconnect attempts reached");
+                    }
+                }
+            });
+
+            socketInstance.on("connect_error", (error) => {
+                console.error("Socket connection error:", error);
+                setIsConnecting(false);
+                setIsConnected(false);
+            });
+
+            // User connected event
+            socketInstance.on("user:connected", (data) => {
+                console.log("User connected:", data);
+            });
+        } catch (error) {
+            console.error("Failed to initialize socket:", error);
+            setIsConnecting(false);
+        }
+    }, []); // No dependencies - stable function
+
+    const disconnect = useCallback(() => {
+        if (socketRef.current) {
+            socketRef.current.disconnect();
+            socketRef.current = null;
+        }
+        setSocket(null);
+        setIsConnected(false);
+        setIsConnecting(false);
+        reconnectAttempts.current = 0;
+    }, []);
+
+    // Auto-connect on mount if token exists
     useEffect(() => {
-        if (!userId) return;
-
-        socketRef.current = io(socketUrl, {
-            transports: ["websocket"],
-            auth: { token: userId },
-            extraHeaders: { token: userId },
-            reconnection: true,
-            reconnectionAttempts: 5,
-            reconnectionDelay: 1000,
-            timeout: 10000,
-        });
-
-        const socket = socketRef.current;
-
-        socket.on("connect", () => {
-            console.log("✅ Socket connected:", socket.id);
-            setConnected(true);
-            socket.emit("user-online", userId);
-        });
-
-        socket.on("online-users", (users) => {
-            setOnlineUsers(users);
-        });
-
-        socket.on("typing", (data) => {
-            setTypingUser(data);
-        });
-
-        socket.on("stop-typing", () => {
-            setTypingUser(null);
-        });
-
-        socket.on("receive-message", (msg) => {
-            setMessages((prev) => [...prev, msg]);
-        });
-
-        socket.on("disconnect", () => {
-            console.log("❌ Socket disconnected");
-            setConnected(false);
-        });
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        if (token && !socketRef.current) {
+            connect();
+        }
 
         return () => {
-            socket.disconnect();
+            disconnect();
         };
-    }, [userId]);
+    }, []); // Empty dependency array - only run once on mount/unmount
 
-    // 🔹 JOIN CONVERSATION (ROOM)
-    const joinConversation = (conversationId) => {
-        if (!socketRef.current) return;
-
-        socketRef.current.emit(
-            "join",
-            { conversationId },
-            (response) => {
-                console.log("✅ Joined conversation:", response);
-            }
-        );
-    };
-
-    // 🔹 SEND MESSAGE
-    const sendMessage = (message) => {
-        socketRef.current?.emit("send-message", message);
-    };
-
-    // 🔹 TYPING EVENTS
-    const startTyping = (data) => {
-        socketRef.current?.emit("typing", data);
-    };
-
-    const stopTyping = () => {
-        socketRef.current?.emit("stop-typing");
+    const value = {
+        socket,
+        isConnected,
+        isConnecting,
+        connect,
+        disconnect
     };
 
     return (
-        <SocketContext.Provider
-            value={{
-                socket: socketRef.current,
-                connected,
-                onlineUsers,
-                typingUser,
-                messages,
-                joinConversation,
-                sendMessage,
-                startTyping,
-                stopTyping,
-            }}
-        >
-            {children}
-        </SocketContext.Provider>
+        <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
     );
 };
 
-export const useSocket = () => useContext(SocketContext);
+export default SocketProvider;

@@ -121,7 +121,7 @@ const SpecialistProgram = ({ id }) => {
             <div>
               <span className='font-semibold block'>  Book a Session with</span>
               <Link href={`${specialistInfo?.profileId?.externalLink}`} target="_blank" className="text-sm w-full block text-blue-500 border border-blue-500 break-all p-2 rounded-lg mt-2 hover:!font-semibold text-center">
-                {specialistInfo?.profileId?.externalLink.slice(0, 25)}...
+                {specialistInfo?.profileId?.externalLink?.slice(0, 25)}...
               </Link>
             </div>
 
