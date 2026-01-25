@@ -425,7 +425,7 @@ const Page = () => {
                         setHasMore(response?.totalPages > 1);
                         previousMessageCount.current = messages.length;
                         hasLoadedMessages.current = true;
-                        console.log(`✅ Loaded ${messages.length} messages successfully`);
+                        // console.log(`✅ Loaded ${messages.length} messages successfully`);
                     }
                 } catch (error) {
                     console.error("Error fetching messages:", error);

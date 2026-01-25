@@ -27,38 +27,45 @@
 //   const [conversations, setConversations] = useState([]);
 //   const [filteredConversations, setFilteredConversations] = useState([]);
 //   const [isLoading, setIsLoading] = useState(true);
-
-//   // console.log(conversations)
+//   const [onlineUsers, setOnlineUsers] = useState({}); // Track online status of all users
+//   const [currentUserId, setCurrentUserId] = useState(null);
 
 //   const lastJoinedRef = useRef(null);
 
-
-
-
-//   // Listen for online/offline status
+//   // Get current user ID
 //   useEffect(() => {
-//     if (!socket) return;
+//     if (typeof window !== 'undefined') {
+//       const user = JSON.parse(localStorage.getItem("user"));
+//       const userId = user?.id || user?._id || user?._userId;
+//       setCurrentUserId(userId);
+//     }
+//   }, []);
+
+//   // Listen for online/offline status updates
+//   useEffect(() => {
+//     if (!socket || !currentUserId) return;
 
 //     const handleStatusUpdate = (data) => {
 //       console.log("related-user-online-status", data);
 
-//       // Update online status based on the received data
-//       if (data && typeof data.isOnline !== 'undefined') {
-//         setIsOnline(data.isOnline);
-//       } else if (data && data.status) {
-//         setIsOnline(data.status === 'online');
+//       // Update online status for specific user
+//       if (data && data.userId) {
+//         setOnlineUsers(prev => ({
+//           ...prev,
+//           [data.userId]: data.isOnline || data.status === 'online'
+//         }));
 //       }
 //     };
 
-//     socket.on('related-user-online-status', handleStatusUpdate);
+//     // Listen to the event with current user's ID
+//     socket.on(`related-user-online-status::${currentUserId}`, handleStatusUpdate);
 
 //     return () => {
-//       socket.off('related-user-online-status', handleStatusUpdate);
+//       socket.off(`related-user-online-status::${currentUserId}`, handleStatusUpdate);
 //     };
-//   }, [socket]);
+//   }, [socket, currentUserId]);
 
-
-
+//   // Listen for conversation list updates
 //   useEffect(() => {
 //     const user = JSON.parse(localStorage.getItem("user"));
 //     if (!user || !socket || !isConnected) return;
@@ -131,9 +138,8 @@
 //     };
 
 //   }, [socket, isConnected]);
-//   // ------------------------------------
+
 //   // FETCH CONVERSATIONS WHEN SOCKET CONNECTS
-//   // ------------------------------------
 //   useEffect(() => {
 //     if (!isConnected) {
 //       console.log("Waiting for socket connection...");
@@ -162,15 +168,7 @@
 
 //   }, [isConnected]);
 
-
-
-
-
-
-
-//   // ------------------------------------
 //   // FILTER SEARCH
-//   // ------------------------------------
 //   useEffect(() => {
 //     if (!searchQuery.trim()) {
 //       setFilteredConversations(conversations);
@@ -185,9 +183,7 @@
 //     }
 //   }, [searchQuery, conversations]);
 
-//   // ------------------------------------
 //   // AUTO JOIN/LEAVE WHEN ROUTE CHANGES
-//   // ------------------------------------
 //   useEffect(() => {
 //     const conversationId = id || pathname.split("/chat/")[1];
 
@@ -219,9 +215,7 @@
 //     handleRoomChange();
 //   }, [id, pathname, isConnected]);
 
-//   // ------------------------------------
 //   // SEARCH HANDLER
-//   // ------------------------------------
 //   const handleSearch = async (query) => {
 //     setSearchQuery(query);
 
@@ -243,6 +237,12 @@
 //     } finally {
 //       setIsLoading(false);
 //     }
+//   };
+
+//   // Helper function to check if user is online
+//   const isUserOnline = (userId) => {
+//     const userIdString = userId?._userId || userId?.id || userId?._id || userId;
+//     return onlineUsers[userIdString] || false;
 //   };
 
 //   return (
@@ -268,8 +268,8 @@
 
 //       {/* CONNECTION STATUS */}
 //       {!isConnected && (
-//         <div className="my-3 p-3 bg-yellow-100 text-yellow-800 rounded-lg text-sm">
-//           Connecting to server...
+//         <div className="my-3 p-2 text-center bg-yellow-100 text-yellow-700 rounded-lg text-sm">
+//           Connecting...
 //         </div>
 //       )}
 
@@ -291,6 +291,8 @@
 //             const lastMessage =
 //               conv?.conversations?.[0]?.lastMessage ||
 //               "No messages yet";
+
+//             const userIsOnline = isUserOnline(conv?.userId);
 
 //             return (
 //               <Link
@@ -324,7 +326,13 @@
 //                       e.target.src = "https://via.placeholder.com/40";
 //                     }}
 //                   />
-//                   <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+//                   {/* Online/Offline Status Indicator */}
+//                   {/* <span 
+//                     className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full ${
+//                       userIsOnline ? 'bg-green-500' : 'bg-gray-400'
+//                     }`}
+//                     title={userIsOnline ? 'Online' : 'Offline'}
+//                   ></span> */}
 //                 </div>
 
 //                 <div className="flex-1 min-w-0">
@@ -357,6 +365,7 @@
 // export default MessageSidebar;
 
 
+
 "use client";
 
 import url from "@/redux/api/baseUrl";
@@ -386,7 +395,7 @@ const MessageSidebar = () => {
   const [conversations, setConversations] = useState([]);
   const [filteredConversations, setFilteredConversations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [onlineUsers, setOnlineUsers] = useState({}); // Track online status of all users
+  const [onlineUsers, setOnlineUsers] = useState({});
   const [currentUserId, setCurrentUserId] = useState(null);
 
   const lastJoinedRef = useRef(null);
@@ -407,7 +416,6 @@ const MessageSidebar = () => {
     const handleStatusUpdate = (data) => {
       console.log("related-user-online-status", data);
 
-      // Update online status for specific user
       if (data && data.userId) {
         setOnlineUsers(prev => ({
           ...prev,
@@ -416,7 +424,6 @@ const MessageSidebar = () => {
       }
     };
 
-    // Listen to the event with current user's ID
     socket.on(`related-user-online-status::${currentUserId}`, handleStatusUpdate);
 
     return () => {
@@ -435,7 +442,6 @@ const MessageSidebar = () => {
       console.log("🔥 conversation-list-updated data:", response);
 
       setConversations(prev => {
-        // Get the conversation ID from the response
         const newConvId = response?.conversations?.[0]?._conversationId ||
           response?.conversationId ||
           response?._id;
@@ -445,7 +451,6 @@ const MessageSidebar = () => {
           return prev;
         }
 
-        // Find existing conversation by matching conversationId
         const existingIndex = prev.findIndex(conv => {
           const existingConvId = conv?.conversations?.[0]?._conversationId ||
             conv?.conversationId ||
@@ -454,39 +459,31 @@ const MessageSidebar = () => {
         });
 
         if (existingIndex !== -1) {
-          // ✅ ONLY UPDATE lastMessage and updatedAt - PRESERVE ORIGINAL userId
           console.log("✏️ Updating existing conversation message:", newConvId);
           const updated = [...prev];
 
-          // 🔥 KEY FIX: Keep the ORIGINAL conversation object, only update message fields
           updated[existingIndex] = {
-            ...updated[existingIndex], // ✅ Keep original userId, name, profileImage
+            ...updated[existingIndex],
             conversations: [
               {
-                ...updated[existingIndex].conversations?.[0], // ✅ Keep original conversation data
-                lastMessage: response.conversations?.[0]?.lastMessage, // ✅ Update message
-                updatedAt: response.conversations?.[0]?.updatedAt,     // ✅ Update time
-                _conversationId: newConvId // ✅ Ensure ID stays the same
+                ...updated[existingIndex].conversations?.[0],
+                lastMessage: response.conversations?.[0]?.lastMessage,
+                updatedAt: response.conversations?.[0]?.updatedAt,
+                _conversationId: newConvId
               }
             ]
-            // ❌ DO NOT spread response data here - it contains wrong userId!
           };
 
-          // Move updated conversation to top
           const [updatedConv] = updated.splice(existingIndex, 1);
           return [updatedConv, ...updated];
         } else {
-          // ➕ New conversation - add to top
           console.log("➕ Adding new conversation:", newConvId);
           return [response, ...prev];
         }
       });
     };
 
-    // Remove any existing listener first
     socket.off(eventName, messageListener);
-
-    // Add the listener
     socket.on(eventName, messageListener);
 
     console.log(`✅ Listening to: ${eventName}`);
@@ -552,27 +549,41 @@ const MessageSidebar = () => {
       // Leave previous conversation if exists
       if (lastJoinedRef.current && lastJoinedRef.current !== conversationId) {
         try {
+          console.log("🚪 Leaving conversation:", lastJoinedRef.current);
           await leaveConversation(lastJoinedRef.current);
-          console.log("Left conversation:", lastJoinedRef.current);
+          console.log("✅ Successfully left conversation:", lastJoinedRef.current);
         } catch (error) {
-          console.error("Error leaving conversation:", error);
+          console.error("❌ Error leaving conversation:", error);
         }
       }
 
       // Join new conversation
       if (conversationId !== lastJoinedRef.current) {
         try {
+          // console.log("🚪 Joining conversation:", conversationId);
           await joinConversation(conversationId);
-          console.log("Joined conversation:", conversationId);
+          console.log("✅ Successfully joined conversation:", conversationId);
           lastJoinedRef.current = conversationId;
         } catch (error) {
-          console.error("Error joining conversation:", error);
+          console.error("❌ Error joining conversation:", error);
         }
       }
     };
 
     handleRoomChange();
   }, [id, pathname, isConnected]);
+
+  // CLEANUP: Leave conversation when component unmounts
+  useEffect(() => {
+    return () => {
+      if (lastJoinedRef.current && isConnected) {
+        console.log("🧹 Component unmounting, leaving conversation:", lastJoinedRef.current);
+        leaveConversation(lastJoinedRef.current).catch(err => {
+          console.error("Error leaving conversation on unmount:", err);
+        });
+      }
+    };
+  }, [isConnected]);
 
   // SEARCH HANDLER
   const handleSearch = async (query) => {
@@ -598,17 +609,49 @@ const MessageSidebar = () => {
     }
   };
 
+
+  const [currentConvId, setCurrentConvId] = useState(null);
+
+
+  // HANDLE CONVERSATION CLICK
+  const handleConversationClick = async () => {
+
+    console.log(currentConvId)
+
+    if (currentConvId) {
+      try {
+        await leaveConversation(currentConvId);
+        console.log("✅ Left conversation successfully");
+      } catch (error) {
+        console.error("❌ Error leaving conversation:", error);
+      }
+    }
+  };
+
   // Helper function to check if user is online
   const isUserOnline = (userId) => {
     const userIdString = userId?._userId || userId?.id || userId?._id || userId;
     return onlineUsers[userIdString] || false;
   };
 
+
   return (
     <div className="p-3">
       <Link
         href="/"
         className="flex items-center gap-2 bg-gray-200 p-2 rounded text-xl font-semibold my-5"
+        onClick={async () => {
+
+          // Leave current conversation when going back home
+          if (lastJoinedRef.current && isConnected) {
+            try {
+              await leaveConversation(lastJoinedRef.current);
+              lastJoinedRef.current = null;
+            } catch (error) {
+              console.error("Error leaving conversation:", error);
+            }
+          }
+        }}
       >
         <FaArrowLeft /> Back Home
       </Link>
@@ -657,15 +700,9 @@ const MessageSidebar = () => {
               <Link
                 key={conversationId}
                 href={`/chat/${conversationId}`}
-                onClick={async (e) => {
-                  if (lastJoinedRef.current && lastJoinedRef.current !== conversationId) {
-                    try {
-                      await leaveConversation(lastJoinedRef.current);
-                      console.log("Left conversation:", lastJoinedRef.current);
-                    } catch (error) {
-                      console.error("Error leaving conversation:", error);
-                    }
-                  }
+                onClick={() => {
+                  setCurrentConvId(conversationId);
+                  handleConversationClick();
                 }}
                 className={`px-2 py-5 flex gap-3 rounded-lg hover:bg-gray-200 ${isActive ? "bg-blue-200" : ""
                   }`}
@@ -686,12 +723,11 @@ const MessageSidebar = () => {
                     }}
                   />
                   {/* Online/Offline Status Indicator */}
-                  <span 
-                    className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full ${
-                      userIsOnline ? 'bg-green-500' : 'bg-gray-400'
-                    }`}
+                  {/* <span
+                    className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full ${userIsOnline ? 'bg-green-500' : 'bg-gray-400'
+                      }`}
                     title={userIsOnline ? 'Online' : 'Offline'}
-                  ></span>
+                  ></span> */}
                 </div>
 
                 <div className="flex-1 min-w-0">

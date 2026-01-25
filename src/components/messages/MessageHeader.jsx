@@ -23,9 +23,16 @@ const MessageHeader = () => {
         // console.log("🔍 Requesting online status for user:", otherUserId);
 
         // Emit event to request user's online status
-        socket.emit('isOnline', { userId: otherUserId }, (response) => {
-            console.log(" User status response:", response?.messageDetails);
+        // setinterval to request status every 2 minure seconds
+        setInterval(() => {
+            socket.emit('isOnline', { userId: otherUserId }, (response) => {
+                // console.log(" User status response:", response?.messageDetails);
+                setIsOnline(response?.messageDetails?.isOnline || response?.messageDetails?.isOnline === 'online');
+            });
+        }, 120000);
 
+        socket.emit('isOnline', { userId: otherUserId }, (response) => {
+            // console.log(" User status response:", response?.messageDetails);
             setIsOnline(response?.messageDetails?.isOnline || response?.messageDetails?.isOnline === 'online');
         });
 

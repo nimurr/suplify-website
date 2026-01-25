@@ -50,7 +50,7 @@ export const fetchConversationList = (
         );
     });
 };
- 
+
 
 export const fetchMessages = (
     conversationId,
@@ -119,6 +119,7 @@ export const leaveConversation = (conversationId) => {
             return;
         }
         socket.emit("leave", { conversationId }, (response) => {
+            console.log("leave Conversation: Received response", response)
 
             if (response.success) {
                 resolve(response.data);
