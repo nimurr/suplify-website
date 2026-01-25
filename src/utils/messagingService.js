@@ -39,7 +39,7 @@ export const fetchConversationList = (
             },
             (response) => {
                 if (response.success) {
-                    console.log("Response data", response.data)
+                    // console.log("Response data", response.data)
                     resolve(response.data);
                 } else {
                     reject(
