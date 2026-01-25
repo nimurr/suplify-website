@@ -60,8 +60,8 @@ const Page = () => {
     useEffect(() => {
         if (!socket || !id) return;
 
-        const messageListener = (message) => {
-            console.log("New message received:", message);
+        const messageListener = (message) => { 
+            // console.log("New message received:", message);
             setFullMessage(prev => [...prev, message]);
         };
 
@@ -70,7 +70,6 @@ const Page = () => {
         return () => {
             socket.off(`new-message-received::${id}`, messageListener);
         };
-
 
     }, [socket, id]);
 

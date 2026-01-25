@@ -8,22 +8,103 @@ import React, { useEffect, useState, useRef } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaArrowLeft } from "react-icons/fa6";
 import { LuLoader } from "react-icons/lu";
-import { joinConversation, fetchConversationList, leaveConversation } from "@/utils/messagingService";
+import {
+  joinConversation,
+  fetchConversationList,
+  leaveConversation,
+  setupConversationListener
+} from "@/utils/messagingService";
 import { useSocket } from "@/context/SocketContext";
+import { getSocket } from "@/utils/socket-io";
 
 const MessageSidebar = () => {
   const { id } = useParams();
   const pathname = usePathname();
   const { isConnected } = useSocket();
+  const socket = getSocket();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [conversations, setConversations] = useState([]);
   const [filteredConversations, setFilteredConversations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Track the last joined conversation to prevent duplicate joins
+  console.log(conversations)
+
   const lastJoinedRef = useRef(null);
 
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !socket || !isConnected) return;
+
+    const eventName = `conversation-list-updated::${user._id}`;
+
+    const messageListener = (response) => {
+      console.log("🔥 conversation-list-updated data:", response);
+
+      setConversations(prev => {
+        // Get the conversation ID from the response
+        const newConvId = response?.conversations?.[0]?._conversationId ||
+          response?.conversationId ||
+          response?._id;
+
+        if (!newConvId) {
+          console.warn("No conversation ID found in response");
+          return prev;
+        }
+
+        // Find existing conversation by matching conversationId
+        const existingIndex = prev.findIndex(conv => {
+          const existingConvId = conv?.conversations?.[0]?._conversationId ||
+            conv?.conversationId ||
+            conv?._id;
+          return existingConvId === newConvId;
+        });
+
+        if (existingIndex !== -1) {
+          // ✅ ONLY UPDATE lastMessage and updatedAt - PRESERVE ORIGINAL userId
+          console.log("✏️ Updating existing conversation message:", newConvId);
+          const updated = [...prev];
+
+          // 🔥 KEY FIX: Keep the ORIGINAL conversation object, only update message fields
+          updated[existingIndex] = {
+            ...updated[existingIndex], // ✅ Keep original userId, name, profileImage
+            conversations: [
+              {
+                ...updated[existingIndex].conversations?.[0], // ✅ Keep original conversation data
+                lastMessage: response.conversations?.[0]?.lastMessage, // ✅ Update message
+                updatedAt: response.conversations?.[0]?.updatedAt,     // ✅ Update time
+                _conversationId: newConvId // ✅ Ensure ID stays the same
+              }
+            ]
+            // ❌ DO NOT spread response data here - it contains wrong userId!
+          };
+
+          // Move updated conversation to top
+          const [updatedConv] = updated.splice(existingIndex, 1);
+          return [updatedConv, ...updated];
+        } else {
+          // ➕ New conversation - add to top
+          console.log("➕ Adding new conversation:", newConvId);
+          return [response, ...prev];
+        }
+      });
+    };
+
+    // Remove any existing listener first
+    socket.off(eventName, messageListener);
+
+    // Add the listener
+    socket.on(eventName, messageListener);
+
+    console.log(`✅ Listening to: ${eventName}`);
+
+    return () => {
+      console.log(`🧹 Cleaning up listener: ${eventName}`);
+      socket.off(eventName, messageListener);
+    };
+
+  }, [socket, isConnected]);
   // ------------------------------------
   // FETCH CONVERSATIONS WHEN SOCKET CONNECTS
   // ------------------------------------
@@ -54,6 +135,12 @@ const MessageSidebar = () => {
     }, 2000);
 
   }, [isConnected]);
+
+
+
+
+
+
 
   // ------------------------------------
   // FILTER SEARCH
@@ -175,12 +262,15 @@ const MessageSidebar = () => {
             const isActive =
               id?.toString() === conversationId?.toString();
 
+            const lastMessage =
+              conv?.conversations?.[0]?.lastMessage ||
+              "No messages yet";
+
             return (
               <Link
                 key={conversationId}
                 href={`/chat/${conversationId}`}
                 onClick={async (e) => {
-                  // Only leave if we're switching to a different conversation
                   if (lastJoinedRef.current && lastJoinedRef.current !== conversationId) {
                     try {
                       await leaveConversation(lastJoinedRef.current);
@@ -194,7 +284,7 @@ const MessageSidebar = () => {
                   }`}
               >
                 <img
-                  className="w-10 h-10 rounded-full"
+                  className="w-10 h-10 rounded-full object-cover"
                   src={
                     conv?.userId?.profileImage?.imageUrl?.includes(
                       "amazonaws.com"
@@ -203,18 +293,21 @@ const MessageSidebar = () => {
                       : url + conv?.userId?.profileImage?.imageUrl
                   }
                   alt="profile"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/40";
+                  }}
                 />
 
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <h2 className="font-semibold text-sm">
                     {conv?.userId?.name}
                   </h2>
                   <p className="text-sm text-gray-600 truncate">
-                    {conv?.conversations?.[0]?.lastMessage}
+                    {lastMessage}
                   </p>
                 </div>
 
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 flex-shrink-0">
                   {moment(
                     conv?.conversations?.[0]?.updatedAt
                   ).fromNow()}
@@ -223,7 +316,7 @@ const MessageSidebar = () => {
             );
           })
         ) : (
-          <p className="p-4 text-gray-500">
+          <p className="p-4 text-gray-500 text-center">
             {!isConnected ? "Waiting for connection..." : "No conversations found"}
           </p>
         )}

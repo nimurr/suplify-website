@@ -50,6 +50,7 @@ export const fetchConversationList = (
         );
     });
 };
+ 
 
 export const fetchMessages = (
     conversationId,
@@ -110,12 +111,6 @@ export const sendMessage = (messageData) => {
     });
 };
 
-// {
-//     // for leave
-//     "conversationId": "696764550e1333a4a235c46a"
-// }
-
-
 export const leaveConversation = (conversationId) => {
     return new Promise((resolve, reject) => {
         const socket = getSocket();
@@ -124,7 +119,7 @@ export const leaveConversation = (conversationId) => {
             return;
         }
         socket.emit("leave", { conversationId }, (response) => {
-          
+
             if (response.success) {
                 resolve(response.data);
             } else {
