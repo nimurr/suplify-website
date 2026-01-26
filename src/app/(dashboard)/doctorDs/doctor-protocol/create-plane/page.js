@@ -44,7 +44,7 @@ const Page = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [newMealPlan, setNewMealPlan] = useState({
-        image: null,
+        image: [],
         link: '',
         planName: '',
         keyPoints: [''],
@@ -118,11 +118,14 @@ const Page = () => {
     };
 
     const handleImageChange = (e) => {
+        const files = Array.from(e.target.files); // ✅ convert FileList to array
+
         setNewMealPlan(prev => ({
             ...prev,
-            image: e.target.files[0]
+            image: files
         }));
     };
+
 
     /* ---------------- CREATE PLAN (FIXED) ---------------- */
     const [createPlane] = useCreatePlanByDocMutation();
@@ -138,7 +141,9 @@ const Page = () => {
             return toast.error("All fields are required");
         }
 
+
         const formData = new FormData();
+
         formData.append("title", newMealPlan.planName);
         formData.append("planType", selectedPlan);
         formData.append("link", newMealPlan.link);
@@ -146,7 +151,12 @@ const Page = () => {
         formData.append("protocolId", protocolId);
         formData.append("patientId", patientId);
         formData.append("keyPoints", JSON.stringify(newMealPlan.keyPoints));
-        formData.append("attachments", newMealPlan.image);
+
+        // ✅ append multiple files correctly
+        newMealPlan.image.forEach((file) => {
+            formData.append("attachments", file);
+        });
+
 
         try {
             const res = await createPlane(formData);
@@ -157,7 +167,7 @@ const Page = () => {
                 refetch();
 
                 setNewMealPlan({
-                    image: null,
+                    image: [],
                     link: '',
                     planName: '',
                     keyPoints: [''],
@@ -202,6 +212,8 @@ const Page = () => {
     const filteredPlans = myAllPlans.filter(
         plan => plan?.planType === selectedPlan
     );
+
+    console.log(filteredPlans)
 
     return (
         <div className="flex lg:flex-row flex-col items-start py-10">
@@ -287,7 +299,7 @@ const Page = () => {
                 {filteredPlans?.map((item, i) => (
                     <div key={i} className="flex justify-between bg-gray-100 p-5 rounded-md my-2">
                         <div className='flex gap-10 items-start '>
-                            <div className='!w-14 min-h-14 min-w-14 bg-gray-200 rounded-md'>
+                            <div className='!w-14 min-w-14 max-h-56 overflow-y-auto bg-gray-200 rounded-md'>
                                 {
                                     item?.attachments.map((item, i) => (
                                         <Image key={i} className='min-w-14 rounded-md border h-auto overflow-hidden' src={item?.attachment} alt="" />
@@ -323,14 +335,15 @@ const Page = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[99999]">
                     <form
                         onSubmit={handleCreateMealPlan}
-                        className="bg-white p-6 rounded w-full max-w-md"
+                        className="bg-white p-6 rounded w-full max-w-2xl"
                     >
+                        <span className='font-semibold block text-center text-2xl mb-5'>Create New Plan</span>
                         <input
                             name="planName"
                             placeholder="Plan Name"
                             value={newMealPlan.planName}
                             onChange={handleInputChange}
-                            className="border p-2 w-full mb-2"
+                            className="border p-2 w-full mb-5"
                         />
 
                         <input
@@ -338,13 +351,15 @@ const Page = () => {
                             placeholder="Link"
                             value={newMealPlan.link}
                             onChange={handleInputChange}
-                            className="border p-2 w-full mb-2"
+                            className="border p-2 w-full mb-5"
                         />
 
                         <input
                             type="file"
+                            accept="image/*"
+                            multiple
                             onChange={handleImageChange}
-                            className="mb-2"
+                            className="mb-5"
                         />
 
                         {newMealPlan.keyPoints.map((kp, i) => (
@@ -352,21 +367,22 @@ const Page = () => {
                                 key={i}
                                 value={kp}
                                 onChange={(e) => handleKeyPointChange(i, e.target.value)}
-                                className="border p-2 w-full mb-2"
+                                className="border p-2 w-full mb-5"
                                 placeholder={`Key point ${i + 1}`}
                             />
                         ))}
 
-                        <button type="button" onClick={addKeyPoint} className="text-blue-500 mb-2">
+                        <button type="button" onClick={addKeyPoint} className="text-blue-500 mb-5">
                             + Add Key Point
                         </button>
 
                         <textarea
                             name="description"
                             placeholder="Description"
+                            rows={5}
                             value={newMealPlan.description}
                             onChange={handleInputChange}
-                            className="border p-2 w-full mb-2"
+                            className="border p-2 w-full mb-5"
                         />
 
                         <div className='flex items-center justify-center gap-2'>

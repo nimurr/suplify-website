@@ -475,69 +475,92 @@ const NewSubscription = () => {
 
             {/* ERROR */}
             {error && <OfflineSub />}
-
-            <Row gutter={[24, 24]} justify="center">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
                 {subscriptionsList.map((plan) => (
-                    <Col xs={24} md={8} key={plan.id}>
-                        <Card
-                            title={plan.name}
-                            className="overflow-hidden"
-                            bordered={false}
-                            style={{
-                                borderRadius: 12,
-                                boxShadow: "0 6px 15px rgba(0,0,0,.1)",
-                            }}
-                        >
-                            {plan.subscriptionType === activeSubscriptionType && (
-                                <span className="absolute top-3 right-[-40px] rotate-45 bg-green-500 text-white px-10 py-1">
-                                    Active
-                                </span>
+                    <div
+                        key={plan.id}
+                        className="relative flex flex-col justify-between h-full w-full overflow-hidden rounded-xl bg-white shadow-[0_6px_15px_rgba(0,0,0,0.1)] p-6"
+                    >
+                        {/* ACTIVE BADGE */}
+                        {plan.subscriptionType === activeSubscriptionType && (
+                            <span className="absolute top-3 right-[-40px] rotate-45 bg-green-500 text-white px-10 py-1 text-sm font-semibold">
+                                Active
+                            </span>
+                        )}
+
+                        <div>
+                            {/* TITLE */}
+                            <h3 className="text-lg font-bold text-gray-900">
+                                {plan.name}
+                            </h3>
+
+                            {/* PRICE */}
+                            <p className="text-3xl font-extrabold mt-3 text-gray-900">
+                                {plan.price}
+                            </p>
+
+                            {/* TRIAL */}
+                            {plan.trial && (
+                                <p className="text-sm text-gray-500 mt-1">
+                                    {plan.trial}
+                                </p>
                             )}
 
-                            <Text strong style={{ fontSize: 22 }}>
-                                {plan.price}
-                            </Text>
-                            <h2>
-                                {plan.trial && (
-                                    <Text type="secondary" style={{ display: "block" }}>
-                                        {plan.trial}
-                                    </Text>
-                                )}
-                            </h2>
- 
-                            <p className="mt-2 text-gray-800 font-semibold">{plan.title && plan.title}</p>
-                            <p className="mt-2 text-gray-600 font-semibold">{plan.subtitle}</p>
+                            {/* TITLE & SUBTITLE */}
+                            {plan.title && (
+                                <p className="mt-3 font-semibold text-gray-800">
+                                    {plan.title}
+                                </p>
+                            )}
 
-                            <ul className="mt-4 space-y-2">
+                            <p className="mt-2 text-gray-600 font-medium">
+                                {plan.subtitle}
+                            </p>
+
+                            {/* PERKS */}
+                            <ul className="mt-4 space-y-2 text-sm text-gray-700">
                                 {plan.perks.map((perk, i) => (
                                     <li key={i}>• {perk}</li>
                                 ))}
                             </ul>
-
+                            {/* IDEAL FOR */}
                             <p className="mt-4 text-sm text-gray-600">
-                                <strong>Ideal For:</strong> {plan.idealFor}
+                                <span className="font-semibold">Ideal For:</span> {plan.idealFor}
                             </p>
+                        </div>
 
-                            <div className="mt-6">
-                                {plan.subscriptionType === activeSubscriptionType ? (
-                                    <Button danger onClick={handleCancelSubscription}>
-                                        Cancel Subscription
-                                    </Button>
-                                ) : plan.subscriptionType === "vise" ? (
-                                    <Button type="primary" onClick={handleApplyForVise}>Apply For Vise</Button>
-                                ) : (
-                                    <Button
-                                        type="primary"
-                                        onClick={() => handleSubscribe(plan)}
-                                    >
-                                        Subscribe Now
-                                    </Button>
-                                )}
-                            </div>
-                        </Card>
-                    </Col>
+
+                        {/* ACTION BUTTON */}
+                        <div className="mt-6">
+                            {plan.subscriptionType === activeSubscriptionType ? (
+                                <button
+                                    onClick={handleCancelSubscription}
+                                    className="w-full rounded-lg border border-red-500 text-red-600 py-2 font-semibold hover:bg-red-50 transition"
+                                >
+                                    Cancel Subscription
+                                </button>
+                            ) : plan.subscriptionType === "vise" ? (
+                                <button
+                                    onClick={handleApplyForVise}
+                                    className="w-full rounded-lg bg-blue-600 text-white py-2 font-semibold hover:bg-blue-700 transition"
+                                >
+                                    Apply For Vise
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => handleSubscribe(plan)}
+                                    className="w-full rounded-lg bg-blue-600 text-white py-2 font-semibold hover:bg-blue-700 transition"
+                                >
+                                    Subscribe Now
+                                </button>
+                            )}
+                        </div>
+                    </div>
                 ))}
-            </Row>
+            </div>
+
+
+
         </div>
     );
 };
