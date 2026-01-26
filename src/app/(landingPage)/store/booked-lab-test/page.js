@@ -12,14 +12,17 @@ import {
 import { useBookedNowLabTestMutation } from '@/redux/fetures/landing/landing';
 import toast from 'react-hot-toast';
 import moment from 'moment';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const { Title, Text } = Typography;
 
 const Page = () => {
-    // id get from url params if needed in future
-    const queryParams = new URLSearchParams(window.location.search);
+    // id get from url params if needed in future with out using window
+    const queryParams = useSearchParams();
     const labTestId = queryParams.get('id');
+    console.log(labTestId)
+
+    // const labTestId = queryParams.get('id');
     const navigate = useRouter();
 
     const [form] = Form.useForm();
@@ -73,7 +76,7 @@ const Page = () => {
 
         try {
             const res = await booklabtest(payload).unwrap();
-     
+
             if (res?.code !== 200) {
                 throw new Error(res?.message || "Failed to book lab test");
             }
