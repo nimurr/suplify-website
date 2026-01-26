@@ -160,8 +160,8 @@ import { MdOutlineDeleteForever } from 'react-icons/md';
 const { p, Text, Paragraph } = Typography;
 
 const WorkoutSpecialistClass = () => {
- 
-  const { data , refetch } = useGetAllWorkoutClassQuery();
+
+  const { data, refetch } = useGetAllWorkoutClassQuery();
   const fullData = data?.data?.attributes;
   console.log(fullData);
   const [deleteHospots] = useDeleteWorkoutClassMutation();
@@ -256,11 +256,12 @@ const WorkoutSpecialistClass = () => {
                     <p className='flex items-center justify-between my-2'>
                       <strong>Start Date:</strong> {moment(item.scheduleDate).format('DD MMM YYYY')}
                     </p>
+
                     <p className='flex items-center justify-between my-2'>
-                      <strong>Start Time:</strong> {moment(item.repeatRule.startDate).format('DD MMM YYYY hh:mm A')}
+                      <strong>Start Time:</strong> {moment(item.startTime).format('hh:mm A')}
                     </p>
                     <p className='flex items-center justify-between my-2'>
-                      <strong>End Time:</strong> {moment(item.repeatRule.endDate).format('DD MMM YYYY ')}
+                      <strong>End Time:</strong> {moment(item.endTime).format('hh:mm A')}
                     </p>
                     <p className='flex items-center justify-between my-2'>
                       <strong>Duration (weeks):</strong> {item.repeatRule.durationWeeks}

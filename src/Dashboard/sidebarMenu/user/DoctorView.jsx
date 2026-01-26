@@ -18,6 +18,7 @@ export default function AppointmentScheduler({ doctorId }) {
   const [profile, setProfile] = useState(null);
 
 
+  console.log(profile)
 
   // Ensure refetch is called once on first render and whenever doctorId changes
   useEffect(() => {
@@ -69,6 +70,14 @@ export default function AppointmentScheduler({ doctorId }) {
               <p className="text-sm text-gray-700 mb-6 leading-relaxed">
                 {profile?.profileId?.description}
               </p>
+              <div>
+               <span className='font-semibold block'>  Book a Session with</span>
+ 
+                <Link href={`${profile?.profileId?.externalLink}`} target="_blank" className="text-sm w-full block text-blue-500 border border-blue-500 break-all p-2 rounded-lg mt-2 hover:!font-semibold text-center">
+                  {profile?.profileId?.externalLink.slice(0, 25)}...
+                </Link>
+              </div>
+
             </div>
           </div>
         </div>
