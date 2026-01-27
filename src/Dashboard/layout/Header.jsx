@@ -43,22 +43,24 @@ export default function DashboardHeader({ collapsed }) {
     const userId = user?.id || user?._id || user?._userId;
     if (!userId) return;
 
-    const eventName = `unseen-count::${userId}`;
+    setTimeout(() => {
+      const eventName = `unseen-count::${userId}`;
 
-    const handler = (data) => {
-      console.log("unseen-count", data);
+      const handler = (data) => {
+        console.log("unseen-count", data);
 
-      setUnseenCount(prev =>
-        prev + (data?.unreadConversationCount || 0)
-      );
-    };
+        setUnseenCount(prev =>
+          prev + (data?.unreadConversationCount || 0)
+        );
+      };
 
-    socket.on(eventName, handler);
+      socket.on(eventName, handler);
 
-    // ✅ cleanup (VERY IMPORTANT)
-    return () => {
-      socket.off(eventName, handler);
-    };
+      // ✅ cleanup (VERY IMPORTANT)
+      return () => {
+        socket.off(eventName, handler);
+      };
+    }, 1000)
   }, []); // 👈 NO unseenCount here
 
 
