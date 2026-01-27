@@ -157,7 +157,6 @@ import Link from 'next/link';
 import { FaRegEdit } from 'react-icons/fa';
 import { MdOutlineDeleteForever } from 'react-icons/md';
 
-const { p, Text, Paragraph } = Typography;
 
 const WorkoutSpecialistClass = () => {
 

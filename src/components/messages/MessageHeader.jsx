@@ -36,43 +36,7 @@ const MessageHeader = () => {
             setIsOnline(response?.messageDetails?.isOnline || response?.messageDetails?.isOnline === 'online');
         });
 
-        // Listen for the status response
-        // const handleStatusResponse = (data) => {
-        //     console.log("📡 User status response:", data);
-
-        //     const userId = data?.userId || data?._userId;
-
-        //     // Check if this response is for the user we're interested in
-        //     if (userId === otherUserId) {
-        //         const online = data?.isOnline || data?.status === 'online';
-        //         setIsOnline(online);
-        //         console.log(`✅ ${fullUserInfo?.name} is ${online ? '🟢 ONLINE' : '⚫ OFFLINE'}`);
-        //     }
-        // };
-
-        // // Listen for status updates
-        // const handleStatusUpdate = (data) => {
-        //     console.log("📡 Status update received:", data);
-
-        //     const userId = data?.userId || data?._userId;
-
-        //     if (userId === otherUserId) {
-        //         const online = data?.isOnline || data?.status === 'online';
-        //         setIsOnline(online);
-        //         console.log(`🔄 ${fullUserInfo?.name} status changed to ${online ? '🟢 ONLINE' : '⚫ OFFLINE'}`);
-        //     }
-        // };
-
-        // Listen for both initial response and updates
-        // socket.on('user-status-response', handleStatusResponse);
-        // socket.on('user-status-update', handleStatusUpdate);
-
-        // Cleanup listeners on unmount
-        // return () => {
-        //     console.log("🧹 Cleaning up status listeners");
-        //     socket.off('user-status-response', handleStatusResponse);
-        //     socket.off('user-status-update', handleStatusUpdate);
-        // };
+      
     }, [socket, otherUserId, fullUserInfo?.name]);
 
     return (
