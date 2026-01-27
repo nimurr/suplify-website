@@ -20,6 +20,7 @@ import url from '@/redux/api/baseUrl';
 import { AiOutlineMessage } from 'react-icons/ai';
 import Link from 'next/link';
 import { IoNotifications } from 'react-icons/io5';
+import { getSocket } from '@/utils/socket-io';
 
 export default function DashboardHeader({ collapsed }) {
   // State for modals and mobile menu
@@ -27,12 +28,40 @@ export default function DashboardHeader({ collapsed }) {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const socket = getSocket();
+
   // Modal handlers
   const openPasswordModal = () => setIsPasswordModalOpen(true);
   const closePasswordModal = () => setIsPasswordModalOpen(false);
 
   const openLogoutModal = () => setIsLogoutModalOpen(true);
   const closeLogoutModal = () => setIsLogoutModalOpen(false);
+  const [unseenCount, setUnseenCount] = useState(0);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userId = user?.id || user?._id || user?._userId;
+    if (!userId) return;
+
+    setTimeout(() => {
+      const eventName = `unseen-count::${userId}`;
+
+      const handler = (data) => {
+        console.log("unseen-count", data);
+
+        setUnseenCount(prev =>
+          prev + (data?.unreadConversationCount || 0)
+        );
+      };
+
+      socket.on(eventName, handler);
+
+      // ✅ cleanup (VERY IMPORTANT)
+      return () => {
+        socket.off(eventName, handler);
+      };
+    }, 1000)
+  }, []); // 👈 NO unseenCount here
 
 
 
@@ -97,7 +126,7 @@ export default function DashboardHeader({ collapsed }) {
   const { data: user } = useGetUserProfileQuery(userData.id)
   const fullUser = user?.data?.attributes;
 
-  console.log(user?.data) 
+  console.log(user?.data)
 
   const imageUrl = fullUser?.profileImage?.imageUrl.includes("amazonaws.com")
     ? fullUser?.profileImage?.imageUrl
@@ -149,7 +178,7 @@ export default function DashboardHeader({ collapsed }) {
           <Link href="/chat" className='w-10 cursor-pointer relative h-10 bg-red-600 text-white flex items-center justify-center rounded-lg'>
             <AiOutlineMessage className='text-2xl font-semibold' />
             <span className='absolute -top-1 -right-1 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs'>
-              {user?.data?.additionalResponse?.unreadConversationCount > 9 ? '9+' : user?.data?.additionalResponse?.unreadConversationCount || 0}
+              {unseenCount ? unseenCount : (user?.data?.additionalResponse?.unreadConversationCount > 9 ? '9+' : user?.data?.additionalResponse?.unreadConversationCount || 0)}
             </span>
           </Link>
           <Link href="/notification" className='w-10 cursor-pointer h-10 bg-red-600 text-white flex items-center justify-center rounded-lg'>

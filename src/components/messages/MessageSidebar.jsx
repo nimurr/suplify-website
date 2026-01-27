@@ -641,16 +641,7 @@ const MessageSidebar = () => {
         href="/"
         className="flex items-center gap-2 bg-gray-200 p-2 rounded text-xl font-semibold my-5"
         onClick={async () => {
-
-          // Leave current conversation when going back home
-          if (lastJoinedRef.current && isConnected) {
-            try {
-              await leaveConversation(lastJoinedRef.current);
-              lastJoinedRef.current = null;
-            } catch (error) {
-              console.error("Error leaving conversation:", error);
-            }
-          }
+          handleConversationClick()
         }}
       >
         <FaArrowLeft /> Back Home
