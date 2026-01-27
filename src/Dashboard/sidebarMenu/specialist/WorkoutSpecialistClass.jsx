@@ -185,7 +185,7 @@ const WorkoutSpecialistClass = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="flex lg:flex-row flex-col items-start gap-6">
+      <div className="flex xl:flex-row flex-col items-start gap-6">
         {/* Left Panel: Trainer Info */}
         <div className="w-64 bg-white rounded-md shadow p-4">
           <img
@@ -226,7 +226,7 @@ const WorkoutSpecialistClass = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {fullData?.results?.map((item, index) => (
               <div
                 key={index}
@@ -242,12 +242,17 @@ const WorkoutSpecialistClass = () => {
                   </div>
                 </div>
 
+                <hr />
                 <div className="flex justify-between items-center">
                   <p className="text-xl font-semibold">{item?.scheduleName}</p>
                   <p className="text-lg flex items-center gap-2 font-semibold text-red-600">
                     ${item?.price}
                   </p>
                 </div>
+                <p className='flex items-center justify-between capitalize my-2'>
+                  <strong>Schedule Name:</strong> {item.scheduleType}
+                </p>
+                <hr />
 
                 {/* Conditional Rendering */}
                 {item.scheduleType === 'repeat' && item.repeatRule && (
@@ -267,7 +272,7 @@ const WorkoutSpecialistClass = () => {
                     </p>
                     <p className='flex items-center justify-between my-2'>
                       <strong>Weekdays:</strong>
-                      <div className='flex items-center gap-2'>
+                      <div className='flex flex-wrap items-center gap-2'>
                         {item?.repeatRule?.weekDays?.map((day) => (
                           <span key={day} className="border px-2 py-1 text-sm rounded-full text-gray-600">
                             {day}
@@ -277,8 +282,23 @@ const WorkoutSpecialistClass = () => {
                     </p>
                   </div>
                 )}
+                {
+                  item?.scheduleType === 'oneTime' && (
+                    <div>
+                      <p className='flex items-center justify-between my-2'>
+                        <strong>Schedule Date:</strong> {moment(item.scheduleDate).format('DD MMM YYYY')}
+                      </p>
+                      <p className='flex items-center justify-between my-2'>
+                        <strong>Schedule Start Time:</strong> {moment(item.startTime).format('hh:mm A')}
+                      </p>
+                      <p className='flex items-center justify-between my-2'>
+                        <strong>Schedule Start Time:</strong> {moment(item.endTime).format('hh:mm A')}
+                      </p>
+                    </div>
+                  )
+                }
 
-                {item.hotspot && (
+                {item.hotspot && item?.classType !== 'online' && (
                   <div className="text-gray-600 mb-4">
                     <hr />
                     <p className='flex items-center justify-between my-2'>
@@ -322,12 +342,18 @@ const WorkoutSpecialistClass = () => {
                   </div>
                 )}
 
+                {/* <div className="my-3">
+                  <strong>Latest Booking:</strong>
+                  {
+                    item?.latestBookingStatus !== null ? <span> {item?.latestBookingStatus} </span> : <span> {item?.status} </span>
+                  }
+                </div> */}
+
                 <div className="flex justify-between items-center mb-4">
                   <p
-                    className={`text-xl font-semibold underline capitalize ${item.status === 'available' ? 'text-green-600' : 'text-red-600'
-                      }`}
                   >
-                    {item.status}
+                    <strong>Status :</strong> <span className={`text-base font-semibold capitalize ${item.status === 'available' ? 'text-green-600' : 'text-red-600'
+                      }`}>{item.status}</span>
                   </p>
                   <p
                     className={`text-base font-semibold px-2 py-1 rounded-md capitalize ${item.sessionType !== 'private'

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { useCreateWorkoutClassMutation, useGetAllHospotsQuery } from '@/redux/fetures/Specialist/workoutClass';
+import moment from 'moment';
 
 // Week days mapping (BACKEND FORMAT)
 const WEEK_DAYS = [
@@ -79,29 +80,51 @@ const Page = () => {
             return toast.error('Select schedule type');
         }
 
+        // const payload = {
+        //     scheduleName: formData.scheduleName,
+        //     scheduleType: formData.scheduleType,
+        //     scheduleDate: toISODateWithZ(formData.scheduleDate),
+
+        //     classType: formData.classType,
+
+        //     startTime: toUTCTimeNoZ(formData.startTime),
+        //     endTime: toUTCTimeNoZ(formData.endTime),
+
+        //     description: formData.description,
+
+
+        //     sessionType: formData.sessionType,
+        //     price: formData.price,
+        // };
         const payload = {
             scheduleName: formData.scheduleName,
             scheduleType: formData.scheduleType,
-            scheduleDate: toISODateWithZ(formData.scheduleDate),
+            scheduleDate: toISODateWithZ(formData.scheduleDate), // keep as is
 
             classType: formData.classType,
 
-            startTime: toUTCTimeNoZ(formData.startTime),
-            endTime: toUTCTimeNoZ(formData.endTime),
+            // Add 6 hours and format as "YYYY-MM-DDTHH:mm:ss"
+            startTime: moment(toUTCTimeNoZ(formData.startTime))
+                .add(6, 'hours')
+                .format('YYYY-MM-DDTHH:mm:ss'),
+
+            endTime: moment(toUTCTimeNoZ(formData.endTime))
+                .add(6, 'hours')
+                .format('YYYY-MM-DDTHH:mm:ss'),
 
             description: formData.description,
-
-
             sessionType: formData.sessionType,
             price: formData.price,
         };
+
+
 
         // ONE TIME
         if (formData.scheduleType === 'oneTime') {
             payload.scheduleDate = toISODateWithZ(formData.scheduleDate);
         }
 
-        if(formData.classType === 'online'){
+        if (formData.classType === 'online') {
             payload.meetingLink = formData.meetingLink;
             payload.typeOfLink = formData.typeOfLink;
         }
@@ -123,6 +146,10 @@ const Page = () => {
             delete payload.meetingLink;
             delete payload.typeOfLink;
         }
+
+        console.log(payload);
+
+        // return
 
         try {
             const res = await createWorkoutClass(payload).unwrap();
@@ -240,7 +267,7 @@ const Page = () => {
                 {
                     formData.classType === 'online' && (
                         <>
-                            <span className='mt-2 font-semibold block'>Schedule Link</span>
+                            <span className='mt-2 font-semibold block'>Schedule Link Type</span>
                             <select name="typeOfLink" onChange={handleChange} required className="w-full p-3 border rounded">
                                 <option value="">Select Link Type</option>
                                 <option value="googleMeet">Google Meet</option>

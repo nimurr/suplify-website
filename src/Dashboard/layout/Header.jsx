@@ -135,7 +135,7 @@ export default function DashboardHeader({ collapsed }) {
   useEffect(() => {
     setUserData(JSON.parse(localStorage.getItem("user")))
 
-    console.log(fullUser)
+    // console.log(fullUser)
 
     // if (!fullUser) {
     //   localStorage.removeItem('token');
