@@ -70,6 +70,9 @@ const ScheduleCard = ({ schedule }) => {
             <p className='flex items-center justify-between my-2'>
               <strong>Start Date:</strong> {moment(schedule.scheduleDate).format('DD MMM YYYY')}
             </p>
+            <p className='flex items-center justify-between my-2'>
+              <strong>End Date :</strong> {moment(schedule.repeatRule?.endDate).format('DD MMM YYYY')}
+            </p>
 
             <p className='flex items-center justify-between my-2'>
               <strong>Start Time:</strong> {moment(schedule.startTime).format('hh:mm A')}
@@ -108,7 +111,7 @@ const ScheduleCard = ({ schedule }) => {
           )
         }
 
-        {schedule.hotspot && (
+        {schedule.hotspot && schedule?.classType !== 'online' && (
           <div className="text-gray-600 mb-4">
             <hr />
             <p className='flex items-center justify-between my-2'>
@@ -175,9 +178,10 @@ const ScheduleCard = ({ schedule }) => {
             schedule?.hasPatientBooking && schedule?.sessionType !== "group" && (
               <Link Link target="_blank" href={`${schedule.meetingLink}`}>
                 <button
-                  className="h-9 text-purple-700"
+                  className="h-9 text-purple-700 underline font-semibold italic"
                 >
-                  {schedule.meetingLink}
+                  {/* {schedule.meetingLink} */}
+                  Meeting Link 
                 </button>
               </Link>
             )
@@ -185,7 +189,7 @@ const ScheduleCard = ({ schedule }) => {
 
 
 
-        {
+        {/* {
           schedule?.sessionType == "group" && !schedule?.hasPatientBooking && !schedule?.isBookedByPatient ? (
             <Button
               type="primary"
@@ -204,7 +208,7 @@ const ScheduleCard = ({ schedule }) => {
                 {schedule.meetingLink}
               </button>
             </Link>
-        }
+        } */}
 
       </div>
     </div >

@@ -250,7 +250,7 @@ const WorkoutSpecialistClass = () => {
                   </p>
                 </div>
                 <p className='flex items-center justify-between capitalize my-2'>
-                  <strong>Schedule Name:</strong> {item.scheduleType}
+                  <strong>Schedule Type:</strong> <span className={`border px-2 py-1 text-sm rounded-full ${item.scheduleType == "oneTime" ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"}`}>{item.scheduleType == "oneTime" ? "One Time" : "Repeat"}</span>
                 </p>
                 <hr />
 
@@ -260,7 +260,9 @@ const WorkoutSpecialistClass = () => {
                     <p className='flex items-center justify-between my-2'>
                       <strong>Start Date:</strong> {moment(item.scheduleDate).format('DD MMM YYYY')}
                     </p>
-
+                    <p className='flex items-center justify-between my-2'>
+                      <strong>End Date :</strong> {moment(item.repeatRule.endDate).format('DD MMM YYYY')}
+                    </p>
                     <p className='flex items-center justify-between my-2'>
                       <strong>Start Time:</strong> {moment(item.startTime).format('hh:mm A')}
                     </p>

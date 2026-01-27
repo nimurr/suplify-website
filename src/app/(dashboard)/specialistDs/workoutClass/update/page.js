@@ -119,9 +119,9 @@ const Page = () => {
         <div className="min-h-screen bg-gray-50 p-6">
             <Toaster />
 
-            <div className="flex lg:flex-row flex-col items-start gap-6">
+            <div className="flex justify-center ">
 
-                <div className="flex-1 bg-white rounded-md shadow p-6 w-full">
+                <div className="flex-1 max-w-5xl mx-atuo bg-white rounded-md shadow p-6 w-full">
                     <div className="flex justify-between items-center mb-4">
                         <p className="text-2xl font-semibold">Edit Workout Session</p>
                     </div>

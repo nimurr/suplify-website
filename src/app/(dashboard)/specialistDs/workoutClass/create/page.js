@@ -49,10 +49,6 @@ const Page = () => {
         return new Date(date).toISOString(); // YYYY-MM-DDTHH:mm:ssZ
     };
 
-    const toUTCTimeNoZ = (datetime) => {
-        return new Date(datetime).toISOString().split('.')[0]; // YYYY-MM-DDTHH:mm:ss
-    };
-
     const onlyDate = (date) => {
         return new Date(date).toISOString().split('T')[0]; // YYYY-MM-DD
     };
@@ -80,37 +76,22 @@ const Page = () => {
             return toast.error('Select schedule type');
         }
 
-        // const payload = {
-        //     scheduleName: formData.scheduleName,
-        //     scheduleType: formData.scheduleType,
-        //     scheduleDate: toISODateWithZ(formData.scheduleDate),
 
-        //     classType: formData.classType,
+        const formatTimeWithSeconds = (time) => {
+            if (!time) return null; // 🔐 prevents Invalid date
+            return moment(`2026-01-30T${time}`, 'YYYY-MM-DDTHH:mm')
+                .format('HH:mm:ss');
+        };
 
-        //     startTime: toUTCTimeNoZ(formData.startTime),
-        //     endTime: toUTCTimeNoZ(formData.endTime),
-
-        //     description: formData.description,
-
-
-        //     sessionType: formData.sessionType,
-        //     price: formData.price,
-        // };
         const payload = {
             scheduleName: formData.scheduleName,
             scheduleType: formData.scheduleType,
-            scheduleDate: toISODateWithZ(formData.scheduleDate), // keep as is
+            scheduleDate: toISODateWithZ(formData.scheduleDate),
 
             classType: formData.classType,
 
-            // Add 6 hours and format as "YYYY-MM-DDTHH:mm:ss"
-            startTime: moment(toUTCTimeNoZ(formData.startTime))
-                .add(6, 'hours')
-                .format('YYYY-MM-DDTHH:mm:ss'),
-
-            endTime: moment(toUTCTimeNoZ(formData.endTime))
-                .add(6, 'hours')
-                .format('YYYY-MM-DDTHH:mm:ss'),
+            startTime: formatTimeWithSeconds(formData.startTime),
+            endTime: formatTimeWithSeconds(formData.endTime),
 
             description: formData.description,
             sessionType: formData.sessionType,
@@ -149,7 +130,6 @@ const Page = () => {
 
         console.log(payload);
 
-        // return
 
         try {
             const res = await createWorkoutClass(payload).unwrap();
@@ -254,10 +234,24 @@ const Page = () => {
 
                 <span className='mt-2 font-semibold block'>Schedule Date</span>
                 <input type="date" name="scheduleDate" onChange={handleChange} required className="w-full p-3 border rounded" />
-                <span className='mt-2 font-semibold block'>Schedule Start Time</span>
-                <input type="datetime-local" name="startTime" onChange={handleChange} required className="w-full p-3 border rounded" />
-                <span className='mt-2 font-semibold block'>Schedule End Time</span>
-                <input type="datetime-local" name="endTime" onChange={handleChange} required className="w-full p-3 border rounded" />
+
+                <span className="mt-2 font-semibold block">Schedule Start Time</span>
+                <input
+                    type="time"
+                    name="startTime"
+                    onChange={handleChange}
+                    required
+                    className="w-full p-3 border rounded"
+                />
+
+                <span className="mt-2 font-semibold block">Schedule End Time</span>
+                <input
+                    type="time"
+                    name="endTime"
+                    onChange={handleChange}
+                    required
+                    className="w-full p-3 border rounded"
+                />
 
                 <span className='mt-2 font-semibold block'>Schedule Name</span>
                 <input name="scheduleName" placeholder="Schedule Name" onChange={handleChange} required className="w-full p-3 border rounded" />
