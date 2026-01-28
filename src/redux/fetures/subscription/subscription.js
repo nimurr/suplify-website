@@ -37,9 +37,17 @@ const subscription = apiSlice.injectEndpoints({
                 method: "POST"
             }),
             providesTags: ["Subscription"]
-        })
+        }),
+        requestForVise : builder.mutation({
+            query: (data) => ({
+                url: `/vise-subscription-request/`,
+                method: "POST",
+                body: data
+            }),
+            providesTags: ["Subscription"]
+        }),
     }),
 });
 
 
-export const { useTakeFreeTrialMutation, useGetFullSubscriptionQuery, useGetAllSubscriptionsQuery, useTakeSubscriptionMutation, useCancelSubMutation } = subscription;
+export const { useTakeFreeTrialMutation, useGetFullSubscriptionQuery, useGetAllSubscriptionsQuery, useTakeSubscriptionMutation, useCancelSubMutation , useRequestForViseMutation } = subscription;

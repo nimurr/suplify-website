@@ -281,6 +281,7 @@ import { Row, Col, Card, Button, Typography } from "antd";
 import {
     useCancelSubMutation,
     useGetAllSubscriptionsQuery,
+    useRequestForViseMutation,
     useTakeSubscriptionMutation,
 } from "@/redux/fetures/subscription/subscription";
 import toast, { Toaster } from "react-hot-toast";
@@ -291,6 +292,7 @@ const { Title, Text } = Typography;
 
 const NewSubscription = () => {
     const { data, isLoading, error } = useGetAllSubscriptionsQuery();
+    const [takeSubscription] = useRequestForViseMutation();
 
     const subscriptionsUserInfo =
         data?.data?.attributes?.result?.results || [];
@@ -421,8 +423,19 @@ const NewSubscription = () => {
         }
     };
 
-    const handleApplyForVise = () => {
-        toast.success("Your application has been submitted.");
+    const handleApplyForVise = async () => {
+        // toast.success("Your application has been submitted.");
+        try {
+
+            const res = await takeSubscription().unwrap();
+            console.log(res)
+            if (res?.code === 200) {
+                toast.success(res?.message);
+            }
+
+        } catch (error) {
+            toast.error(error?.data?.message || 'Failed to take subscription');
+        }
     };
 
     /* ---------------- UI ---------------- */
