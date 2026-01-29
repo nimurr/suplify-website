@@ -191,6 +191,11 @@ export default function Navbar() {
     router.push('/');
   };
 
+  const handleGoLogin = () => {
+    // router.push('/auth/login');
+    window.location.href = '/auth/login';
+  };
+
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${showBlackBg ? 'bg-black/90 py-3' : 'bg-transparent py-4'}`}>
@@ -271,6 +276,7 @@ export default function Navbar() {
               </Link> */}
                 <Link
                   href="/auth/login"
+                  onClick={handleGoLogin}
                   className="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-6 rounded-full transition"
                 >
                   Login
@@ -340,6 +346,7 @@ export default function Navbar() {
                 <div className="flex items-center space-x-4">
                   <Link
                     href="/auth/login"
+                    onClick={handleGoLogin}
                     className="bg-primary w-full text-center hover:bg-primary-dark text-white font-bold py-2 px-6 rounded-full transition"
                   >
                     Login

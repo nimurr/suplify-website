@@ -19,6 +19,7 @@ import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { CiCirclePlus, CiEdit, CiSearch } from 'react-icons/ci';
+import { FaRegEdit } from 'react-icons/fa';
 import { MdOutlineDeleteForever } from 'react-icons/md';
 
 const Page = () => {
@@ -209,6 +210,11 @@ const Page = () => {
         }
     };
 
+    const showModalForEditItems = (item) => {
+        setEditItems(item);
+        setIsModalOpen(true);
+    };
+
     const filteredPlans = myAllPlans.filter(
         plan => plan?.planType === selectedPlan
     );
@@ -298,7 +304,7 @@ const Page = () => {
 
                 {filteredPlans?.map((item, i) => (
                     <div key={i} className="flex justify-between bg-gray-100 p-5 rounded-md my-2">
-                        <div className='flex gap-10 items-start '>
+                        <div className='flex gap-10 items-start pr-14'>
                             <div className='!w-14 min-w-14 max-h-56 overflow-y-auto bg-gray-200 rounded-md'>
                                 {
                                     item?.attachments.map((item, i) => (
@@ -320,11 +326,19 @@ const Page = () => {
                                 <Link href={item?.link} target='_blank' className='text-blue-600 text-xs'>{item?.link || 'No Link'}</Link>
                             </div>
                         </div>
-                        <div className='w-14'>
-                            <MdOutlineDeleteForever
-                                className="cursor-pointer text-xl w-14 text-red-600"
-                                onClick={() => handleDeleteAssignItem(item)}
-                            />
+                        <div className='flex items-start gap-2 w-24 right-5 absolute'>
+                            <div className=''>
+                                <FaRegEdit
+                                    className="cursor-pointer text-xl  text-green-600"
+                                    onClick={() => showModalForEditItems(item)}
+                                />
+                            </div>
+                            <div className=''>
+                                <MdOutlineDeleteForever
+                                    className="cursor-pointer text-2xl  text-red-600"
+                                    onClick={() => handleDeleteAssignItem(item)}
+                                />
+                            </div>
                         </div>
                     </div>
                 ))}
