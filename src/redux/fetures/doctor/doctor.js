@@ -77,6 +77,13 @@ const doctor = apiSlice.injectEndpoints({
                 method: "POST",
             })
         }),
+        editAssignPlan: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/plan-by-doc/v2/${id}`,
+                method: "PUT",
+                body: data
+            })
+        }),
         deleteAssignPlan: builder.mutation({
             query: ({ id }) => ({
                 url: `/plan-by-doc/softDelete/${id}`,
@@ -199,6 +206,7 @@ export const {
     useCreateSearchPlanQuery,
 
     useAssignProtacoltoPatientMutation,
+    useEditAssignPlanMutation,
     useDeleteAssignPlanMutation,
 
     useUpdateProtocolMutation,

@@ -3,10 +3,12 @@
 import {
     useCreatePlanByDocMutation
 } from '@/redux/fetures/doctor/createPlane';
+import { RxCross1 } from "react-icons/rx";
 
 import {
     useAssignProtacoltoPatientMutation,
     useDeleteAssignPlanMutation,
+    useEditAssignPlanMutation,
     useGetMyPlansQuery,
     useGetSingleProtocolQuery,
     useSearchPlaneQuery,
@@ -185,6 +187,7 @@ const Page = () => {
     /* ---------------- ASSIGN / DELETE ---------------- */
     const [assignPlan] = useAssignProtacoltoPatientMutation();
     const [deleteAssignPlan] = useDeleteAssignPlanMutation();
+    const [editAssignPlan] = useEditAssignPlanMutation();
 
     const handleAssginPlan = async (item) => {
         const res = await assignPlan({
@@ -210,10 +213,117 @@ const Page = () => {
         }
     };
 
+    const [editItems, setEditItems] = useState(null);
+    const [isModalOpenForEdit, setIsModalOpenForEdit] = useState(false);
+    const [newImage, setNewImage] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null);
+
     const showModalForEditItems = (item) => {
-        setEditItems(item);
-        setIsModalOpen(true);
+        setEditItems({
+            ...item,
+            keyPoints: item.keyPoints || [],
+        });
+
+        setPreviewImage(item?.attachments?.[0]?.attachment || null);
+        setNewImage(null);
+        setIsModalOpenForEdit(true);
     };
+
+
+    const handleInputChange2 = (e) => {
+        const { name, value } = e.target;
+        setEditItems((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleImageChange2 = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setNewImage(file);
+        setPreviewImage(URL.createObjectURL(file));
+    };
+
+    const handleRemoveImage = () => {
+        setNewImage(null);
+        setPreviewImage(null);
+
+        setEditItems((prev) => ({
+            ...prev,
+            attachments: [],
+        }));
+    };
+
+    const addKeyPoint2 = () => {
+        setEditItems((prev) => ({
+            ...prev,
+            keyPoints: [...prev.keyPoints, ""],
+        }));
+    };
+
+    const removeKeyPoint2 = (index) => {
+        setEditItems((prev) => ({
+            ...prev,
+            keyPoints: prev.keyPoints.filter((_, i) => i !== index),
+        }));
+    };
+
+    const handleKeyPointChange2 = (index, value) => {
+        const updatedKeyPoints = [...editItems.keyPoints];
+        updatedKeyPoints[index] = value;
+
+        setEditItems((prev) => ({
+            ...prev,
+            keyPoints: updatedKeyPoints,
+        }));
+    };
+
+
+
+
+    const handleEditMealPlan = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append("title", editItems.title);
+        formData.append("link", editItems.link);
+        formData.append("description", editItems.description);
+        formData.append("keyPoints", editItems.keyPoints);
+        if (newImage) {
+            formData.append("attachments", newImage);
+        }
+
+        const formWithoutImage = {
+            title: editItems.title,
+            link: editItems.link,
+            description: editItems.description,
+            keyPoints: editItems.keyPoints,
+        };
+
+        try {
+            const res = await editAssignPlan({
+                id: editItems?._planByDoctorId,
+                data: newImage ? formData : formWithoutImage
+            }).unwrap();
+            console.log(res);
+            if (res?.code === 200) {
+                toast.success(res?.message);
+                refetch();
+                setIsModalOpenForEdit(false);
+            }
+        } catch (error) {
+            toast.error(error?.data?.message || "Failed to edit plan");
+        }
+
+        // setIsModalOpenForEdit(false);
+    };
+
+
+
+
+
 
     const filteredPlans = myAllPlans.filter(
         plan => plan?.planType === selectedPlan
@@ -263,7 +373,7 @@ const Page = () => {
             </div>
 
             {/* RIGHT CONTENT */}
-            <div className="lg:w-3/4 p-8">
+            <div className="lg:w-3/4 p-8 ">
                 <div className="flex justify-between">
                     <h3 className="text-2xl capitalize">{selectedPlan}</h3>
                     <button
@@ -303,11 +413,11 @@ const Page = () => {
                 <h2 className="mt-4 font-bold">My Assigned Plans</h2>
 
                 {filteredPlans?.map((item, i) => (
-                    <div key={i} className="flex justify-between bg-gray-100 p-5 rounded-md my-2">
+                    <div key={i} className="flex justify-between bg-gray-100 p-5 rounded-md my-2 relative">
                         <div className='flex gap-10 items-start pr-14'>
                             <div className='!w-14 min-w-14 max-h-56 overflow-y-auto bg-gray-200 rounded-md'>
                                 {
-                                    item?.attachments.map((item, i) => (
+                                    item?.attachments?.map((item, i) => (
                                         <Image key={i} className='min-w-14 rounded-md border h-auto overflow-hidden' src={item?.attachment} alt="" />
                                     ))
                                 }
@@ -326,7 +436,7 @@ const Page = () => {
                                 <Link href={item?.link} target='_blank' className='text-blue-600 text-xs'>{item?.link || 'No Link'}</Link>
                             </div>
                         </div>
-                        <div className='flex items-start gap-2 w-24 right-5 absolute'>
+                        <div className='flex items-start gap-2 w-24 -right-8 top-2 absolute'>
                             <div className=''>
                                 <FaRegEdit
                                     className="cursor-pointer text-xl  text-green-600"
@@ -355,7 +465,7 @@ const Page = () => {
                         <input
                             name="planName"
                             placeholder="Plan Name"
-                            value={newMealPlan.planName}
+                            defaultValue={newMealPlan.planName}
                             onChange={handleInputChange}
                             className="border p-2 w-full mb-5"
                         />
@@ -363,7 +473,7 @@ const Page = () => {
                         <input
                             name="link"
                             placeholder="Link"
-                            value={newMealPlan.link}
+                            defaultValue={newMealPlan.link}
                             onChange={handleInputChange}
                             className="border p-2 w-full mb-5"
                         />
@@ -379,7 +489,7 @@ const Page = () => {
                         {newMealPlan.keyPoints.map((kp, i) => (
                             <input
                                 key={i}
-                                value={kp}
+                                defaultValue={kp}
                                 onChange={(e) => handleKeyPointChange(i, e.target.value)}
                                 className="border p-2 w-full mb-5"
                                 placeholder={`Key point ${i + 1}`}
@@ -394,7 +504,7 @@ const Page = () => {
                             name="description"
                             placeholder="Description"
                             rows={5}
-                            value={newMealPlan.description}
+                            defaultValue={newMealPlan.description}
                             onChange={handleInputChange}
                             className="border p-2 w-full mb-5"
                         />
@@ -410,6 +520,102 @@ const Page = () => {
                     </form>
                 </div>
             )}
+
+            {isModalOpenForEdit && (
+                <div className="fixed inset-0 max-h-screen overflow-y-auto py-20 pt-60 bg-black bg-opacity-40 flex items-center justify-center z-[99999]">
+                    <form
+                        onSubmit={handleEditMealPlan}
+                        className="bg-white p-6 rounded w-full max-w-2xl"
+                    >
+                        <span className='font-semibold block text-center text-2xl mb-5'>Create New Plan</span>
+                        <input
+                            name="title"
+                            placeholder="Plan Name"
+                            defaultValue={editItems.title}
+                            onChange={handleInputChange2}
+                            className="border p-2 w-full mb-5"
+                        />
+
+                        <input
+                            name="link"
+                            placeholder="Link"
+                            defaultValue={editItems.link}
+                            onChange={handleInputChange2}
+                            className="border p-2 w-full mb-5"
+                        />
+
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleImageChange2}
+                            className="mb-5"
+                        />
+                        {previewImage && (
+                            <div className="relative flex justify-center mb-5">
+                                <RxCross1
+                                    onClick={handleRemoveImage}
+                                    className="absolute top-2 right-2 text-xl bg-black text-red-500 p-1 rounded cursor-pointer"
+                                />
+                                <img
+                                    src={previewImage}
+                                    alt="preview"
+                                    className="max-h-48 rounded"
+                                />
+                            </div>
+                        )}
+
+
+                        {editItems?.keyPoints?.map((kp, i) => (
+                            <div key={i} className="flex items-center gap-2 mb-3">
+                                <input
+                                    defaultValue={kp}
+                                    onChange={(e) => handleKeyPointChange2(i, e.target.value)}
+                                    className="border p-2 w-full"
+                                    placeholder={`Key point ${i + 1}`}
+                                />
+
+                                <button
+                                    type="button"
+                                    onClick={() => removeKeyPoint2(i)}
+                                    className="bg-red-500 text-white px-3 py-2 rounded"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
+
+
+                        <button
+                            type="button"
+                            onClick={addKeyPoint2}
+                            className="text-blue-500 mb-5"
+                        >
+                            + Add Key Point
+                        </button>
+
+
+                        <textarea
+                            name="description"
+                            placeholder="Description"
+                            rows={5}
+                            defaultValue={editItems.description}
+                            onChange={handleInputChange2}
+                            className="border p-2 w-full mb-5"
+                        />
+
+                        <div className='flex items-center justify-center gap-2'>
+                            <button type="button" onClick={() => setIsModalOpenForEdit(false)} className=" text-white bg-red-500 px-4 py-2 rounded w-full border">
+                                Cancel
+                            </button>
+                            <button className="bg-blue-500 text-white px-4 py-2 rounded w-full">
+                                Update Plan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
         </div>
     );
 };
