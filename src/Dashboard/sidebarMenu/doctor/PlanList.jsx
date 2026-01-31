@@ -7,6 +7,7 @@ import CustomButton from '@/components/customComponent/CustomButton';
 import { useCreatePlaneMutation, useGetAllPlanesQuery } from '@/redux/fetures/doctor/createPlane';
 import { FiPlus } from 'react-icons/fi';
 import Link from 'next/link';
+import url from '@/redux/api/baseUrl';
 
 const { Title, Text } = Typography;
 
@@ -98,12 +99,23 @@ export default function ProtocolsAndMealPlans() {
 
             allPlane?.map((plan) => (
               <Card key={plan.id} className="shadow-sm" bodyStyle={{ padding: '1rem' }}>
+
+                <div className='flex gap-3 flex-wrap '>
+                  {
+                    plan?.attachments.map((attachment) => (
+
+                      <img className='mb-5 h-20 object-cover rounded-lg w-20' src={`${attachment?.attachment.includes('amazonaws') ? attachment?.attachment : url + attachment?.attachment}`} alt="" />
+                    ))
+                  }
+
+                </div>
+
                 <div className="mb-1">
                   <Text className='capitalize' strong>{plan.title?.slice(0, 100)}</Text>
                 </div>
 
                 <div className='my-5'>
-                  <Text className="text-gray-500 capitalize ">{plan?.description?.slice(0, 600)}</Text>
+                  <Text className="text-gray-500 capitalize ">{plan?.description?.slice(0, 300)}</Text>
                 </div>
                 <div className='mb-2'>
                   {

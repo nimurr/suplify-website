@@ -140,7 +140,7 @@ export default function MealPlanProtocol() {
               <Link href={plan?.link} target='_blank' className='text-blue-600 mb-2 underline inline-block text-xs'>Go To Link</Link>
 
               <div className="flex justify-between items-center">
-                <Text className="font-semibold text-sm">Total Key Points: {plan.totalKeyPoints}</Text>
+                {/* <Text className="font-semibold text-sm">Total Key Points: {plan.totalKeyPoints}</Text> */}
               </div>
             </Card>
           ))}
