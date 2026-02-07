@@ -161,6 +161,8 @@ const NewSubscription = () => {
         }
     };
 
+    console.log(subscriptionsUserInfo)
+
     /* ---------------- UI ---------------- */
     return (
         <div style={{ padding: "50px", background: "#f9f9f9" }}>
@@ -181,9 +183,12 @@ const NewSubscription = () => {
                     <table className="min-w-full border">
                         <thead className="bg-gray-100">
                             <tr>
-                                <th className="p-2">Plan</th>
+                                <th className="p-2">User Subscription Id</th>
+                                <th className="p-2">Subscription Name</th>
                                 <th className="p-2">Start</th>
-                                <th className="p-2">Expire</th>
+                                <th className="p-2">Current Period Start Date </th>
+                                <th className="p-2">Cancelled At Period End </th>
+                                <th className="p-2">Cancel Date</th>
                                 <th className="p-2">Status</th>
                             </tr>
                         </thead>
@@ -191,10 +196,19 @@ const NewSubscription = () => {
                             {subscriptionsUserInfo.map((item, i) => (
                                 <tr key={i} className="text-center border-t">
                                     <td className="p-2">
+                                        {item?._userSubscriptionId}
+                                    </td>
+                                    <td className="p-2">
                                         {item?.subscriptionPlanId?.subscriptionName}
                                     </td>
                                     <td className="p-2">
                                         {moment(item?.subscriptionStartDate).format("YYYY-MM-DD")}
+                                    </td>
+                                    <td className="p-2">
+                                        {moment(item?.currentPeriodStartDate).format("YYYY-MM-DD")}
+                                    </td>
+                                    <td className="p-2">
+                                        {item?.cancelledAtPeriodEnd ? "True" : "False"}
                                     </td>
                                     <td className="p-2">
                                         {moment(item?.expirationDate).format("YYYY-MM-DD")}
