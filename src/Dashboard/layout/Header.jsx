@@ -38,11 +38,18 @@ export default function DashboardHeader({ collapsed }) {
   const closeLogoutModal = () => setIsLogoutModalOpen(false);
   const [unseenCount, setUnseenCount] = useState(0);
 
-  const [notifyunseenCount, setNotifyunseenCount] = useState(false);
 
+  const [userData, setUserData] = useState({})
+
+  const { data: user, refetch } = useGetUserProfileQuery(userData.id)
+  const fullUser = user?.data?.attributes;
+
+  const [notifyunseenCount, setNotifyunseenCount] = useState(user?.data?.additionalResponse?.hasUnviewedNotification ? true : false);
+ 
 
   const handleNotifyCountRemove = () => {
-    setNotifyunseenCount(0);
+    refetch();
+    setNotifyunseenCount(false);
   }
 
   useEffect(() => {
@@ -50,11 +57,11 @@ export default function DashboardHeader({ collapsed }) {
     const userId = user?.id || user?._id || user?._userId;
     if (!userId) return;
 
-
     setTimeout(() => {
       const eventName = `notification::${userId}`;
       const handler = (data) => {
         console.log('Notification Socket Real Time Data :' + data)
+        refetch();
         setNotifyunseenCount(true);
       };
 
@@ -144,10 +151,8 @@ export default function DashboardHeader({ collapsed }) {
     },
   ];
 
-  const [userData, setUserData] = useState({})
 
-  const { data: user } = useGetUserProfileQuery(userData.id)
-  const fullUser = user?.data?.attributes;
+
 
   const imageUrl = fullUser?.profileImage?.imageUrl.includes("amazonaws.com")
     ? fullUser?.profileImage?.imageUrl
@@ -205,7 +210,7 @@ export default function DashboardHeader({ collapsed }) {
           <Link onClick={handleNotifyCountRemove} href="/notification" className='w-10 cursor-pointer h-10 bg-red-600 text-white flex items-center justify-center rounded-lg relative'>
             <IoNotifications className='text-2xl font-semibold' />
             {
-              notifyunseenCount && <span className='absolute top-2 right-2 bg-blue-500 text-white rounded-full w-3 h-3 flex items-center justify-center text-xs'></span>
+              notifyunseenCount && <span className='absolute top-2 right-2 bg-blue-500 text-white rounded-full w-2 h-2 flex items-center justify-center text-xs'></span>
             }
           </Link>
           <Dropdown
