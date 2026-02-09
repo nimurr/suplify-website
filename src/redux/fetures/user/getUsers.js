@@ -14,4 +14,4 @@ const getUsers = apiSlice.injectEndpoints({
     })
 })
 
-export const { useGetUsersQuery, useGetUserProfileQuery } = getUsers
+export const { useGetUsersQuery, useGetUserProfileQuery } = getUsers;

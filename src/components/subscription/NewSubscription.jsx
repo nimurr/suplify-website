@@ -14,6 +14,8 @@ import OfflineSub from "./OfflineSub";
 const { Title, Text } = Typography;
 
 const NewSubscription = () => {
+
+
     const { data, isLoading, error } = useGetAllSubscriptionsQuery();
     const [takeSubscription] = useRequestForViseMutation();
 
