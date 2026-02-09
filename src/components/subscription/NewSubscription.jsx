@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Card, Button, Typography } from "antd";
 import {
+    useAnswerAQuestionUsingFormMutation,
     useCancelSubMutation,
     useGetAllSubscriptionsQuery,
     useRequestForViseMutation,
@@ -10,10 +11,22 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import moment from "moment";
 import OfflineSub from "./OfflineSub";
+import { useGetMyprofileForsubQuery } from "@/redux/fetures/user/getUsers";
+import { useRouter } from "next/navigation";
 
 const { Title, Text } = Typography;
 
 const NewSubscription = () => {
+
+    const [buySubscriptionForOthersSub] = useAnswerAQuestionUsingFormMutation();
+
+    const { data: userInfo } = useGetMyprofileForsubQuery();
+
+    const fullUser = userInfo?.data?.attributes;
+    // console.log()
+
+    const navigate = useRouter();
+
 
 
     const { data, isLoading, error } = useGetAllSubscriptionsQuery();
@@ -122,16 +135,21 @@ const NewSubscription = () => {
         subscriptionsUserInfo[0]?.userId?.subscriptionType;
 
     const handleSubscribe = async (plan) => {
-        try {
-            const res = await takeSub(plan).unwrap();
-            if (res?.code === 200) {
-                toast.success(res?.message);
-                window.location.href = res?.data?.attributes;
-            } else {
-                toast.error(res?.message);
+
+        if (fullUser?.isFormSubmitted) {
+            try {
+                const res = await takeSub(plan).unwrap();
+                if (res?.code === 200) {
+                    toast.success(res?.message);
+                    window.location.href = res?.data?.attributes;
+                } else {
+                    toast.error(res?.message);
+                }
+            } catch (err) {
+                toast.error(err?.data?.message || "Subscription failed");
             }
-        } catch (err) {
-            toast.error(err?.data?.message || "Subscription failed");
+        } else {
+            navigate.push(`/dashboard/subscription/question-form?id=${plan?.id}`);
         }
     };
 
@@ -150,20 +168,22 @@ const NewSubscription = () => {
 
     const handleApplyForVise = async () => {
         // toast.success("Your application has been submitted.");
-        try {
+        if (fullUser?.isFormSubmitted) {
+            try {
 
-            const res = await takeSubscription().unwrap();
-            console.log(res)
-            if (res?.code === 200) {
-                toast.success(res?.message);
+                const res = await takeSubscription().unwrap();
+                console.log(res)
+                if (res?.code === 200) {
+                    toast.success(res?.message);
+                }
+            } catch (error) {
+                toast.error(error?.data?.message || 'Failed to take subscription');
             }
-
-        } catch (error) {
-            toast.error(error?.data?.message || 'Failed to take subscription');
+        }
+        else {
+            navigate.push(`/dashboard/subscription/question-form?id=vise`);
         }
     };
-
-    console.log(subscriptionsUserInfo)
 
     /* ---------------- UI ---------------- */
     return (
