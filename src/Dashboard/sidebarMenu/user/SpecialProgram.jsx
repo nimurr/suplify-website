@@ -81,6 +81,8 @@ const SpecialistProgram = ({ id }) => {
     setIsModalVisible(false);
   };
 
+  console.log(fullData)
+
   return (
     <div className="flex items-start flex-wrap lg:flex-nowrap gap-10">
       <Toaster />
@@ -156,10 +158,12 @@ const SpecialistProgram = ({ id }) => {
                         } rounded-md`}
                       cover={
                         <img
-                          alt="program"
-                          onClick={() => handleProgramClick(item)}
-                          src={item?.attachmentDetails[0]?.attachment}
-                          className="w-full object-cover rounded-t-md max-h-[250px] min-h-[250px]"
+                          alt="example"
+                          className='min-h-48 object-cover max-h-48'
+                          src={item?.attachmentDetails?.length < 1 ? 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png' : item?.attachmentDetails
+                          [0]?.attachment?.includes('amazonaws') ? item?.attachmentDetails
+                          [0]?.attachment : url + item?.attachmentDetails
+                          [0]?.attachment}
                         />
                       }
                     // Handle program click to show modal

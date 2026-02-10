@@ -24,7 +24,10 @@ const ResetPassword = () => {
     const data = {
       email,
       password: values?.confirmPassword,
+      otp : "000000"
     }
+
+    console.log(data)
     try{
     const res = await resetPassword(data).unwrap();
       if(res?.code == 200){
@@ -33,13 +36,14 @@ const ResetPassword = () => {
       }
     }catch(error){
       console.log(error)
+      toast.error(error?.data?.message)
     }
     // console.log('Received values of form: ',  data);
   };
   
 
   return (
-    <div className="flex justify-center items-center lg:min-h-[700px] bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <Toaster />
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">Reset Password</h1>
@@ -93,7 +97,7 @@ const ResetPassword = () => {
             <Button
               type="primary"
               htmlType="submit"
-               className="w-full !bg-[#2E7D32] text-white p-3 rounded "
+               className="w-full !bg-[#ce0000] text-white p-3 h-10 rounded "
             >
               Reset Password
             </Button>

@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { BsBank } from "react-icons/bs";
-import { Modal, Button, Form, Input } from 'antd'; // Import necessary components from Ant Design
+import { Modal, Button, Form, Input, Radio } from 'antd'; // Import necessary components from Ant Design
 import { useAddBankInfoMutation, useGetBankInfoQuery, useWithDrawRequestMutation, useWithDrawRequestTnxHistoryQuery } from '@/redux/fetures/doctor/doctor'; // Redux query hook to get bank info
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -14,7 +14,7 @@ const Page = () => {
         bankAccountHolderName: '',
         bankAccountNumber: '',
         bankAccountType: '',
-        bankBranch: '',
+        // bankBranch: '',
         bankName: '',
         bankRoutingNumber: ''
     });
@@ -28,7 +28,7 @@ const Page = () => {
                 bankAccountHolderName: fullBankInfo.bankAccountHolderName,
                 bankAccountNumber: fullBankInfo.bankAccountNumber,
                 bankAccountType: fullBankInfo.bankAccountType,
-                bankBranch: fullBankInfo.bankBranch,
+                // bankBranch: fullBankInfo.bankBranch,
                 bankName: fullBankInfo.bankName,
                 bankRoutingNumber: fullBankInfo.bankRoutingNumber
             });
@@ -188,23 +188,34 @@ const Page = () => {
                         <Input className='py-2' placeholder="Enter account holder name" />
                     </Form.Item>
 
-                    {/* Account Type */}
+                    {/* Account Type :- saving or checking */}
                     <Form.Item
                         label="Account Type"
                         name="bankAccountType"
                         rules={[{ required: true, message: 'Please enter the account type!' }]}
                     >
-                        <Input className='py-2' placeholder="Enter account type" />
+                        <Radio.Group>
+                            <Radio value="checking">Checking</Radio>
+                            <Radio value="saving">Saving</Radio>
+                        </Radio.Group>
                     </Form.Item>
 
+                    {/* <Form.Item
+                        label="Account Type"
+                        name="bankAccountType"
+                        rules={[{ required: true, message: 'Please enter the account type!' }]}
+                    >
+                        <Input className='py-2' placeholder="Enter account type" />
+                    </Form.Item> */}
+
                     {/* Branch Name */}
-                    <Form.Item
+                    {/* <Form.Item
                         label="Branch Name"
                         name="bankBranch"
                         rules={[{ required: true, message: 'Please enter the branch name!' }]}
                     >
                         <Input className='py-2' placeholder="Enter branch name" />
-                    </Form.Item>
+                    </Form.Item> */}
 
                     {/* Bank Name */}
                     <Form.Item
@@ -233,7 +244,7 @@ const Page = () => {
                         <p className='flex items-center justify-between'><strong>Account Holder Name:</strong> {detailsData.bankAccountHolderName}</p>
                         <p className='flex items-center justify-between'><strong>Account Number:</strong> {detailsData.bankAccountNumber}</p>
                         <p className='flex items-center justify-between'><strong>Account Type:</strong> {detailsData.bankAccountType}</p>
-                        <p className='flex items-center justify-between'><strong>Branch:</strong> {detailsData.bankBranch}</p>
+                        {/* <p className='flex items-center justify-between'><strong>Branch:</strong> {detailsData.bankBranch}</p> */}
                         <p className='flex items-center justify-between'><strong>Bank Name:</strong> {detailsData.bankName}</p>
                         <p className='flex items-center justify-between'><strong>Routing Number:</strong> {detailsData.bankRoutingNumber}</p>
                         <p className='flex items-center justify-between'><strong>Requested Amount:</strong> ${detailsData.requestedAmount}</p>

@@ -3,7 +3,7 @@
 // import { Form, Input, Button, message } from "antd";
 // import Link from "next/link";
 // import { useRouter } from "next/navigation";
- 
+
 
 // export default function ForgotPassword() {
 //   const [form] = Form.useForm();
@@ -16,7 +16,7 @@
 //     console.log("Received values:", values);
 //     // Add your logic to send OTP here
 //     router.push(`/auth/sendOtp?email=${values.email}&path=${pathName}`)
- 
+
 //   };
 
 //   return (
@@ -44,8 +44,8 @@
 //           </Form.Item>
 
 //           <Form.Item>
-          
-            
+
+
 //             <Button
 //               type="primary"
 //               htmlType="submit"
@@ -53,7 +53,7 @@
 //             >
 //               Send OTP
 //             </Button>
-        
+
 //           </Form.Item>
 //         </Form>
 //       </div>
@@ -68,6 +68,7 @@ import { Form, Input, Button } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import CustomButton from "../customComponent/CustomButton";
 
 export default function ForgotPassword() {
   const [form] = Form.useForm();
@@ -75,7 +76,7 @@ export default function ForgotPassword() {
   const router = useRouter();
   const [pathName, setPathName] = useState("");
 
-  const [passwordForgot, {isLoading}] = useForgotPasswordMutation()
+  const [passwordForgot, { isLoading }] = useForgotPasswordMutation()
 
 
   useEffect(() => {
@@ -86,20 +87,21 @@ export default function ForgotPassword() {
 
   const onFinish = async (values) => {
     console.log("Received values:", values);
-    try{
+    try {
       const res = await passwordForgot(values).unwrap();
-      if(res?.code == 200){
+      console.log(res?.data)
+      if (res?.code == 200) {
         toast.success(res?.message)
-        router.push(`/auth/sendOtp?email=${values.email}&path=${pathName}`);
+        router.push(`/auth/sendOtp?email=${values.email}&path=${res?.data?.attributes?.resetPasswordToken}`);
       }
-    }catch(error){
+    } catch (error) {
       console.log(error)
       setEror(error?.data?.message)
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center lg:min-h-[700px] bg-gray-100">
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <div className="w-full max-w-[500px] p-8 bg-white rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center mb-6">Forgot Password</h1>
         <p className="text-center text-gray-600 mb-6">
@@ -118,9 +120,7 @@ export default function ForgotPassword() {
           </Form.Item>
           <p className=' text-red-500'>{error}</p>
           <Form.Item>
-            <Button type="primary" isLoading={isLoading} htmlType="submit" className="w-full !bg-[#2E7D32] text-white p-3 rounded">
-              Send OTP
-            </Button>
+            <CustomButton text="Send OTP" />
           </Form.Item>
         </Form>
       </div>

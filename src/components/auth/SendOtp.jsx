@@ -42,12 +42,13 @@ const SendOtp = () => {
       const res = await verifyOtp(data).unwrap();
       console.log(res);
 
-      if (res?.code === 200) {
+      if (res?.code === 200 && !path) {
         toast.success(res?.message);
         router.push(`/auth/login`);
       }
       else {
         toast.error(res?.data?.message || "Something went wrong ! Please try again");
+        router.push(`/auth/resetPassword?email=${email}`);
       }
     } catch (error) {
       console.log(error);

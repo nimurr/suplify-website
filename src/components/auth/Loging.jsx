@@ -34,6 +34,8 @@ export default function Login() {
           router.push(`/`);
           return
         }
+
+        console.log(res?.message)
         toast.success(res?.message || "Login successful!");
 
         if (res?.data?.attributes?.userWithoutPassword?.role === "specialist") {
@@ -49,9 +51,8 @@ export default function Login() {
 
       }
     } catch (error) {
-      console.error("Login failed:", error);
-      toast.error(error?.data?.message || "Login failed. Please try again.");
-      // alert(error?.data?.message || "Login failed. Please try again.")
+      console.log(error)
+      toast.error(error?.data?.message || "Login failed. Please try again.")
     }
 
 
@@ -114,9 +115,9 @@ export default function Login() {
               <Input.Password placeholder="Type password" />
             </Form.Item>
 
-            {/* <Link href="/auth/forgotPassword" className="  text-gray-500 flex justify-end mb-2 hover:text-blue-600">
-                Forgot password?
-              </Link> */}
+            <Link href="/auth/forgotPassword" className="  text-gray-500 flex justify-end my-5 hover:text-blue-600">
+              Forgot password?
+            </Link>
 
             <Form.Item>
               <CustomButton text="Login" />

@@ -45,7 +45,7 @@ export default function DashboardHeader({ collapsed }) {
   const fullUser = user?.data?.attributes;
 
   const [notifyunseenCount, setNotifyunseenCount] = useState(user?.data?.additionalResponse?.hasUnviewedNotification ? true : false);
- 
+
 
   const handleNotifyCountRemove = () => {
     refetch();
