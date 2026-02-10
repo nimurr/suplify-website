@@ -46,9 +46,11 @@ const SendOtp = () => {
         toast.success(res?.message);
         router.push(`/auth/login`);
       }
+      else if (res?.code === 200 && path) {
+        router.push(`/auth/resetPassword?email=${email}`);
+      }
       else {
         toast.error(res?.data?.message || "Something went wrong ! Please try again");
-        router.push(`/auth/resetPassword?email=${email}`);
       }
     } catch (error) {
       console.log(error);

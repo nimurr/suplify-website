@@ -30,6 +30,7 @@ const ResetPassword = () => {
     console.log(data)
     try{
     const res = await resetPassword(data).unwrap();
+    console.log(res)
       if(res?.code == 200){
         toast.success(res?.message)
         router.push(`/auth/login`);
