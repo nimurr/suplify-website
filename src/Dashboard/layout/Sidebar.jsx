@@ -138,6 +138,12 @@ export default function Sidebar() {
         path: "/specialistDs/booked-workout-class",
       },
       {
+        key: "/specialistDs/hire-specialist-request",
+        icon: <IoBookmarksOutline />,
+        label: "Hire Specialist Request",
+        path: "/specialistDs/hire-specialist-request",
+      },
+      {
         key: "/specialistDs/earning/all",
         icon: <FaSackDollar />,
         label: "Earning",

@@ -118,10 +118,12 @@ export default function Banner() {
         {/* Content */}
         <div className="z-20 w-[80%] mx-auto">
           <h1 className="text-4xl text-left md:text-6xl font-bold text-white mb-6">
-            Transform Your Life <br /> Through Fitness
+            {/* Transform Your Life <br /> Through Fitness */}
+            Elite Performance &  <br /> Longevity Optimization
           </h1>
           <p className="text-xl md:text-2xl text-white mb-8">
-            Expert-guided workouts, Nutrition Plans, and wellness advice to help <br /> you achieve your goals
+            {/* Expert-guided workouts, Nutrition Plans, and wellness advice to help <br /> you achieve your goals */}
+            Premium, data-driven care using advanced diagnostics, medical oversight, <br /> and precision coaching to optimize human performance and long-term health.
           </p>
           <div className="flex gap-4">
             <button
