@@ -3,9 +3,9 @@ import { apiSlice } from "../../api/apiSlice";
 export const HireSpecialistRequest = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAllHireSpecialistRequests: builder.query({
-            query: ({ page, limit }) => {
+            query: ({ page, limit, status }) => {
                 return {
-                    url: `/hire-specialist/paginate?page=${page}&limit=${limit}`,
+                    url: `/hire-specialist/paginate/v2?page=${page}&limit=${limit}&status=${status}`,
                     method: "GET",
                 }
             },
