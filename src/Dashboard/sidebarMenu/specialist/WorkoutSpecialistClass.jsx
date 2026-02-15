@@ -189,7 +189,7 @@ const WorkoutSpecialistClass = () => {
         {/* Left Panel: Trainer Info */}
         <div className="w-64 bg-white rounded-md shadow p-4">
           <img
-            src={url + fullData?.specialistInfo?.profileImage?.imageUrl}
+            src={fullData?.specialistInfo?.profileImage?.imageUrl?.includes('amazonaws') ? fullData?.specialistInfo?.profileImage?.imageUrl : url + fullData?.specialistInfo?.profileImage?.imageUrl}
             alt="Trainer"
             className="w-full h-auto object-cover rounded-md mb-4"
           />

@@ -209,7 +209,7 @@ const Page = () => {
                     onChange={(e) => setStatusFilter(e.target.value)}
                     value={statusFilter}
                     className="py-2 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400"
-                > 
+                >
                     <option value="rejected">Rejected</option>
                     <option value="approved">Approved</option>
                     <option value="pending">Pending</option>
