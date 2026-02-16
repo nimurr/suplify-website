@@ -164,7 +164,7 @@ const ScheduleCard = ({ schedule }) => {
 
         {
 
-          schedule?.sessionType == "private" && !schedule?.hasPatientBooking ? (
+          schedule?.sessionType == "private" || schedule?.sessionType == "group" && !schedule?.hasPatientBooking ? (
             <Button
               type="primary"
               danger
@@ -175,13 +175,15 @@ const ScheduleCard = ({ schedule }) => {
               Book Now
             </Button>
           ) :
-            schedule?.hasPatientBooking && schedule?.sessionType !== "group" && (
+            schedule?.hasPatientBooking &&
+            schedule?.classType !== "inPerson" &&
+            // schedule?.sessionType !== "group" &&
+            (
               <Link Link target="_blank" href={`${schedule.meetingLink}`}>
                 <button
                   className="h-9 text-purple-700 underline font-semibold italic"
                 >
-                  {/* {schedule.meetingLink} */}
-                  Meeting Link 
+                  Meeting Link
                 </button>
               </Link>
             )
