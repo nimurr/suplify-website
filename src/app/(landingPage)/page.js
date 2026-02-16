@@ -25,8 +25,9 @@ export default function Home() {
       <TrainersTeam />
       <HowItWorksPage />
       <PlansPage />
-      <WorkoutClassPage />
-      <TrainingProgram />
+      <br />
+      {/* <WorkoutClassPage />
+      <TrainingProgram /> */}
 
 
     </div>

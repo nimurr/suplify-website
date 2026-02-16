@@ -1,11 +1,14 @@
+import { message } from "antd";
+import { useRouter } from "next/navigation";
 import React from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 const OfflineSub = () => {
   const plans = [
     {
       id: "standard-static",
       name: "STANDARD MEMBERSHIP",
-      price: "$— / month",
+      price: "$11.99 / month",
       subtitle:
         "A low-cost membership that unlocks access to the entire Suplify ecosystem.",
       subscriptionType: "standard",
@@ -26,7 +29,7 @@ const OfflineSub = () => {
     {
       id: "standardPlus-static",
       name: "SUPLIFY+ (COACHING)",
-      price: "$— / month",
+      price: "$429/ month",
       title: "Your Specialist. Your Strategy. Your Upgrade.",
       subtitle: "Your Specialist. Your Strategy. Your Upgrade.",
       subscriptionType: "standardPlus",
@@ -69,9 +72,18 @@ const OfflineSub = () => {
         "Clients who want a full medical-grade transformation with clinical oversight.",
     },
   ];
+  const navigate = useRouter();
+
+  const handleApplyForVise = () => {
+
+    toast.error("Please login first to apply for Vise");
+    navigate.push("/auth/login");
+
+  };
 
   return (
     <div className="w-full my-10">
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {plans.map((plan) => (
           <div
@@ -102,6 +114,15 @@ const OfflineSub = () => {
             <div className="mt-4 text-sm text-gray-700">
               <strong>Ideal For:</strong> {plan.idealFor}
             </div>
+            {
+              plan?.id == "vise-static-plan" &&
+              <button
+                onClick={handleApplyForVise}
+                className="w-full rounded-lg mt-5 bg-blue-600 text-white py-2 font-semibold hover:bg-blue-700 transition"
+              >
+                Apply For Vise
+              </button>
+            }
           </div>
         ))}
       </div>

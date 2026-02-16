@@ -1,6 +1,6 @@
 import React from 'react';
-import { Crown } from 'lucide-react';
-import Subscription from '../subscription/Subscription';
+// import { Crown } from 'lucide-react';
+// import Subscription from '../subscription/Subscription';
 import NewSubscription from '../subscription/NewSubscription';
 
 const PricingPlans = () => {

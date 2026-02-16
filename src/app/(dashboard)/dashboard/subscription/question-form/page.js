@@ -38,15 +38,13 @@ const Page = () => {
 
             const payload = { answers };
 
-            console.log('Submitting:', payload);
-
             const response = await questionAnswer({ id, data: payload }).unwrap();
 
             console.log(response)
 
             if (response?.code === 200 || response?.code === 201) {
                 toast.success(response?.message || 'Answers submitted successfully!');
-                navigate.push(`${response?.data?.attributes}`);
+                navigate.push(`/`);
                 form.resetFields();
             } else {
                 toast.error(response?.message || 'Failed to submit answers');

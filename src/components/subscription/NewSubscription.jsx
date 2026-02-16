@@ -21,7 +21,6 @@ const NewSubscription = () => {
     const [buySubscriptionForOthersSub] = useAnswerAQuestionUsingFormMutation();
 
     const { data: userInfo } = useGetMyprofileForsubQuery();
-
     const fullUser = userInfo?.data?.attributes;
     // console.log()
 
@@ -44,7 +43,8 @@ const NewSubscription = () => {
         const formattedPlans = [];
 
         // 1️⃣ Backend-driven plans
-        subscriptions.forEach((subscription) => {
+
+        subscriptions?.forEach((subscription) => {
             if (subscription.subscriptionType === "standard") {
                 formattedPlans.push({
                     id: subscription._subscriptionId,
@@ -95,6 +95,7 @@ const NewSubscription = () => {
                 });
             }
         });
+
 
         if (subscriptions) {
 
@@ -185,6 +186,7 @@ const NewSubscription = () => {
         }
     };
 
+
     /* ---------------- UI ---------------- */
     return (
         <div style={{ padding: "50px", background: "#f9f9f9" }}>
@@ -246,92 +248,94 @@ const NewSubscription = () => {
             )}
 
             {/* ERROR */}
-            {error && <OfflineSub />}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
-                {subscriptionsList.map((plan) => (
-                    <div
-                        key={plan.id}
-                        className="relative flex flex-col justify-between h-full w-full overflow-hidden rounded-xl bg-white shadow-[0_6px_15px_rgba(0,0,0,0.1)] p-6"
-                    >
-                        {/* ACTIVE BADGE */}
-                        {plan.subscriptionType === activeSubscriptionType && (
-                            <span className="absolute top-3 right-[-40px] rotate-45 bg-green-500 text-white px-10 py-1 text-sm font-semibold">
-                                Active
-                            </span>
-                        )}
+            {
+                error ?
+                    <OfflineSub />
+                    :
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
+                        {subscriptionsList.map((plan) => (
+                            <div
+                                key={plan.id}
+                                className="relative flex flex-col justify-between h-full w-full overflow-hidden rounded-xl bg-white shadow-[0_6px_15px_rgba(0,0,0,0.1)] p-6"
+                            >
+                                {/* ACTIVE BADGE */}
+                                {plan.subscriptionType === activeSubscriptionType && (
+                                    <span className="absolute top-3 right-[-40px] rotate-45 bg-green-500 text-white px-10 py-1 text-sm font-semibold">
+                                        Active
+                                    </span>
+                                )}
 
-                        <div>
-                            {/* TITLE */}
-                            <h3 className="text-lg font-bold text-gray-900">
-                                {plan.name}
-                            </h3>
+                                <div>
+                                    {/* TITLE */}
+                                    <h3 className="text-lg font-bold text-gray-900">
+                                        {plan.name}
+                                    </h3>
 
-                            {/* PRICE */}
-                            <p className="text-3xl font-extrabold mt-3 text-gray-900">
-                                {plan.price}
-                            </p>
+                                    {/* PRICE */}
+                                    <p className="text-3xl font-extrabold mt-3 text-gray-900">
+                                        {plan.price}
+                                    </p>
 
-                            {/* TRIAL */}
-                            {plan.trial && (
-                                <p className="text-sm text-gray-500 mt-1">
-                                    {plan.trial}
-                                </p>
-                            )}
+                                    {/* TRIAL */}
+                                    {plan.trial && (
+                                        <p className="text-sm text-gray-500 mt-1">
+                                            {plan.trial}
+                                        </p>
+                                    )}
 
-                            {/* TITLE & SUBTITLE */}
-                            {plan.title && (
-                                <p className="mt-3 font-semibold text-gray-800">
-                                    {plan.title}
-                                </p>
-                            )}
+                                    {/* TITLE & SUBTITLE */}
+                                    {plan.title && (
+                                        <p className="mt-3 font-semibold text-gray-800">
+                                            {plan.title}
+                                        </p>
+                                    )}
 
-                            <p className="mt-2 text-gray-600 font-medium">
-                                {plan.subtitle}
-                            </p>
+                                    <p className="mt-2 text-gray-600 font-medium">
+                                        {plan.subtitle}
+                                    </p>
 
-                            {/* PERKS */}
-                            <ul className="mt-4 space-y-2 text-sm text-gray-700">
-                                {plan.perks.map((perk, i) => (
-                                    <li key={i}>• {perk}</li>
-                                ))}
-                            </ul>
-                            {/* IDEAL FOR */}
-                            <p className="mt-4 text-sm text-gray-600">
-                                <span className="font-semibold">Ideal For:</span> {plan.idealFor}
-                            </p>
-                        </div>
+                                    {/* PERKS */}
+                                    <ul className="mt-4 space-y-2 text-sm text-gray-700">
+                                        {plan.perks.map((perk, i) => (
+                                            <li key={i}>• {perk}</li>
+                                        ))}
+                                    </ul>
+                                    {/* IDEAL FOR */}
+                                    <p className="mt-4 text-sm text-gray-600">
+                                        <span className="font-semibold">Ideal For:</span> {plan.idealFor}
+                                    </p>
+                                </div>
 
 
-                        {/* ACTION BUTTON */}
-                        <div className="mt-6">
-                            {plan.subscriptionType === activeSubscriptionType ? (
-                                <button
-                                    onClick={handleCancelSubscription}
-                                    className="w-full rounded-lg border border-red-500 text-red-600 py-2 font-semibold hover:bg-red-50 transition"
-                                >
-                                    Cancel Subscription
-                                </button>
-                            ) : plan.subscriptionType === "vise" ? (
-                                <button
-                                    onClick={handleApplyForVise}
-                                    className="w-full rounded-lg bg-blue-600 text-white py-2 font-semibold hover:bg-blue-700 transition"
-                                >
-                                    Apply For Vise
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={() => handleSubscribe(plan)}
-                                    className="w-full rounded-lg bg-blue-600 text-white py-2 font-semibold hover:bg-blue-700 transition"
-                                >
-                                    Subscribe Now
-                                </button>
-                            )}
-                        </div>
+                                {/* ACTION BUTTON */}
+                                <div className="mt-6">
+                                    {plan.subscriptionType === activeSubscriptionType ? (
+                                        <button
+                                            onClick={handleCancelSubscription}
+                                            className="w-full rounded-lg border border-red-500 text-red-600 py-2 font-semibold hover:bg-red-50 transition"
+                                        >
+                                            Cancel Subscription
+                                        </button>
+                                    ) : plan.subscriptionType === "vise" ? (
+                                        <button
+                                            onClick={handleApplyForVise}
+                                            className="w-full rounded-lg bg-blue-600 text-white py-2 font-semibold hover:bg-blue-700 transition"
+                                        >
+                                            Apply For Vise
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleSubscribe(plan)}
+                                            className="w-full rounded-lg bg-blue-600 text-white py-2 font-semibold hover:bg-blue-700 transition"
+                                        >
+                                            Subscribe Now
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
-
-
+            }
 
         </div>
     );

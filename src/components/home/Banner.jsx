@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
-import { useTakeFreeTrialMutation } from '@/redux/fetures/subscription/subscription'
+import { useRequestForViseMutation, useTakeFreeTrialMutation } from '@/redux/fetures/subscription/subscription'
 import { useStartVideoQuery } from '@/redux/fetures/landing/landing'
+import { useRouter } from 'next/navigation'
+import { useGetMyprofileForsubQuery } from '@/redux/fetures/user/getUsers'
 
 export default function Banner() {
   const { data } = useStartVideoQuery();
@@ -53,6 +55,32 @@ export default function Banner() {
       }
     }
   }
+
+  const { data: userInfo } = useGetMyprofileForsubQuery();
+  const fullUser = userInfo?.data?.attributes;
+
+  const navigate = useRouter();
+  const [takeSubscription] = useRequestForViseMutation();
+
+  const handleApplyForVise = async () => {
+    // toast.success("Your application has been submitted.");
+    if (fullUser?.isFormSubmitted) {
+      try {
+
+        const res = await takeSubscription().unwrap();
+        console.log(res)
+        if (res?.code === 200) {
+          toast.success(res?.message);
+        }
+      } catch (error) {
+        toast.error(error?.data?.message || 'Failed to take subscription');
+      }
+    }
+    else {
+      navigate.push(`/dashboard/subscription/question-form?id=vise`);
+    }
+  };
+
 
 
   return (
@@ -132,13 +160,12 @@ export default function Banner() {
             >
               Free Trial {isLoading && "..."}
             </button>
-            <Link
-              href="https://calendly.com/nimurnerob404/30min"
-              target='_blank'
+            <button
+              onClick={handleApplyForVise}
               className="bg-transparent hover:bg-white/10 text-white font-bold py-3 px-6 border-2 border-white rounded-full transition"
             >
-              Apply for Health Optimization - Direct to Vice Sign Up
-            </Link>
+              Apply for Health Optimization
+            </button>
           </div>
           <p className="text-white mt-8 text-sm md:text-base">
             Try 7 days for free trial.

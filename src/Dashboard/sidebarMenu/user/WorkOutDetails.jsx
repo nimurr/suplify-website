@@ -164,7 +164,7 @@ const ScheduleCard = ({ schedule }) => {
 
         {
 
-          schedule?.sessionType == "private" || schedule?.sessionType == "group" && !schedule?.hasPatientBooking ? (
+          (schedule?.sessionType == "private" || schedule?.sessionType == "group") && !schedule?.hasPatientBooking ? (
             <Button
               type="primary"
               danger
