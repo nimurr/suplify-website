@@ -32,6 +32,11 @@ export default function Banner() {
   }
 
   const [freeTrial, { isLoading }] = useTakeFreeTrialMutation();
+  const { data: userInfo } = useGetMyprofileForsubQuery();
+  const fullUser = userInfo?.data?.attributes;
+
+  const navigate = useRouter();
+  const [takeSubscription] = useRequestForViseMutation();
 
   const handleFreeTrial = async () => {
     if (!user) {
@@ -56,14 +61,10 @@ export default function Banner() {
     }
   }
 
-  const { data: userInfo } = useGetMyprofileForsubQuery();
-  const fullUser = userInfo?.data?.attributes;
 
-  const navigate = useRouter();
-  const [takeSubscription] = useRequestForViseMutation();
 
   const handleApplyForVise = async () => {
-    // toast.success("Your application has been submitted.");
+
     if (fullUser?.isFormSubmitted) {
       try {
 
@@ -77,7 +78,15 @@ export default function Banner() {
       }
     }
     else {
-      navigate.push(`/dashboard/subscription/question-form?id=vise`);
+      if (fullUser) {
+        toast.success("Your application has been submitted.");
+        navigate.push(`/dashboard/subscription/question-form?id=vise`);
+      }
+      else {
+        toast.error("Please login first to apply for Vise");
+        // navigate.push("/auth/login");
+        window.location.href = "/auth/login";
+      }
     }
   };
 
