@@ -215,15 +215,15 @@ export default function Navbar() {
             <Link href="/store" className={`${pathname === '/store' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
               Store
             </Link>
-            <Link href="/workout-class" className={`${pathname === '/workout-class' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+            {/* <Link href="/workout-class" className={`${pathname === '/workout-class' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
               Workouts Class
-            </Link>
+            </Link> */}
             {/* <Link href="/" className={`${pathname === '/' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
               Nutrition
             </Link> */}
-            <Link href="/training-program" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+            {/* <Link href="/training-program" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
               Training Program
-            </Link>
+            </Link> */}
             <Link href="/informational-video" className={`${pathname === '/informational-video' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
               Informational Video
             </Link>
