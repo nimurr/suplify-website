@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { User, Heart, Rocket } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const HowItWorksPage = () => {
-  const users = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : [];
-
+  const [users, setUsers] = useState([]);
   const navigate = useRouter();
+
+  useEffect(() => {
+    const users = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : [];
+    setUsers(users);
+  }, []);
+
 
   const handleGetStarted = () => {
     if (users.role === 'patient') {
