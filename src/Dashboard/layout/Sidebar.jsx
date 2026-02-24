@@ -66,7 +66,7 @@ export default function Sidebar() {
       {
         key: "/dashboard/specialist",
         icon: <SlUserFollowing />,
-        label: "Spesialist",
+        label: "Specialist",
         path: "/dashboard/specialist",
       },
       {
@@ -78,7 +78,7 @@ export default function Sidebar() {
       {
         key: "/dashboard/protocol",
         icon: <TbPrescription />,
-        label: "Protocol",
+        label: "Dr. Protocol",
         path: "/dashboard/protocol",
       },
       {

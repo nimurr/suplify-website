@@ -417,10 +417,13 @@ const PatientProfileEdit = () => {
                 >
                     <Input disabled placeholder="Email" className="h-10" />
                 </Form.Item>
-
-                <Form.Item label="External Link" name="externalLink">
-                    <Input placeholder="External Link" className="h-10" />
-                </Form.Item>
+                {
+                    fullUser?.role !== "patient" && (
+                        <Form.Item label="External Link" name="externalLink">
+                            <Input placeholder="External Link" className="h-10" />
+                        </Form.Item>
+                    )
+                }
 
                 <Form.Item label="How Many Programs" name="howManyPrograms">
                     <Input placeholder="How Many Programs" className="h-10" />
