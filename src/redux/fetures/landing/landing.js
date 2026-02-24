@@ -21,6 +21,14 @@ const landing = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Landing"]
         }),
+        bookedNowLabTest: builder.mutation({
+            query: (data) => ({
+                url: `/labTest-bookings`,
+                method: 'POST',
+                body: data
+            }),
+            invalidatesTags: ["Landing"]
+        }),
         getAllcartProducts: builder.query({
             query: () => ({
                 url: `/carts/view`,
@@ -80,6 +88,7 @@ export const {
     useGetAllCategoriesQuery,
     useGetAddToCartLangthQuery,
     useAddTocartProductMutation,
+    useBookedNowLabTestMutation,
     useGetAllcartProductsQuery,
     useRemoveAddToCartProductMutation,
     useIncreseCartProductMutation,

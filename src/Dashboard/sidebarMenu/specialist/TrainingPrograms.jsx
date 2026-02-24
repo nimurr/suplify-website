@@ -72,7 +72,8 @@ export default function TrainingPrograms() {
                 cover={
                   <img
                     alt="example"
-                    src={program?.attachments[0]?.attachment?.includes('amazonaws') ? program?.attachments[0]?.attachment : url + program?.attachments[0]?.attachment}
+                    className='min-h-48 object-cover max-h-48'
+                    src={program?.attachments.length < 1 ? 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png' : program?.attachments[0]?.attachment?.includes('amazonaws') ? program?.attachments[0]?.attachment : url + program?.attachments[0]?.attachment}
                   />
 
                 }

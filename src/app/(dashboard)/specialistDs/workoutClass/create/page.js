@@ -1,15 +1,41 @@
 'use client';
-import { useCreateWorkoutClassMutation } from '@/redux/fetures/Specialist/workoutClass';
-import { useRouter } from 'next/navigation';
+
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
+import { useCreateWorkoutClassMutation, useGetAllHospotsQuery } from '@/redux/fetures/Specialist/workoutClass';
+import moment from 'moment';
+
+// Week days mapping (BACKEND FORMAT)
+const WEEK_DAYS = [
+    { label: 'Monday', value: 'MONDAY' },
+    { label: 'Tuesday', value: 'TUESDAY' },
+    { label: 'Wednesday', value: 'WEDNESDAY' },
+    { label: 'Thursday', value: 'THURSDAY' },
+    { label: 'Friday', value: 'FRIDAY' },
+    { label: 'Saturday', value: 'SATURDAY' },
+    { label: 'Sunday', value: 'SUNDAY' },
+];
 
 const Page = () => {
-    // Initialize formData with empty values
+    const router = useRouter();
+    const { data } = useGetAllHospotsQuery();
+    const [createWorkoutClass] = useCreateWorkoutClassMutation();
+    const fullData = data?.data?.attributes || [];
+
+
     const [formData, setFormData] = useState({
-        scheduleDate: '', // Empty initial value
-        startTime: '', // Empty initial value
-        endTime: '', // Empty initial value
+        scheduleType: '',
+        weekDays: [],
+        durationWeeks: 1,
+
+        hotspotId: '',
+
+        scheduleDate: '',
+        startTime: '',
+        endTime: '',
+        classType: 'online',
+
         scheduleName: '',
         description: '',
         typeOfLink: '',
@@ -18,240 +44,246 @@ const Page = () => {
         price: '',
     });
 
+    // ------------------ HELPERS ------------------
+    const toISODateWithZ = (date) => {
+        return new Date(date).toISOString(); // YYYY-MM-DDTHH:mm:ssZ
+    };
+
+    const onlyDate = (date) => {
+        return new Date(date).toISOString().split('T')[0]; // YYYY-MM-DD
+    };
+
+    // ------------------ HANDLERS ------------------
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value, // Update formData as user inputs data
-        });
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const [createWorkoutClass] = useCreateWorkoutClassMutation();
-    // Function to convert to UTC with 'Z' for scheduleDate (add 6 hours)
-    const convertToUTCWithZ = (datetime) => {
-        const date = new Date(datetime);
-        date.setHours(date.getHours() + 6); // Add 6 hours
-        return date.toISOString(); // Converts to 'YYYY-MM-DDTHH:mm:ssZ' format
+    const handleWeekDayToggle = (day) => {
+        setFormData(prev => ({
+            ...prev,
+            weekDays: prev.weekDays.includes(day)
+                ? prev.weekDays.filter(d => d !== day)
+                : [...prev.weekDays, day],
+        }));
     };
 
-    // Function to convert to UTC without 'Z' for startTime and endTime (add 6 hours)
-    const convertToUTC = (datetime) => {
-        const date = new Date(datetime);
-        date.setHours(date.getHours() + 6); // Add 6 hours
-        return date.toISOString().split('.')[0]; // Converts to 'YYYY-MM-DDTHH:mm:ss' format without 'Z'
-    };
-
-    const route = useRouter();
-
-    // Handle form submission
+    // ------------------ SUBMIT ------------------
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form data:", formData);
 
-        // Convert to UTC before sending data and add 6 hours to each datetime
-        const formattedData = {
-            ...formData,
-            scheduleDate: convertToUTCWithZ(formData.scheduleDate), // Convert scheduleDate to UTC with 'Z' and add 6 hours
-            startTime: convertToUTC(formData.startTime), // Convert startTime to UTC without 'Z' and add 6 hours
-            endTime: convertToUTC(formData.endTime), // Convert endTime to UTC without 'Z' and add 6 hours
+        if (!formData.scheduleType) {
+            return toast.error('Select schedule type');
+        }
+
+
+        const formatTimeWithSeconds = (time) => {
+            if (!time) return null; // 🔐 prevents Invalid date
+            return moment(`2026-01-30T${time}`, 'YYYY-MM-DDTHH:mm')
+                .format('HH:mm:ss');
         };
- 
-        try {
-            const response = await createWorkoutClass(formattedData).unwrap();
-            console.log(response);
-            if (response?.code === 200) {
-                toast.success(response?.message);
-                setFormData({
-                    scheduleDate: '', // Empty initial value
-                    startTime: '', // Empty initial value
-                    endTime: '', // Empty initial value
-                    scheduleName: '',
-                    description: '',
-                    typeOfLink: '',
-                    sessionType: '',
-                    meetingLink: '',
-                    price: '',
-                });
-                route.push("/specialistDs/workoutClass");
+
+        const payload = {
+            scheduleName: formData.scheduleName,
+            scheduleType: formData.scheduleType,
+            scheduleDate: toISODateWithZ(formData.scheduleDate),
+
+            classType: formData.classType,
+
+            startTime: formatTimeWithSeconds(formData.startTime),
+            endTime: formatTimeWithSeconds(formData.endTime),
+
+            description: formData.description,
+            sessionType: formData.sessionType,
+            price: formData.price,
+        };
+
+
+
+        // ONE TIME
+        if (formData.scheduleType === 'oneTime') {
+            payload.scheduleDate = toISODateWithZ(formData.scheduleDate);
+        }
+
+        if (formData.classType === 'online') {
+            payload.meetingLink = formData.meetingLink;
+            payload.typeOfLink = formData.typeOfLink;
+        }
+
+        // REPEAT
+        if (formData.scheduleType === 'repeat') {
+            if (!formData.weekDays.length) {
+                return toast.error('Select at least one weekday');
             }
+
+            payload.repeatRule = {
+                weekDays: formData.weekDays,
+                startDate: onlyDate(formData.scheduleDate),
+                durationWeeks: Number(formData.durationWeeks),
+            };
+        }
+        if (formData.classType === 'inPerson') {
+            payload.hotspotId = formData.hotspotId;
+            delete payload.meetingLink;
+            delete payload.typeOfLink;
+        }
+
+        console.log(payload);
+
+
+        try {
+            const res = await createWorkoutClass(payload).unwrap();
+            console.log(res)
+            toast.success(res?.message || 'Workout created successfully');
+            router.push('/specialistDs/workoutClass');
         } catch (error) {
-            console.log(error);
-            toast.error(error?.data?.message || "Something went wrong!");
+            toast.error(error?.data?.message || 'Something went wrong');
         }
     };
 
-
+    // ------------------ UI ------------------
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-md shadow-lg">
+        <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow">
             <Toaster />
-            <h2 className="text-2xl font-semibold text-center mb-6">Create Workout Session</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-center">Create Workout Session</h2>
+
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Schedule Date */}
-                <div>
-                    <label htmlFor="scheduleDate" className="block text-sm font-medium text-gray-700">
-                        Schedule Date
-                    </label>
-                    <input
-                        type="datetime-local"
-                        id="scheduleDate"
-                        name="scheduleDate"
-                        value={formData.scheduleDate} // Bind input value to formData
-                        onChange={handleChange} // Update formData on change
-                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        required
-                    />
-                </div>
 
-                {/* Start Time (24-hour format with full datetime) */}
-                <div>
-                    <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
-                        Start Time
-                    </label>
-                    <input
-                        type="datetime-local"
-                        id="startTime"
-                        name="startTime"
-                        value={formData.startTime} // Bind input value to formData
-                        onChange={handleChange} // Update formData on change
-                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        required
-                    />
-                </div>
+                <span className='mt-2 font-semibold block'>Schedule Type</span>
 
-                {/* End Time (24-hour format with full datetime) */}
-                <div>
-                    <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
-                        End Time
-                    </label>
-                    <input
-                        type="datetime-local"
-                        id="endTime"
-                        placeholder='Enter end time'
-                        name="endTime"
-                        value={formData.endTime} // Bind input value to formData
-                        onChange={handleChange} // Update formData on change
-                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        required
-                    />
-                </div>
+                {/* Schedule Type */}
+                <select
+                    name="scheduleType"
+                    value={formData.scheduleType}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded"
+                    required
+                >
+                    <option value="">Select Schedule Type</option>
+                    <option value="oneTime">One Time</option>
+                    <option value="repeat">Repeat</option>
+                </select>
 
-                {/* Schedule Name */}
-                <div>
-                    <label htmlFor="scheduleName" className="block text-sm font-medium text-gray-700">
-                        Schedule Name
-                    </label>
-                    <input
-                        type="text"
-                        id="scheduleName"
-                        placeholder='Enter schedule name'
-                        name="scheduleName"
-                        value={formData.scheduleName} // Bind input value to formData
-                        onChange={handleChange} // Update formData on change
-                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        required
-                    />
-                </div>
 
-                {/* Description */}
-                <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                        Description
-                    </label>
-                    <textarea
-                        id="description"
-                        placeholder='Enter description'
-                        name="description"
-                        value={formData.description} // Bind input value to formData
-                        onChange={handleChange} // Update formData on change
-                        rows="4"
-                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        required
-                    />
-                </div>
 
-                {/* Type of Link */}
-                <div>
-                    <label htmlFor="typeOfLink" className="block text-sm font-medium text-gray-700">
-                        Type of Link
-                    </label>
-                    <select
-                        id="typeOfLink"
-                        name="typeOfLink"
-                        value={formData.typeOfLink} // Bind select value to formData
-                        onChange={handleChange} // Update formData on change
-                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        required
-                    >
-                        <option value="">Select Link Type</option>
-                        <option value="googleMeet">Google Meet</option>
-                        <option value="zoom">Zoom</option>
-                        <option value="teams">Microsoft Teams</option>
-                        <option value="skype">Skype</option>
-                    </select>
-                </div>
+                {/* Week Days */}
+                {formData.scheduleType === 'repeat' && (
+                    <div>
+                        <p className="font-medium mb-2">Select Days</p>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {WEEK_DAYS.map(day => (
+                                <label key={day.value} className="flex items-center gap-2 border p-2 rounded">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.weekDays.includes(day.value)}
+                                        onChange={() => handleWeekDayToggle(day.value)}
+                                    />
+                                    {day.label}
+                                </label>
+                            ))}
+                        </div>
+                        <span className='mt-2 font-semibold block'>Schedule Duration ( Weeks )</span>
+                        <input
+                            type="number"
+                            name="durationWeeks"
+                            min="1"
+                            value={formData.durationWeeks}
+                            onChange={handleChange}
+                            className="w-full mt-3 p-3 border rounded"
+                            placeholder="Duration Weeks"
+                        />
+                    </div>
+                )}
 
-                {/* Session Type */}
-                <div>
-                    <label htmlFor="sessionType" className="block text-sm font-medium text-gray-700">
-                        Session Type
-                    </label>
-                    <select
-                        id="sessionType"
-                        name="sessionType"
-                        value={formData.sessionType} // Bind select value to formData
-                        onChange={handleChange} // Update formData on change
-                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        required
-                    >
-                        <option value="">Select Session Type</option>
-                        <option value="private">Private</option>
-                        <option value="group">Group</option>
-                    </select>
-                </div>
+                <span className='mt-2 font-semibold block'>Class Type</span>
+                <select
+                    name="classType"
+                    value={formData.classType}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded"
+                    required
+                >
+                    <option value="">Select Class Type</option>
+                    <option value="online">Online</option>
+                    <option value="inPerson">In Person</option>
+                </select>
 
-                {/* Meeting Link */}
-                <div>
-                    <label htmlFor="meetingLink" className="block text-sm font-medium text-gray-700">
-                        Meeting Link
-                    </label>
-                    <input
-                        type="url"
-                        id="meetingLink"
-                        placeholder='Enter Meeting Link'
-                        name="meetingLink"
-                        value={formData.meetingLink} // Bind input value to formData
-                        onChange={handleChange} // Update formData on change
-                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        required
-                    />
-                </div>
+                {
+                    /* class type is inPerson then show derp down all the fields below */
+                    formData.classType === 'inPerson' && (
+                        <>
+                            <span className='mt-2 font-semibold block'>Hospots</span>
+                            <select
+                                name="hotspotId"
+                                value={formData.hotspotId}
+                                onChange={handleChange}
+                                className="w-full p-3 border rounded"
+                                required
+                            >
 
-                {/* Price */}
-                <div>
-                    <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                        Price ($)
-                    </label>
-                    <input
-                        type="number"
-                        placeholder='Enter Price '
-                        id="price"
-                        name="price"
-                        value={formData.price} // Bind input value to formData
-                        onChange={handleChange} // Update formData on change
-                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        required
-                    />
-                </div>
+                                <option disabled value="">Select Hotspot</option>
+                                {
+                                    fullData.map(hotspot => (
+                                        <option key={hotspot._SuplifyHotspotId} value={hotspot._SuplifyHotspotId}>{hotspot.name}</option>
+                                    ))
+                                }
+                            </select>
+                        </>
+                    )
+                }
 
-                {/* Submit Button */}
-                <div className="flex justify-center">
-                    <button
-                        type="submit"
-                        className="w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                    >
-                        Submit
-                    </button>
-                </div>
+                <span className='mt-2 font-semibold block'>Schedule Date</span>
+                <input type="date" name="scheduleDate" onChange={handleChange} required className="w-full p-3 border rounded" />
+
+                <span className="mt-2 font-semibold block">Schedule Start Time</span>
+                <input
+                    type="time"
+                    name="startTime"
+                    onChange={handleChange}
+                    required
+                    className="w-full p-3 border rounded"
+                />
+
+                <span className="mt-2 font-semibold block">Schedule End Time</span>
+                <input
+                    type="time"
+                    name="endTime"
+                    onChange={handleChange}
+                    required
+                    className="w-full p-3 border rounded"
+                />
+
+                <span className='mt-2 font-semibold block'>Schedule Name</span>
+                <input name="scheduleName" placeholder="Schedule Name" onChange={handleChange} required className="w-full p-3 border rounded" />
+                <span className='mt-2 font-semibold block'>Schedule Description</span>
+                <textarea name="description" placeholder="Description" onChange={handleChange} required className="w-full p-3 border rounded" />
+
+                {
+                    formData.classType === 'online' && (
+                        <>
+                            <span className='mt-2 font-semibold block'>Schedule Link Type</span>
+                            <select name="typeOfLink" onChange={handleChange} required className="w-full p-3 border rounded">
+                                <option value="">Select Link Type</option>
+                                <option value="googleMeet">Google Meet</option>
+                                <option value="zoom">Zoom</option>
+                            </select>
+
+                            <input name="meetingLink" placeholder="Meeting Link" onChange={handleChange} required className="w-full p-3 border rounded" />
+                        </>
+                    )
+                }
+
+                <span className='mt-2 font-semibold block'>Session Type</span>
+                <select name="sessionType" onChange={handleChange} required className="w-full p-3 border rounded">
+                    <option value="">Session Type</option>
+                    <option value="private">Private</option>
+                    <option value="group">Group</option>
+                </select>
+                <input name="price" type="number" placeholder="Price" onChange={handleChange} required className="w-full p-3 border rounded" />
+
+                <button className="w-full bg-indigo-600 text-white p-3 rounded hover:bg-indigo-700">
+                    Submit
+                </button>
             </form>
         </div>
     );

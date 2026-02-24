@@ -1,97 +1,133 @@
-import React from 'react';
+import { message } from "antd";
+import { useRouter } from "next/navigation";
+import React from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 const OfflineSub = () => {
-    const fullData = [{
-        subscriptionType: 'standard',
-        perksForStandard: [
-            'Custom Nutrition Plan - Monthly',
-            'Workout Program - 12-Week Program',
-            'InBody Scan Tracking - Monthly',
-            'Shopping List & Supplement Protocol - Yes (No Discounts)',
-            'Specialist Support (Check-Ins) - 2x Per Month',
-            'Live Online Workouts - No',
-            'Exclusive Webinars - No',
-            'Personalized Blood Work & Lab Testing - No',
-            'Specialist Access & Scheduling - No',
-            'Doctor Consultation - No',
-            'VIP Perks - No',
-        ],
-        perksForStandardPlus: [
-            'Monthly nutrition strategy',
-            'Goal-based supplement protocol',
-            'Monthly updated training plan',
-            'Personalized user profile with habit and progress tracking',
-            'Access to Suplify’s a la carte library (extra cost) for workouts, tools, doctor consultation, lab tests',
-            'Suplify Rewards access (points + perks)',
-            'Access to challenges, webinars, and Hot Spot discounts',
-            'No coaching included',
-            'Optional Upgrade: Add a Suplify Specialist for +$280/month (Total: $350/month) → Includes weekly check-ins/coaching, accountability, 15% off supplements, and protocol adjustments',
-        ],
-        perksForVIP: [
-            'VIP Nutrition Plan - Monthly with Priority Support',
-            'Workout Program - Personalized based on goals',
-            'Exclusive Access to Live Online Workouts',
-            'Monthly Health Check-ins with a Specialist',
-            'Specialist Support (Check-Ins) - 4x Per Month',
-            'VIP Access to Exclusive Webinars and Events',
-            'Custom Supplement Protocol & Discounted Shopping List',
-            'Priority Scheduling for Specialist Consultation',
-            'Personalized Blood Work & Lab Testing',
-            'Doctor Consultation Included',
-            'Exclusive VIP Perks and Rewards',
-        ]
-    }];
+  const plans = [
+    {
+      id: "standard-static",
+      name: "STANDARD MEMBERSHIP",
+      price: "$11.99 / month",
+      subtitle:
+        "A low-cost membership that unlocks access to the entire Suplify ecosystem.",
+      subscriptionType: "standard",
+      perks: [
+        "Access to the full Suplify platform",
+        "Huge discounts on high-quality supplements",
+        "Discounts on coaching",
+        "Discounts on doctor consultations",
+        "Discounts on lab testing",
+        "Discounts on VO₂ Max, RMR, HRV testing",
+        "Discounts on protocol upgrades",
+        "Member-only pricing on wellness tools & programs",
+        "Access to challenges, webinars, and member events",
+      ],
+      idealFor:
+        "Anyone wanting high-end wellness resources at wholesale pricing — without coaching.",
+    },
+    {
+      id: "standardPlus-static",
+      name: "SUPLIFY+ (COACHING)",
+      price: "$429/ month",
+      title: "Your Specialist. Your Strategy. Your Upgrade.",
+      subtitle: "Your Specialist. Your Strategy. Your Upgrade.",
+      subscriptionType: "standardPlus",
+      perks: [
+        "Everything in Standard Membership",
+        "Weekly coaching & accountability",
+        "One private training session per week",
+        "Personalized health & performance strategy",
+        "Nutrition guidance and protocol updates",
+        "Training program adjustments",
+        "Priority access to specialists",
+        "Free entries to webinars & seminars",
+        "Preferred access to challenges & events",
+        "Product giveaways",
+        "Members-only upgrades",
+      ],
+      idealFor:
+        "Clients who want structure, support, expert guidance, and consistent accountability.",
+    },
+    {
+      id: "vise-static-plan",
+      name: "VISE (PREMIUM MEDICAL PROGRAM)",
+      price: "Pricing Varies",
+      title:
+        "The Complete Medical + Performance Transformation Program",
+      subtitle:
+        "16-week personalized medical & performance protocol",
+      subscriptionType: "vise",
+      perks: [
+        "Full lab panel",
+        "VO₂ Max, RMR, and HRV testing",
+        "Doctor consultation to review all findings",
+        "Fully customized medical & performance protocol",
+        "Assigned Specialist for full program execution",
+        "Nutrition, training, supplement & lifestyle plan",
+        "Ongoing adjustments and clinical oversight",
+        "All costs bundled into one all-inclusive program",
+      ],
+      idealFor:
+        "Clients who want a full medical-grade transformation with clinical oversight.",
+    },
+  ];
+  const navigate = useRouter();
 
-    return (
-        <div className="w-full mt-10">
-            {fullData?.map((plan, idx) => (
+  const handleApplyForVise = () => {
 
-                <div className=" grid text-left  grid-cols-1 md:grid-cols-2 items-start lg:grid-cols-3 gap-6">
+    toast.error("Please login first to apply for Vise");
+    navigate.push("/auth/login");
 
-                    {plan.subscriptionType === 'standard' && (
-                        <div className=" p-6 bg-gray-100 shadow-sm rounded-lg">
-                            <p clsassName="text-2xl font-bold text-center block w-full">Standard Plan</p>
-                            <hr clsassName="my-3 block" />
-                            <br />
-                            <div clsassName="spyce-y-3">
-                                {plan.perksForStandard.map((perk, index) => (
-                                    <li key={index} className="mb-2  text-sm list-none">{perk}</li>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+  };
 
-                    {plan.subscriptionType !== 'standardPlus' && (
-                        <div className=" p-6 bg-gray-100 shadow-sm rounded-lg">
-                            <p clsassName="mb-2 text-2xl font-bold text-center block w-full">Standard Plus Plan </p>
-                            <hr clsassName="my-3 block" />
-                            <br />
-                            <div clsassName="spyce-y-3">
-                                {plan.perksForStandardPlus.map((perk, index) => (
-                                    <li key={index} className="mb-2  text-sm list-none">{perk}</li>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+  return (
+    <div className="w-full my-10">
+      <Toaster position="top-center" reverseOrder={false} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {plans.map((plan) => (
+          <div
+            key={plan.id}
+            className="p-6 bg-gray-100 rounded-lg shadow-sm flex flex-col"
+          >
+            <h2 className="text-xl font-bold text-center">{plan.name}</h2>
+            <p className="text-center text-lg font-semibold mt-2">
+              {plan.price}
+            </p>
 
-                    {plan.subscriptionType !== 'VIP' && (
-                        <div className=" p-6 bg-gray-100 shadow-sm rounded-lg">
-                            <p clsassName="mb-2 text-2xl font-bold text-center block w-full">VIP Plan</p>
-                            <hr clsassName="my-3 block" />
-                            <br />
-                            <div clsassName="spyce-y-3">
-                                {plan.perksForVIP.map((perk, index) => (
-                                    <li key={index} className="mb-2  text-sm list-none">{perk}</li>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+            {plan.subtitle && (
+              <p className="text-sm text-center mt-2 text-gray-600">
+                {plan.subtitle}
+              </p>
+            )}
 
-                </div>
-            ))
+            <hr className="my-4" />
+
+            <ul className="space-y-2 flex-1">
+              {plan.perks.map((perk, index) => (
+                <li key={index} className="text-sm">
+                  • {perk}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-4 text-sm text-gray-700">
+              <strong>Ideal For:</strong> {plan.idealFor}
+            </div>
+            {
+              plan?.id == "vise-static-plan" &&
+              <button
+                onClick={handleApplyForVise}
+                className="w-full rounded-lg mt-5 bg-blue-600 text-white py-2 font-semibold hover:bg-blue-700 transition"
+              >
+                Apply For Vise
+              </button>
             }
-        </div >
-    );
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default OfflineSub;

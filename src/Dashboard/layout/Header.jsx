@@ -20,6 +20,7 @@ import url from '@/redux/api/baseUrl';
 import { AiOutlineMessage } from 'react-icons/ai';
 import Link from 'next/link';
 import { IoNotifications } from 'react-icons/io5';
+import { getSocket } from '@/utils/socket-io';
 
 export default function DashboardHeader({ collapsed }) {
   // State for modals and mobile menu
@@ -27,12 +28,70 @@ export default function DashboardHeader({ collapsed }) {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const socket = getSocket();
+
   // Modal handlers
   const openPasswordModal = () => setIsPasswordModalOpen(true);
   const closePasswordModal = () => setIsPasswordModalOpen(false);
 
   const openLogoutModal = () => setIsLogoutModalOpen(true);
   const closeLogoutModal = () => setIsLogoutModalOpen(false);
+  const [unseenCount, setUnseenCount] = useState(0);
+
+
+  const [userData, setUserData] = useState({})
+
+  const { data: user, refetch } = useGetUserProfileQuery(userData.id)
+  const fullUser = user?.data?.attributes;
+
+  const [notifyunseenCount, setNotifyunseenCount] = useState(user?.data?.additionalResponse?.hasUnviewedNotification ? true : false);
+
+
+  const handleNotifyCountRemove = () => {
+    refetch();
+    setNotifyunseenCount(false);
+  }
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userId = user?.id || user?._id || user?._userId;
+    if (!userId) return;
+
+    setTimeout(() => {
+      const eventName = `notification::${userId}`;
+      const handler = (data) => {
+        console.log('Notification Socket Real Time Data :' + data)
+        refetch();
+        setNotifyunseenCount(true);
+      };
+
+      socket.on(eventName, handler);
+
+      // ✅ cleanup (VERY IMPORTANT)
+      return () => {
+        socket.off(eventName, handler);
+      };
+    }, 1000);
+
+
+    setTimeout(() => {
+      const eventName = `unseen-count::${userId}`;
+      const handler = (data) => {
+        console.log("unseen-count", data);
+        setUnseenCount(prev =>
+          prev + (data?.unreadConversationCount || 0)
+        );
+      };
+      socket.on(eventName, handler);
+      // ✅ cleanup (VERY IMPORTANT)
+      return () => {
+        socket.off(eventName, handler);
+      };
+    }, 1000)
+
+
+
+  }, []); // 👈 NO unseenCount here
 
 
 
@@ -92,10 +151,8 @@ export default function DashboardHeader({ collapsed }) {
     },
   ];
 
-  const [userData, setUserData] = useState({})
 
-  const { data: user } = useGetUserProfileQuery(userData.id)
-  const fullUser = user?.data?.attributes;
+
 
   const imageUrl = fullUser?.profileImage?.imageUrl.includes("amazonaws.com")
     ? fullUser?.profileImage?.imageUrl
@@ -104,7 +161,7 @@ export default function DashboardHeader({ collapsed }) {
   useEffect(() => {
     setUserData(JSON.parse(localStorage.getItem("user")))
 
-    console.log(fullUser)
+    // console.log(fullUser)
 
     // if (!fullUser) {
     //   localStorage.removeItem('token');
@@ -144,11 +201,17 @@ export default function DashboardHeader({ collapsed }) {
 
         {/* User profile */}
         <div className="mr-6 flex items-center gap-2">
-          <Link href="/chat" className='w-10 cursor-pointer h-10 bg-red-600 text-white flex items-center justify-center rounded-lg'>
+          <Link href="/chat" className='w-10 cursor-pointer relative h-10 bg-red-600 text-white flex items-center justify-center rounded-lg'>
             <AiOutlineMessage className='text-2xl font-semibold' />
+            <span className='absolute -top-1 -right-1 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs'>
+              {unseenCount ? unseenCount : (user?.data?.additionalResponse?.unreadConversationCount > 9 ? '9+' : user?.data?.additionalResponse?.unreadConversationCount || 0)}
+            </span>
           </Link>
-          <Link href="/notification" className='w-10 cursor-pointer h-10 bg-red-600 text-white flex items-center justify-center rounded-lg'>
+          <Link onClick={handleNotifyCountRemove} href="/notification" className='w-10 cursor-pointer h-10 bg-red-600 text-white flex items-center justify-center rounded-lg relative'>
             <IoNotifications className='text-2xl font-semibold' />
+            {
+              notifyunseenCount && <span className='absolute top-2 right-2 bg-blue-500 text-white rounded-full w-2 h-2 flex items-center justify-center text-xs'></span>
+            }
           </Link>
           <Dropdown
             menu={{ items: userMenuItems }}

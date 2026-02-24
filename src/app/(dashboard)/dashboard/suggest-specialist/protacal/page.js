@@ -154,9 +154,9 @@ export default function Page() {
                                 </ul>
                             </div>
 
-                            <div className="flex justify-between items-center">
+                            {/* <div className="flex justify-between items-center">
                                 <Text className="font-semibold text-sm">Total Key Points: {plan.totalKeyPoints}</Text>
-                            </div>
+                            </div> */}
                         </Card>
                     ))}
                     {

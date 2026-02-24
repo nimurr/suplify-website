@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense, useEffect, useState } from "react";
-import { Button } from "antd";
+import { Button, Image } from "antd";
 import { LeftOutlined } from "@ant-design/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useBookNowSheduleWorkoutClassMutation, useGetAllScheduleWorkoutClassQuery } from "@/redux/fetures/patient/specialist";
@@ -9,11 +9,13 @@ import moment from "moment";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import url from "@/redux/api/baseUrl";
+import { IoDocumentTextOutline } from "react-icons/io5";
 
 // Schedule card component
 const ScheduleCard = ({ schedule }) => {
 
   const [bookNow] = useBookNowSheduleWorkoutClassMutation();
+  console.log(schedule)
 
   const id = schedule._id;
 
@@ -37,12 +39,14 @@ const ScheduleCard = ({ schedule }) => {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+
+      {/* apply this component only here  */}
       <div className="p-4 flex flex-col justify-between h-full">
         {/* Video icon and workout title */}
         <div className="flex justify-between items-start mb-3">
-          <div className="flex items-center gap-2">
-            <div className="bg-gray-100 p-2 rounded-md">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div className=" items-center gap-2">
+            <div className="bg-gray-100 w-14 h-14 flex items-center justify-center p-2 rounded-md">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="2" y="4" width="20" height="16" rx="2" stroke="black" strokeWidth="1.5" />
                 <path d="M10 9L15 12L10 15V9Z" fill="black" />
               </svg>
@@ -55,23 +59,95 @@ const ScheduleCard = ({ schedule }) => {
           </div>
         </div>
 
-        {/* Date row */}
-        <div className="mb-2">
-          <div className="text-xs text-gray-600">Date</div>
-          <div className="text-sm font-medium">{moment(schedule.scheduleDate).format('YYYY-MM-DD')}</div>
-        </div>
+        <p className='flex items-center justify-between capitalize my-2'>
+          <strong>Schedule Type:</strong> <span className={`border px-2 py-1 text-sm rounded-full ${schedule.scheduleType == "oneTime" ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"}`}>{schedule.scheduleType == "oneTime" ? "One Time" : "Repeat"}</span>
+        </p>
+        <hr />
 
-        {/* Time row */}
-        <div className="flex justify-between mb-3">
-          <div>
-            <div className="text-xs text-gray-600">Start Time</div>
-            <div className="text-sm font-medium">{moment(schedule.startTime).format('hh:mm A')}</div>
+        {/* Conditional Rendering */}
+        {schedule.scheduleType === 'repeat' && schedule.repeatRule && (
+          <div className="text-gray-600 mb-4">
+            <p className='flex items-center justify-between my-2'>
+              <strong>Start Date:</strong> {moment(schedule.scheduleDate).format('DD MMM YYYY')}
+            </p>
+            <p className='flex items-center justify-between my-2'>
+              <strong>End Date :</strong> {moment(schedule.repeatRule?.endDate).format('DD MMM YYYY')}
+            </p>
+
+            <p className='flex items-center justify-between my-2'>
+              <strong>Start Time:</strong> {moment(schedule.startTime).format('hh:mm A')}
+            </p>
+            <p className='flex items-center justify-between my-2'>
+              <strong>End Time:</strong> {moment(schedule.endTime).format('hh:mm A')}
+            </p>
+            <p className='flex items-center justify-between my-2'>
+              <strong>Duration (weeks):</strong> {schedule.repeatRule.durationWeeks}
+            </p>
+            <p className='flex items-center justify-between my-2'>
+              <strong>Weekdays:</strong>
+              <div className='flex items-center gap-2'>
+                {schedule?.repeatRule?.weekDays?.map((day) => (
+                  <span key={day} className="border px-2 py-1 text-sm rounded-full text-gray-600">
+                    {day}
+                  </span>
+                ))}
+              </div>
+            </p>
           </div>
-          <div>
-            <div className="text-xs text-gray-600">End Time</div>
-            <div className="text-sm font-medium">{moment(schedule.endTime).format('hh:mm A')}</div>
+        )}
+        {
+          schedule?.scheduleType === 'oneTime' && (
+            <div>
+              <p className='flex items-center justify-between my-2'>
+                <strong>Schedule Date:</strong> {moment(schedule.scheduleDate).format('DD MMM YYYY')}
+              </p>
+              <p className='flex items-center justify-between my-2'>
+                <strong>Schedule Start Time:</strong> {moment(schedule.startTime).format('hh:mm A')}
+              </p>
+              <p className='flex items-center justify-between my-2'>
+                <strong>Schedule Start Time:</strong> {moment(schedule.endTime).format('hh:mm A')}
+              </p>
+            </div>
+          )
+        }
+
+        {schedule.hotspot && schedule?.classType !== 'online' && (
+          <div className="text-gray-600 mb-4">
+            <hr />
+            <p className='flex items-center justify-between my-2'>
+              <strong>Hotspot Name:</strong> {schedule.hotspot.name}
+            </p>
+            <p className='flex items-center justify-between my-2'>
+              <strong>Hotspot Address:</strong> {schedule.hotspot.address}
+            </p>
+            <br />
+            {
+              schedule.hotspot.attachments?.attachment && (
+                <Image className='' width={100} height={100} src={schedule.hotspot.attachments?.attachment?.includes('amazonaws') ? schedule.hotspot.attachments?.attachment : (url + schedule.hotspot.attachments?.attachment)} alt="" />
+              )
+            }
+            <hr />
           </div>
-        </div>
+        )}
+
+
+
+        {/* {schedule.classType === 'online' && schedule.isPaidByPatient && (
+          <div className="text-gray-600 mb-4 ">
+            <hr />
+            <p className='flex items-center justify-between my-2'>
+              <strong>Platform:</strong> {schedule.typeOfLink || 'N/A'}
+            </p>
+            <Link
+              href={schedule?.meetingLink || '#'}
+              className="text-base py-2 underline flex mt-2 items-center cursor-pointer gap-2 text-purple-700"
+            >
+              <IoDocumentTextOutline className="text-xl" /> Go to Meeting Link
+            </Link>
+            <hr />
+          </div>
+        )} */}
+
 
         {/* Description */}
         <div className="text-xs text-gray-600 mb-4">
@@ -84,9 +160,11 @@ const ScheduleCard = ({ schedule }) => {
         </div>
 
 
+
+
         {
 
-          schedule?.sessionType == "private" && !schedule?.hasPatientBooking ? (
+          (schedule?.sessionType == "private" || schedule?.sessionType == "group") && !schedule?.hasPatientBooking ? (
             <Button
               type="primary"
               danger
@@ -97,18 +175,23 @@ const ScheduleCard = ({ schedule }) => {
               Book Now
             </Button>
           ) :
-            schedule?.hasPatientBooking && schedule?.sessionType !== "group" && (
+            schedule?.hasPatientBooking &&
+            schedule?.classType !== "inPerson" &&
+            // schedule?.sessionType !== "group" &&
+            (
               <Link Link target="_blank" href={`${schedule.meetingLink}`}>
                 <button
-                  className="h-9 text-purple-700"
+                  className="h-9 text-purple-700 underline font-semibold italic"
                 >
-                  {schedule.meetingLink}
+                  Meeting Link
                 </button>
               </Link>
             )
         }
-        {
 
+
+
+        {/* {
           schedule?.sessionType == "group" && !schedule?.hasPatientBooking && !schedule?.isBookedByPatient ? (
             <Button
               type="primary"
@@ -127,7 +210,7 @@ const ScheduleCard = ({ schedule }) => {
                 {schedule.meetingLink}
               </button>
             </Link>
-        }
+        } */}
 
       </div>
     </div >
@@ -155,7 +238,7 @@ const WorkOutDetails = () => {
       </h1>
       <div className="mx-auto">
         {/* Trainer info section */}
-        <div className="flex flex-col md:flex-row gap-6 mb-6">
+        <div className="flex flex-col items-start md:flex-row gap-6 mb-6">
           {/* Trainer image */}
           <div className="w-full bg-white p-2 rounded-lg md:w-1/4 lg:w-1/5">
             <div className="rounded-lg overflow-hidden">
@@ -199,8 +282,8 @@ const WorkOutDetails = () => {
 
             {/* Schedule grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {schedules?.map((schedule) => (
-                <ScheduleCard key={schedule.id} specialistId={specialistId} schedule={schedule} />
+              {schedules?.map((schedule, index) => (
+                <ScheduleCard key={index} specialistId={specialistId} schedule={schedule} />
               ))}
             </div>
           </div>

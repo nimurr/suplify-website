@@ -10,8 +10,12 @@ const getUsers = apiSlice.injectEndpoints({
         getUserProfile: builder.query({
             query: (id) => `/users/profile/${id}`,
             providesTags: [{ type: "Profile" }]
+        }),
+        getMyprofileForsub: builder.query({
+            query: () => `/users/profile/custom`,
+            providesTags: [{ type: "Profile" }]
         })
     })
 })
 
-export const { useGetUsersQuery, useGetUserProfileQuery } = getUsers
+export const { useGetUsersQuery, useGetUserProfileQuery, useGetMyprofileForsubQuery } = getUsers;

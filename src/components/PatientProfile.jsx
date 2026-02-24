@@ -5,6 +5,7 @@ import { Button, Input, Image, Space } from "antd";
 import { useRouter } from "next/navigation";
 import url from "@/redux/api/baseUrl";
 import { useGetUserProfileQuery } from "@/redux/fetures/user/getUsers";
+import Link from "next/link";
 
 
 const PatientProfile = () => {
@@ -52,11 +53,17 @@ const PatientProfile = () => {
                     <p className="text-gray-600">{fullUser?.email}</p>
                     {
                         fullUser?.role == "doctor" ?
-                            <p className="text-gray-600">{fullUser?.profileId?.address || "N/A"}</p> : null
+                            <div>
+                                <p className="text-gray-600">{fullUser?.profileId?.address || "N/A"}</p>
+                                <p>{fullUser?.profileId?.externalLink || "N/A"}</p>
+                            </div> : null
                     }
                     {
                         fullUser?.role == "specialist" ?
-                            <p className="text-gray-600">{fullUser?.profileId?.address || "N/A"}</p> : null
+                            <div>
+                                <p className="text-gray-600 text-center">{fullUser?.profileId?.address || "N/A"}</p>
+                                <Link href={fullUser?.profileId?.externalLink} className="my-2 underline text-blue-500">View Extarnal Booking link</Link>
+                            </div> : null
                     }
 
                 </div>

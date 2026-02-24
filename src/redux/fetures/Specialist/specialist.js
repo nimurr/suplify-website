@@ -3,8 +3,8 @@ import { apiSlice } from "../../api/apiSlice";
 const specialist = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         spacialistAllPatents: builder.query({
-            query: () => ({
-                url: `/specialist-patients/all-patients`,
+            query: ({ page, limit }) => ({
+                url: `/specialist-patients/all-patients?page=${page}&limit=${limit}`,
                 method: "GET",
             }),
             providesTags: ["specialistKeyPoints"]
@@ -61,7 +61,7 @@ export const {
     useSpacialistPotentialPatientQuery,
     useGetMealPlanByProtocolIdAndPatientIdQuery,
     useGetAllMealSuggestionQuery,
-    useAddSpecialistKeyPointMutation, 
+    useAddSpecialistKeyPointMutation,
     useRemoveKeyPointMutation
 
 } = specialist;

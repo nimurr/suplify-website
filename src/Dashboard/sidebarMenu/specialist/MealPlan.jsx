@@ -113,6 +113,9 @@ export default function MealPlan() {
         toast.success("New Suggestions Added Successfully");
         setNewSuggestions([]);
       }
+      else{
+        toast.error(res?.data?.message);
+      }
 
 
     } catch (error) {

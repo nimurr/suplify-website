@@ -17,6 +17,7 @@ import WellnessPage from './Wellness';
 import LabTestPage from './Labtest';
 import { useGetAddToCartLangthQuery, useGetAllCategoriesQuery } from '@/redux/fetures/landing/landing';
 import Link from 'next/link';
+import ProductCardForLabTest from './ProductCardForLabTest';
 
 
 
@@ -173,7 +174,7 @@ export default function ProductTabComponent() {
 
               <div className="grid grid-cols-1  lg:grid-cols-4 items-start gap-4 mb-8">
                 {labTestCategories[0]?.products?.slice(0, 4).map(product => (
-                  <ProductCard
+                  <ProductCardForLabTest
                     key={product.id}
                     product={product}
                     onViewDetails={() => handleSeeMoreClick('labtest')}

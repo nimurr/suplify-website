@@ -10,7 +10,7 @@ const TrainingProgram = () => {
         <div className="flex justify-center mt-10">
           <div className="relative">
             <Image
-              src="/images/bg-remove-for-landingPage.png"
+              src="https://png.pngtree.com/png-vector/20241109/ourmid/pngtree-defined-muscles-on-a-bodybuilder-during-bicep-training-with-weights-png-image_14337309.png"
               alt="Workout Class"
               width={700}
               height={500}
