@@ -33,7 +33,7 @@ const HowItWorksPage = () => {
   return (
     <div className=" md:w-[70%] md:mt-12 mb-10 mx-auto p-6 bg-rose-50 rounded-lg shadow-md border">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">How Suplify life</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">How Suplify Life Works</h1>
         <p className="text-gray-600">
           Create your account, choose a plan, and gain access to your personalized wellness experience.
         </p>
