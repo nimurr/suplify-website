@@ -6,6 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { ChevronRight } from 'lucide-react';
 
 const ProductCard = ({ product, onViewDetails }) => {
+  console.log(product)
 
   const [addToCardItem] = useAddTocartProductMutation();
 
@@ -13,9 +14,13 @@ const ProductCard = ({ product, onViewDetails }) => {
     const data = {
       itemId: id,
     };
+
+    console.log(data)
     try {
       const res = await addToCardItem(data).unwrap();
-      console.log(res);
+      console.log(res)
+      
+
       if (res?.code === 200) {
         toast.success(res?.message);
       } else {
@@ -65,7 +70,7 @@ const ProductCard = ({ product, onViewDetails }) => {
         )}
       </p>
       <Button
-        onClick={() => handleAddCard(product?._id)}
+        onClick={() => handleAddCard(product?._id || product?.id || product?.itemId || product?._ProductId)}
         icon={<ShoppingCartOutlined />}
         className="float-right"
       />

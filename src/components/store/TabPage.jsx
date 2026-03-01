@@ -32,13 +32,10 @@ export default function ProductTabComponent() {
   const labTestCategories = fullCategories?.filter((category) => category.category === 'labTest');
   const fitnessCategories = fullCategories?.filter((category) => category.category === 'fitness');
 
-  console.log(labTestCategories);
-
   const { data: cartLengthData } = useGetAddToCartLangthQuery();
 
   const [activeTab, setActiveTab] = useState('all');
 
-  console.log(productData)
   // Handle tab change
   const handleTabChange = (key) => {
     setActiveTab(key);
@@ -63,15 +60,15 @@ export default function ProductTabComponent() {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'supplements':
-        return <SupplementsPage products={supplementCategories} />;
+        return <SupplementsPage />;
       case 'fitness':
-        return <FitnessPage products={fitnessCategories} />;
+        return <FitnessPage />;
       case 'wellness':
-        return <WellnessPage products={wellnessCategories} />;
+        return <WellnessPage />;
       //   case 'lifestyle':
       //     return <LifestylePage />;
       case 'labtest':
-        return <LabTestPage products={labTestCategories} />;
+        return <LabTestPage   />;
       default:
         return (
           <div>
