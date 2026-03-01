@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Menu } from "antd";
 import { MdFlightClass, MdOutlineHistory, MdOutlineSupportAgent } from "react-icons/md";
-import { TbPrescription } from "react-icons/tb";
+import { TbInfoTriangle, TbPrescription } from "react-icons/tb";
 import { GrUserManager } from "react-icons/gr";
 import { GiSwipeCard } from "react-icons/gi";
 import { SlUserFollowing } from "react-icons/sl";
@@ -99,12 +99,12 @@ export default function Sidebar() {
         label: "Booked Lab Test",
         path: "/dashboard/booked-lab-test",
       },
-      // {
-      //   key: "/dashboard/message",
-      //   icon: <TiMessageTyping />,
-      //   label: "Message",
-      //   path: "/dashboard/message",
-      // },
+      {
+        key: "/dashboard/my-info",
+        icon: <TbInfoTriangle />,
+        label: "My Info",
+        path: "/dashboard/my-info",
+      },
     ],
     specialist: [
       {

@@ -5,7 +5,7 @@ import { useGetAllProductsByCategoryQuery } from '@/redux/fetures/landing/landin
 
 const LabTestPage = () => {
 
-  const [category, setCategory] = useState('labtest');
+  const [category, setCategory] = useState('labTest');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
