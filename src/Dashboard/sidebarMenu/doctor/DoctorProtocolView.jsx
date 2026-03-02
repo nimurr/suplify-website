@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from "react";
-import { Card, Button, Avatar, Input, Modal, Select, Form } from "antd";
+import { Card, Button, Avatar, Input, Modal, Select, Form, Image, Pagination } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import BackHeader from "@/components/customComponent/BackHeader";
 import { FiPlusCircle } from "react-icons/fi";
@@ -11,6 +11,7 @@ import Link from "next/link";
 import url from "@/redux/api/baseUrl";
 import { useRouter, useSearchParams } from "next/navigation";
 import BookLabTest from "./BookLabTest";
+import { useGetClientDocForDoctorQuery } from "@/redux/fetures/information/myDocuman";
 
 const { TextArea } = Input;
 
@@ -20,19 +21,33 @@ const DoctorProtocolPage = () => {
 
   const navigate = useRouter();
   const searchParams = useSearchParams();
-  const patientId = searchParams.get("patientId"); // Extract patientId from search params
+  const patientId = searchParams.get("patientId");
 
-  // Fetch patient protocols and specialists using redux hooks
+  // --- Pagination state for Client Documents ---
+  const [docPage, setDocPage] = useState(1);
+  const [docLimit, setDocLimit] = useState(10);
+
+  // --- Pagination state for Protocols ---
+  const [protocolPage, setProtocolPage] = useState(1);
+  const protocolLimit = 8; // protocols per page (4-col grid × 2 rows)
+
   const { data: patientData, isLoading: isPatientDataLoading, refetch } = useGetAllProtocalsByPatientIdQuery(patientId);
   const { data: specialistData, isLoading: isSpecialistDataLoading } = useGetAllSpacialistQuery(patientId);
-
+  const { data: clinetDocData } = useGetClientDocForDoctorQuery({ id: patientId, page: docPage, limit: docLimit });
 
   const fullPatientData = patientData?.data?.attributes || [];
   const fullSpecialistData = specialistData?.data?.attributes || [];
+  const fullClinetDocData = clinetDocData?.data?.attributes?.results || [];
+  const totalDocs = clinetDocData?.data?.attributes?.totalResults || 0;
 
-  // console.log(patientData)
+  // Client-side pagination for protocols (if API doesn't support it)
+  const allProtocols = fullPatientData?.results || [];
+  const totalProtocols = allProtocols.length;
+  const paginatedProtocols = allProtocols.slice(
+    (protocolPage - 1) * protocolLimit,
+    protocolPage * protocolLimit
+  );
 
-  // Mutation for assigning protocol to patient
   const [assignSpecialist] = useAssignSpecialistPatientMutation();
   const [assignProtocol] = useAssignProtocolToPatientMutation();
 
@@ -44,11 +59,7 @@ const DoctorProtocolPage = () => {
   }, [patientId]);
 
   const handleAssignSpecialist = async () => {
-    const data = {
-      patientId: patientId,
-      specialistId: specialist,
-    };
-
+    const data = { patientId, specialistId: specialist };
     try {
       const res = await assignSpecialist(data);
       if (res?.data?.code == 200) {
@@ -64,8 +75,7 @@ const DoctorProtocolPage = () => {
   };
 
   const handleCreateNewProtocol = async () => {
-    const data = { patientId: patientId };
-
+    const data = { patientId };
     try {
       const res = await assignProtocol(data);
       if (res?.data?.code == 200) {
@@ -83,27 +93,18 @@ const DoctorProtocolPage = () => {
   const [createExtranote] = useExtraNoteCreateMutation();
   const [extraNoteModalVisible, setExtraNoteModalVisible] = useState('');
 
-
   const submitExtraNote = async () => {
-
-    const data = {
-      extraNote: extraNoteModalVisible,
-    };
-
-    console.log(data)
-
+    const data = { extraNote: extraNoteModalVisible };
     try {
       const res = await createExtranote({ data, id: patientId });
-      console.log(res)
-
       if (res?.data?.code == 200) {
         toast.success(res?.data?.message);
         refetch();
-      } else if (error) {
+      } else {
         toast.error(res?.error?.data?.message);
       }
     } catch (error) {
-      console.error("Error creating new protocol:", error);
+      console.error("Error creating note:", error);
       toast.error("Failed to create protocol");
     }
   };
@@ -123,9 +124,11 @@ const DoctorProtocolPage = () => {
               <Avatar
                 size={60}
                 src={url + fullPatientData?.extraNote?.patientId?.profileImage?.imageUrl}
-                alt="Mahmud"
+                alt="Patient"
               />
-              <span className="font-semibold capitalize text-sm">{fullPatientData?.extraNote?.patientId?.name || "No name found"}</span>
+              <span className="font-semibold capitalize text-sm">
+                {fullPatientData?.extraNote?.patientId?.name || "No name found"}
+              </span>
             </div>
             <div className="mb-1 text-sm font-semibold">Extra Note</div>
             <p className="text-xs text-gray-500 mb-4">
@@ -136,11 +139,12 @@ const DoctorProtocolPage = () => {
                 rows={6}
                 defaultValue={fullPatientData?.extraNote?.extraNote}
                 placeholder="Type your note ..."
-                name="extranote"
                 className="resize-none rounded-md border border-gray-300"
                 onChange={(e) => setExtraNoteModalVisible(e.target.value)}
               />
-              <button type="submit" className="bg-red-600 text-white py-2 px-6 rounded-lg mt-3">Save</button>
+              <button type="submit" className="bg-red-600 text-white py-2 px-6 rounded-lg mt-3">
+                Save
+              </button>
             </Form>
           </div>
         )}
@@ -148,57 +152,146 @@ const DoctorProtocolPage = () => {
         {/* Right Content */}
         <div className="flex-1 bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold">All Protocol</h2>
+            <h2 className="text-xl font-semibold">
+              All Protocol
+              {totalProtocols > 0 && (
+                <span className="ml-2 text-sm font-normal text-gray-400">
+                  ({totalProtocols} total)
+                </span>
+              )}
+            </h2>
             <div className="flex gap-2">
               <button
                 disabled
-                onClick={() => setIsModalVisible(true)}  // Show modal on click
-                className={`bg-red-600 text-white py-2 px-6 rounded-lg disabled:bg-red-300 disabled:cursor-not-allowed flex items-center gap-2`}
+                onClick={() => setIsModalVisible(true)}
+                className="bg-red-600 text-white py-2 px-6 rounded-lg disabled:bg-red-300 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 Assign a Specialist
               </button>
-              <button onClick={handleCreateNewProtocol} className="bg-red-600 text-white py-2 px-6 rounded-lg flex items-center gap-2">
+              <button
+                onClick={handleCreateNewProtocol}
+                className="bg-red-600 text-white py-2 px-6 rounded-lg flex items-center gap-2"
+              >
                 <FiPlusCircle /> Create New
               </button>
             </div>
           </div>
 
-          {/* Loading States */}
+          {/* Protocol Cards */}
           {isPatientDataLoading || isSpecialistDataLoading ? (
             <p>Loading...</p>
           ) : (
-            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-              {fullPatientData?.results?.map(({ id, name, _protocolId }) => (
-                <Card
-                  key={id}
-                  hoverable
-                  bodyStyle={{ padding: "12px 16px" }}
-                  className="rounded-lg shadow"
-                >
-                  <Card.Meta
-                    title={<div className="truncate font-semibold text-sm capitalize">{name}</div>}
-                    description={<div className="text-xs text-gray-600" />}
+            <>
+              {paginatedProtocols.length === 0 ? (
+                <p className="text-gray-400 text-sm">No protocols found.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+                  {paginatedProtocols.map(({ id, name, _protocolId }) => (
+                    <Card
+                      key={id}
+                      hoverable
+                      bodyStyle={{ padding: "12px 16px" }}
+                      className="rounded-lg shadow"
+                    >
+                      <Card.Meta
+                        title={
+                          <div className="truncate font-semibold text-sm capitalize">{name}</div>
+                        }
+                        description={<div className="text-xs text-gray-600" />}
+                      />
+                      <Link
+                        href={`/doctorDs/doctor-protocol/create-plane?protocolId=${_protocolId}&patientId=${patientId}`}
+                        className="bg-red-600 w-full text-white py-2 px-6 rounded-lg mt-5 text-center flex items-center justify-center"
+                      >
+                        <EditOutlined /> Edit
+                      </Link>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Protocol Pagination */}
+              {totalProtocols > protocolLimit && (
+                <div className="flex justify-end mt-6">
+                  <Pagination
+                    current={protocolPage}
+                    pageSize={protocolLimit}
+                    total={totalProtocols}
+                    onChange={(page) => setProtocolPage(page)}
+                    showSizeChanger={false}
+                    showTotal={(total, range) =>
+                      `${range[0]}–${range[1]} of ${total} protocols`
+                    }
                   />
-                  <Link href={`/doctorDs/doctor-protocol/create-plane?protocolId=${_protocolId}&patientId=${patientId}`} className="bg-red-600 w-full text-white py-2 px-6 rounded-lg mt-5 text-center flex items-center justify-center" size="small">
-                    <EditOutlined /> Edit
-                  </Link>
-                </Card>
-              ))}
-            </div>
+                </div>
+              )}
+            </>
           )}
-          <div className="mt-5 ">
+
+          <div className="mt-5">
             <BookLabTest />
           </div>
-
         </div>
+      </div>
+
+      {/* Client Documents Section */}
+      <div className="px-6 pb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-700">
+            Client Documents
+            {totalDocs > 0 && (
+              <span className="ml-2 text-sm font-normal text-gray-400">
+                ({totalDocs} total)
+              </span>
+            )}
+          </h2>
+        </div>
+
+        {fullClinetDocData.length === 0 ? (
+          <p className="text-gray-400 text-sm">No documents found.</p>
+        ) : (
+          <div className="grid xl:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
+            {fullClinetDocData.map((doc) => (
+              <div key={doc?._id} className="border p-4 rounded bg-white shadow-sm">
+                <h3 className="font-semibold text-gray-600 mb-2 truncate">{doc?.title}</h3>
+                <Image
+                  width="100%"
+                  src={doc?.attachments[0]?.attachment}
+                  alt={doc?.title}
+                  className="!w-full object-cover rounded"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Documents Pagination */}
+        {totalDocs > 0 && (
+          <div className="flex justify-end mt-6">
+            <Pagination
+              current={docPage}
+              pageSize={docLimit}
+              total={totalDocs}
+              onChange={(page, pageSize) => {
+                setDocPage(page);
+                setDocLimit(pageSize);
+              }}
+              showSizeChanger
+              pageSizeOptions={["5", "10", "20", "50"]}
+              showTotal={(total, range) =>
+                `${range[0]}–${range[1]} of ${total} documents`
+              }
+            />
+          </div>
+        )}
       </div>
 
       {/* Assign Specialist Modal */}
       <Modal
         title="Assign a Specialist"
         visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}  // Close modal
-        footer={null}  // No default footer
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
         width={400}
       >
         <div>

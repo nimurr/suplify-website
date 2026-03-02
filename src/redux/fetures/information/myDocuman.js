@@ -9,6 +9,12 @@ const myDocuman = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+        getClientDocForDoctor: builder.query({
+            query: ({ id, page, limit }) => ({
+                url: `/client-documents/paginate?patientId=${id}&page=${page}&limit=${limit}`,
+                method: "GET",
+            }),
+        }),
         getMyDocuman: builder.query({
             query: ({ page, limit }) => ({
                 url: `/client-documents/paginate/patient?page=${page}&limit=${limit}`,
@@ -24,4 +30,9 @@ const myDocuman = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useCreateMyDocumanMutation, useGetMyDocumanQuery, useDeleteMyDocumanMutation } = myDocuman;
+export const {
+    useCreateMyDocumanMutation,
+    useGetClientDocForDoctorQuery,
+    useGetMyDocumanQuery,
+    useDeleteMyDocumanMutation
+} = myDocuman;
