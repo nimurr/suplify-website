@@ -19,7 +19,7 @@ const ProductCard = ({ product, onViewDetails }) => {
     try {
       const res = await addToCardItem(data).unwrap();
       console.log(res)
-      
+
 
       if (res?.code === 200) {
         toast.success(res?.message);
@@ -52,23 +52,28 @@ const ProductCard = ({ product, onViewDetails }) => {
       bodyStyle={{ padding: '16px' }}
     >
       <Toaster />
-      <p className="text-gray-700 font-semibold text-xl">{product.name.charAt(0).toUpperCase() + product.name.slice(1)}</p>
-      <h3 className="text-2xl font-bold">${product.price}</h3>
-      <p className="text-sm text-gray-500 mb-2">
-        {/* Render either truncated or full description based on state */}
-        {show ? product?.description : (product?.description?.length > 100 ? product.description.slice(0, 100) + '...' : product?.description)}
+      <div className='flex justify-between items-center mb-2 gap-3'>
+        <div>
+          <p className="text-gray-700 font-semibold text-xl">{product.name.charAt(0).toUpperCase() + product.name.slice(1)}</p>
+          <h3 className="text-2xl font-bold">${product.price}</h3>
+          <p className="text-sm text-gray-500 ">
+            {/* Render either truncated or full description based on state */}
+            {show ? product?.description : (product?.description?.length > 100 ? product.description.slice(0, 100) + '...' : product?.description)}
 
-        {/* Toggle button to see more or less */}
-        {product?.description?.length > 100 && (
-          <button onClick={toggleDescription} className="text-blue-600 flex items-center text-sm">
-            {show ? (
-              <>See Less <ChevronRight size={16} /></>
-            ) : (
-              <>See More <ChevronRight size={16} /></>
+            {/* Toggle button to see more or less */}
+            {product?.description?.length > 100 && (
+              <button onClick={toggleDescription} className="text-blue-600 flex items-center text-sm">
+                {show ? (
+                  <>See Less <ChevronRight size={16} /></>
+                ) : (
+                  <>See More <ChevronRight size={16} /></>
+                )}
+              </button>
             )}
-          </button>
-        )}
-      </p>
+          </p>
+        </div>
+        <p>Stock Qty-{product?.stockQuantity || 0}</p>
+      </div>
       <Button
         onClick={() => handleAddCard(product?._id || product?.id || product?.itemId || product?._ProductId)}
         icon={<ShoppingCartOutlined />}
