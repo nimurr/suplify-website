@@ -200,162 +200,164 @@ export default function Navbar() {
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${showBlackBg ? 'bg-black/90 py-3' : 'bg-transparent py-4'}`}>
       <Toaster />
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center">
-          {/* Logo/Brand - Left side */}
-          <Link href="/" className="text-white text-2xl font-bold">
-            <img className='h-16 rounded-3xl' src="/images/logo.png" alt="" />
-          </Link>
+      <div className='md:w-[83vw] mx-auto'>
+        <div className="md:container mx-auto px-4">
+          <div className="flex justify-between items-center">
+            {/* Logo/Brand - Left side */}
+            <Link href="/" className="text-white text-2xl font-bold">
+              <img className='h-16 w-16 object-cover rounded' src="/images/logo.png" alt="" />
+            </Link>
 
-          {/* Desktop Navigation - Centered */}
-          <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-8">
-            <Link href="/" className={`${pathname === '/' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
-              Home
-            </Link>
-            <Link href="/store" className={`${pathname === '/store' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
-              Store
-            </Link>
-            {/* <Link href="/workout-class" className={`${pathname === '/workout-class' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+            {/* Desktop Navigation - Centered */}
+            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-8">
+              <Link href="/" className={`${pathname === '/' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+                Home
+              </Link>
+              <Link href="/store" className={`${pathname === '/store' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+                Store
+              </Link>
+              {/* <Link href="/workout-class" className={`${pathname === '/workout-class' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
               Workouts Class
             </Link> */}
-            {/* <Link href="/" className={`${pathname === '/' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              {/* <Link href="/" className={`${pathname === '/' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
               Nutrition
             </Link> */}
-            {/* <Link href="/training-program" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              {/* <Link href="/training-program" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
               Training Program
             </Link> */}
-            <Link href="/informational-video" className={`${pathname === '/informational-video' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
-              Informational Video
-            </Link>
-            <Link href="/pricing" className={`${pathname === '/pricing' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
-              Pricing
-            </Link>
-          </div>
+              <Link href="/informational-video" className={`${pathname === '/informational-video' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+                Informational Video
+              </Link>
+              <Link href="/pricing" className={`${pathname === '/pricing' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+                Pricing
+              </Link>
+            </div>
 
-          {/* CTA Buttons - Right side */}
-          <div className="hidden md:flex items-center md:gap-3 gap-1">
-            {user ? (
-              <div className='flex items-center gap-2'>
-                <Button
-                  onClick={handleDashboardClick}
-                  style={{
-                    background: 'linear-gradient(to right, #3b82f6, #22c55e)',
-                    border: '1px solid white',
-                    color: 'white',
-                    padding: '8px 16px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s ease',
-                  }}
-                >
-                  Dashboard
-                </Button>
-                <Button
-                  onClick={handleLogoutRemove}
-                  style={{
-                    background: 'linear-gradient(to right, #3b82f6, #22c55e)',
-                    border: '1px solid white',
-                    color: 'white',
-                    padding: '8px 16px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s ease',
-                  }}
-                >
-                  Logout
-                </Button>
-              </div>
+            {/* CTA Buttons - Right side */}
+            <div className="hidden md:flex items-center md:gap-3 gap-1">
+              {user ? (
+                <div className='flex items-center gap-2'>
+                  <button
+                    onClick={handleDashboardClick}
+                    style={{
+                      background: 'linear-gradient(to right, #3b82f6, #22c55e)',
+                      border: '1px solid white',
+                      color: 'white',
+                      padding: '8px 16px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.3s ease',
+                    }}
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    onClick={handleLogoutRemove}
+                    style={{
+                      background: 'linear-gradient(to right, #3b82f6, #22c55e)',
+                      border: '1px solid white',
+                      color: 'white',
+                      padding: '8px 16px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.3s ease',
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
 
-            ) : (
-              <div className="hidden md:flex items-center space-x-4">
-                {/* <Link 
+              ) : (
+                <div className="hidden md:flex items-center space-x-4">
+                  {/* <Link 
                 href="/" 
                 className="text-white hover:text-primary transition font-medium"
               >
                 Sign Up
               </Link> */}
-                <Link
-                  href="/auth/login"
-                  onClick={handleGoLogin}
-                  className="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-6 rounded-full transition"
-                >
-                  Login
-                </Link>
-              </div>
-            )}
-          </div>
-
-
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-white focus:outline-none"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden bg-black/95 py-4 px-4 flex flex-col space-y-4 mt-4 rounded-lg">
-            <Link href="/" className={`${pathname === '/' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
-              Home
-            </Link>
-            <Link href="/store" className={`${pathname === '/store' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
-              Store
-            </Link>
-            <Link href="/workout-class" className={`${pathname === '/workout-class' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
-              Workouts Class
-            </Link>
-            <Link href="/nutrition" className={`${pathname === '/nutrition' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
-              Nutrition
-            </Link>
-            <Link href="/training-program" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
-              Training Program
-            </Link>
-            <Link href="/informational-video" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
-              Informational Video
-            </Link>
-            <Link href="/pricing" className={`${pathname === '/pricing' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
-              Pricing
-            </Link>
-            <div className=" ">
-              {user ? (
-                <Button
-                  onClick={handleDashboardClick}
-                  style={{
-                    background: 'linear-gradient(to right, #3b82f6, #22c55e)',
-                    border: '1px solid white',
-                    color: 'white',
-                    padding: '8px 16px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s ease',
-                  }}
-                >
-                  Dashboard
-                </Button>
-              ) : (
-                <div className="flex items-center space-x-4">
                   <Link
                     href="/auth/login"
                     onClick={handleGoLogin}
-                    className="bg-primary w-full text-center hover:bg-primary-dark text-white font-bold py-2 px-6 rounded-full transition"
+                    className="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-6 rounded transition"
                   >
                     Login
                   </Link>
                 </div>
               )}
             </div>
+
+
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden text-white focus:outline-none"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
-        )}
+
+          {/* Mobile Menu */}
+          {isOpen && (
+            <div className="md:hidden bg-black/95 py-4 px-4 flex flex-col space-y-4 mt-4 rounded-lg">
+              <Link href="/" className={`${pathname === '/' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+                Home
+              </Link>
+              <Link href="/store" className={`${pathname === '/store' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+                Store
+              </Link>
+              <Link href="/workout-class" className={`${pathname === '/workout-class' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+                Workouts Class
+              </Link>
+              <Link href="/nutrition" className={`${pathname === '/nutrition' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+                Nutrition
+              </Link>
+              <Link href="/training-program" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+                Training Program
+              </Link>
+              <Link href="/informational-video" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+                Informational Video
+              </Link>
+              <Link href="/pricing" className={`${pathname === '/pricing' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+                Pricing
+              </Link>
+              <div className=" ">
+                {user ? (
+                  <button
+                    onClick={handleDashboardClick}
+                    style={{
+                      background: 'linear-gradient(to right, #3b82f6, #22c55e)',
+                      border: '1px solid white',
+                      color: 'white',
+                      padding: '8px 16px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.3s ease',
+                    }}
+                  >
+                    Dashboard
+                  </button>
+                ) : (
+                  <div className="flex items-center space-x-4">
+                    <Link
+                      href="/auth/login"
+                      onClick={handleGoLogin}
+                      className="bg-primary w-full text-center hover:bg-primary-dark text-white font-bold py-2 px-6 rounded transition"
+                    >
+                      Login
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   )

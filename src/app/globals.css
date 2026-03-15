@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,7 +15,7 @@
     --foreground: #ededed;
   }
 }
- 
+
 
 @layer base {
   :root {
@@ -30,4 +32,10 @@
     background-color: rgb(var(--background));
     color: rgb(var(--foreground));
   }
+}
+
+* {
+  font-family: "Work Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }

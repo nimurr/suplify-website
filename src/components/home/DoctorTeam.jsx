@@ -4,7 +4,7 @@ import Image from 'next/image';
 const DoctorTeamPage = () => {
   return (
     <div className="bg-pink-50 py-16">
-      <div className="container mx-auto">
+      <div className="md:w-[70%] px-6 mx-auto">
        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
          

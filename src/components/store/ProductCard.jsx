@@ -49,7 +49,7 @@ const ProductCard = ({ product, onViewDetails }) => {
           />
         </div>
       }
-      bodyStyle={{ padding: '16px' }}
+      bodyStyle={{ padding: '16px' }}np
     >
       <Toaster />
       <div className='flex justify-between items-center mb-2 gap-3'>
