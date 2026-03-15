@@ -91,7 +91,6 @@ const SpecialistsTeam = () => {
               <span className="font-semibold">Book a consultation today</span> and start your journey to better health with expert guidance tailored to your needs.
             </p>
           </div>
-
         </div>
       </div>
     </div>
