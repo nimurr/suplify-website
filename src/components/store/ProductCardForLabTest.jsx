@@ -10,6 +10,9 @@ import Link from 'next/link';
 
 const ProductCardForLabTest = ({ product, onViewDetails }) => {
 
+    // console.log(product?._ProductId)
+
+
     const [addToCardItem] = useAddTocartProductMutation();
 
     const handleAddCard = async (id) => {
@@ -67,12 +70,12 @@ const ProductCardForLabTest = ({ product, onViewDetails }) => {
                     </button>
                 )}
             </p>
-            <Link 
-                href={`/store/booked-lab-test?id=${product._id}`}
+            <Link
+                href={`/store/booked-lab-test?id=${product._id || product?._ProductId}`}
                 className="w-full bg-green-500 text-white py-2 px-4 rounded-md flex items-center justify-center gap-2"
-               
+
             >
-            Booked Now
+                Booked Now
             </Link>
         </Card>
     );

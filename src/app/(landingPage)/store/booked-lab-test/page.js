@@ -95,8 +95,10 @@ const Page = () => {
     return (
         <div className='py-5 pt-32'>
             <div className="py-5  max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
-                <Title level={3}>Analysis Form</Title>
-                <Text type="secondary"> Appointment Form</Text>
+                <Title className='text-center' level={3}>Analysis Form
+                    {/* ( Lab Test) */}
+                </Title>
+                <Text type="secondary text-xl"> Appointment Form</Text>
                 <br />
 
                 <p className="text-gray-500 mt-2 mb-6">
