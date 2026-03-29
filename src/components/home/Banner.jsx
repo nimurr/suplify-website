@@ -165,7 +165,7 @@ export default function Banner() {
           <div className="flex flex-wrap gap-4">
             <button
               onClick={handleFreeTrial}
-              className="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-6 rounded transition"
+              className="bg-[#34d399] hover:bg-[#34d399] text-white font-bold py-3 px-6 rounded transition"
             >
               Free Trial {isLoading && "..."}
             </button>

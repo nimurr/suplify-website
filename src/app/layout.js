@@ -3,11 +3,11 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import { ConfigProvider } from "antd";
 import Providers from "@/redux/Providers";
 import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
 import { SocketProvider } from "@/context/SocketContext";
+import AntdProvider from "@/components/AntdProvider";
 
 
 const geistSans = Geist({
@@ -41,14 +41,12 @@ export default function RootLayout({ children }) {
         />
         <Providers>
           <Suspense fallback={<div>Loading...</div>}>
-            {/* <ProviderTheme> */}
-
-            <SocketProvider >
-              {children}
-            </SocketProvider>
+            <AntdProvider>
+              <SocketProvider >
+                {children}
+              </SocketProvider>
+            </AntdProvider>
           </Suspense>
-
-          {/* </ProviderTheme> */}
         </Providers>
       </body>
     </html>

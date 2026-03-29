@@ -95,12 +95,14 @@ const Page = () => {
     return (
         <div className='py-5 pt-32'>
             <div className="py-5  max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
-                <Title level={3}>Blood Sugar & Insulin Test</Title>
-                <Text type="secondary">Appointment Schedule</Text>
+                <Title level={3}>Analysis Form</Title>
+                <Text type="secondary"> Appointment Form</Text>
+                <br />
 
                 <p className="text-gray-500 mt-2 mb-6">
-                    Select a convenient date and time to get your personalized lab test at home.
+                    Select a convenient time for your appointment. A Suplify team member will review and finalize your appointment. Please note, your appointment is not confirmed until it has been finalized by a Suplify team member.
                 </p>
+                <br />
 
                 <Form
                     form={form}

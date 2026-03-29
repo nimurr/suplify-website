@@ -32,22 +32,22 @@
 
 //           {/* Desktop Navigation - Centered */}
 //           <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-8">
-//             <Link href="/" className="text-white hover:text-primary transition">
+//             <Link href="/" className="text-white hover:text-[#34d399] transition">
 //               Home
 //             </Link>
-//             <Link href="/store" className="text-white hover:text-primary transition">
+//             <Link href="/store" className="text-white hover:text-[#34d399] transition">
 //               Store
 //             </Link>
-//             <Link href="/workout-class" className="text-white hover:text-primary transition">
+//             <Link href="/workout-class" className="text-white hover:text-[#34d399] transition">
 //               Workouts Class
 //             </Link>
-//             <Link href="/" className="text-white hover:text-primary transition">
+//             <Link href="/" className="text-white hover:text-[#34d399] transition">
 //               Nutrition
 //             </Link>
-//             <Link href="/training-program" className="text-white hover:text-primary transition">
+//             <Link href="/training-program" className="text-white hover:text-[#34d399] transition">
 //               Training Program
 //             </Link>
-//             <Link href="/pricing" className="  hover:text-primary text-primary text-[18px] transition">
+//             <Link href="/pricing" className="  hover:text-[#34d399] text-[#34d399] text-[18px] transition">
 //               Pricing
 //             </Link>
 //           </div>
@@ -56,7 +56,7 @@
 //           <div className="hidden md:flex items-center space-x-4">
 //             <Link 
 //               href="/signup" 
-//               className="text-white hover:text-primary transition font-medium"
+//               className="text-white hover:text-[#34d399] transition font-medium"
 //             >
 //               Sign Up
 //             </Link>
@@ -86,22 +86,22 @@
 //         {/* Mobile Menu */}
 //         {isOpen && (
 //           <div className="md:hidden bg-black/95 py-4 px-4 flex flex-col space-y-4 mt-4 rounded-lg">
-//             <Link href="/workouts" className="text-white hover:text-primary transition">
+//             <Link href="/workouts" className="text-white hover:text-[#34d399] transition">
 //               Workouts
 //             </Link>
-//             <Link href="/nutrition" className="text-white hover:text-primary transition">
+//             <Link href="/nutrition" className="text-white hover:text-[#34d399] transition">
 //               Nutrition
 //             </Link>
-//             <Link href="/about" className="text-white hover:text-primary transition">
+//             <Link href="/about" className="text-white hover:text-[#34d399] transition">
 //               About
 //             </Link>
-//             <Link href="/contact" className="text-white hover:text-primary transition">
+//             <Link href="/contact" className="text-white hover:text-[#34d399] transition">
 //               Contact
 //             </Link>
 //             <div className="pt-4 border-t border-white/20">
 //               <Link 
 //                 href="/signup" 
-//                 className="block text-white hover:text-primary transition font-medium py-2"
+//                 className="block text-white hover:text-[#34d399] transition font-medium py-2"
 //               >
 //                 Sign Up
 //               </Link>
@@ -210,25 +210,25 @@ export default function Navbar() {
 
             {/* Desktop Navigation - Centered */}
             <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-8">
-              <Link href="/" className={`${pathname === '/' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              <Link href="/" className={`${pathname === '/' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
                 Home
               </Link>
-              <Link href="/store" className={`${pathname === '/store' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              <Link href="/store" className={`${pathname === '/store' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
                 Store
               </Link>
-              {/* <Link href="/workout-class" className={`${pathname === '/workout-class' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              {/* <Link href="/workout-class" className={`${pathname === '/workout-class' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
               Workouts Class
             </Link> */}
-              {/* <Link href="/" className={`${pathname === '/' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              {/* <Link href="/" className={`${pathname === '/' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
               Nutrition
             </Link> */}
-              {/* <Link href="/training-program" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              {/* <Link href="/training-program" className={`${pathname === '/training-program' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
               Training Program
             </Link> */}
-              <Link href="/informational-video" className={`${pathname === '/informational-video' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              <Link href="/informational-video" className={`${pathname === '/informational-video' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
                 Informational Video
               </Link>
-              <Link href="/pricing" className={`${pathname === '/pricing' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              <Link href="/pricing" className={`${pathname === '/pricing' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
                 Pricing
               </Link>
             </div>
@@ -271,7 +271,7 @@ export default function Navbar() {
                 <div className="hidden md:flex items-center space-x-4">
                   {/* <Link 
                 href="/" 
-                className="text-white hover:text-primary transition font-medium"
+                className="text-white hover:text-[#34d399] transition font-medium"
               >
                 Sign Up
               </Link> */}
@@ -306,25 +306,25 @@ export default function Navbar() {
           {/* Mobile Menu */}
           {isOpen && (
             <div className="md:hidden bg-black/95 py-4 px-4 flex flex-col space-y-4 mt-4 rounded-lg">
-              <Link href="/" className={`${pathname === '/' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              <Link href="/" className={`${pathname === '/' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
                 Home
               </Link>
-              <Link href="/store" className={`${pathname === '/store' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              <Link href="/store" className={`${pathname === '/store' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
                 Store
               </Link>
-              <Link href="/workout-class" className={`${pathname === '/workout-class' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              <Link href="/workout-class" className={`${pathname === '/workout-class' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
                 Workouts Class
               </Link>
-              <Link href="/nutrition" className={`${pathname === '/nutrition' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              <Link href="/nutrition" className={`${pathname === '/nutrition' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
                 Nutrition
               </Link>
-              <Link href="/training-program" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              <Link href="/training-program" className={`${pathname === '/training-program' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
                 Training Program
               </Link>
-              <Link href="/informational-video" className={`${pathname === '/training-program' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              <Link href="/informational-video" className={`${pathname === '/training-program' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
                 Informational Video
               </Link>
-              <Link href="/pricing" className={`${pathname === '/pricing' ? 'text-primary' : 'text-white'} hover:text-primary transition`}>
+              <Link href="/pricing" className={`${pathname === '/pricing' ? 'text-[#34d399]' : 'text-white'} hover:text-[#34d399] transition`}>
                 Pricing
               </Link>
               <div className=" ">
