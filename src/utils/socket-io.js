@@ -1,6 +1,7 @@
 import { io, Socket } from "socket.io-client";
 
-const socketUrl = "sheakh6735.sobhoy.com";
+// const socketUrl = "sheakh6735.sobhoy.com";
+const socketUrl = "wss://ws.suplify.life";
 
 let socket  = null;
 

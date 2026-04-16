@@ -1,6 +1,6 @@
 
 
-// const socketUrl = 'ws.suplify.life';
-const socketUrl = 'sheakh6735.sobhoy.com';
+// const socketUrl = 'sheakh6735.sobhoy.com';
+const socketUrl = 'wss://ws.suplify.life';
 
 export default socketUrl;
