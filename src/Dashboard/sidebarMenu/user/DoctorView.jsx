@@ -74,7 +74,7 @@ export default function AppointmentScheduler({ doctorId }) {
                <span className='font-semibold block'>  Book a Session with</span>
  
                 <Link href={`${profile?.profileId?.externalLink}`} target="_blank" className="text-sm w-full block text-blue-500 border border-blue-500 break-all p-2 rounded-lg mt-2 hover:!font-semibold text-center">
-                  {profile?.profileId?.externalLink.slice(0, 25)}...
+                  {profile?.profileId?.externalLink?.slice(0, 25)}...
                 </Link>
               </div>
 
