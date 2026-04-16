@@ -151,7 +151,7 @@ export default function DoctorPage() {
                 <p className="text-gray-600 text-sm my-2">
                   {doc?.profile?.description?.length > 60 ? doc?.profile?.description.slice(0, 60) + "..." : doc?.profile?.description || "No description available"}
                 </p>
-                <button className="py-2 px-8 bg-buttonColor text-white rounded" onClick={() => ViewFull(doc._id)}>View Full</button>
+                <button className="py-2 px-8 bg-red-500 text-white rounded" onClick={() => ViewFull(doc._id)}>View Full</button>
               </Card>
             ))}
           </div>
