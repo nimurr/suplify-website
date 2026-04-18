@@ -7,16 +7,20 @@ import { useGetFullPatientStatusDataForSpecialistQuery } from "@/redux/fetures/p
 import { Suspense } from 'react';
 
 export default function SpecialistProgramDetails() {
+
   const router = useRouter();
+  const searchParams = useSearchParams(); // ✅ correct place
+
   const [id, setId] = useState(null);
   const [programId, setProgramId] = useState(null);
 
   useEffect(() => {
-    // This will ensure searchParams is only read on the client side
-    const searchParams = useSearchParams();
     setId(searchParams.get("id"));
     setProgramId(searchParams.get("programId"));
-  }, []);
+  }, [searchParams]); // ✅ add dependency
+
+
+  console.log(id)
 
   const [selectItem, setSelectItem] = useState(null);
 
