@@ -12,6 +12,7 @@ import url from "@/redux/api/baseUrl";
 import { useCreateNewChatMutation } from "@/redux/fetures/messaging/createChat";
 import toast, { Toaster } from "react-hot-toast";
 import { FaUserPlus } from "react-icons/fa6";
+import { usePurcheseTrainingProgramMutation } from "@/redux/fetures/doctor/doctor";
 
 const SpecialistProgram = ({ id }) => {
 
@@ -80,8 +81,21 @@ const SpecialistProgram = ({ id }) => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
+  const [purchesProgram] = usePurcheseTrainingProgramMutation();
 
-  console.log(fullData)
+  const handleBuyItem = async (id) => {
+    try {
+      const res = await purchesProgram({ id }).unwrap();
+      console.log(res?.data?.attributes?.url);
+      if (res?.code == 200) {
+        toast.success(res?.message);
+        window.location.href = `${res?.data?.attributes?.url}`;
+      }
+    } catch (error) {
+      toast.error(error?.data?.message);
+    }
+
+  };
 
   return (
     <div className="flex items-start flex-wrap lg:flex-nowrap gap-10">
@@ -198,6 +212,7 @@ const SpecialistProgram = ({ id }) => {
                         </Button>
                       ) : (
                         <CustomButton
+                          onClick={() => handleBuyItem(item?._id)}
                           text="Buy"
                           className="mt-5"
                         />

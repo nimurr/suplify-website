@@ -188,7 +188,13 @@ const doctor = apiSlice.injectEndpoints({
             }),
             providesTags: ["OrderHistory"]
         }),
-
+        purcheseTrainingProgram: builder.mutation({
+            query: ({  id }) => ({
+                url: `/training-programs/purchase/${id}`,
+                method: "POST",
+            }),
+            invalidatesTags: ["OrderHistory"]
+        }),
     }),
 });
 export const {
@@ -224,7 +230,8 @@ export const {
     // all book history for Spacialist
     useGetAllBookTraningProgramQuery,
     useGetAllBookedWorkoutClassQuery,
-    useGetAllTrasecitonHistoryQuery
+    useGetAllTrasecitonHistoryQuery,
+    usePurcheseTrainingProgramMutation
 
 
 
