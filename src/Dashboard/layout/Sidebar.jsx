@@ -251,9 +251,9 @@ export default function Sidebar() {
         >
           <Link href="/" className="flex items-center">
             <img
-              src="/images/logod.png"
+              src="/images/logo.png"
               alt="App Logo"
-              className="w-12 rounded-full"
+              className="w-20 mx-auto rounded"
             />
           </Link>
           {/* <img src="/images/logod1.png" alt="App Logo" className="w-20" /> */}
