@@ -94,7 +94,7 @@ export default function Page() {
                 </div>
 
                 <div className="lg:col-span-3 space-y-4">
-                    <h2 className='text-2xl font-semibold mb-5 capitalize'>{planType}</h2>
+                    <h2 className='text-2xl font-semibold mb-5 capitalize'>{planType == 'suppliment' ? "Supplement" : planType}</h2>
                     {
                         isLoading && (
                             <div className="flex justify-center items-center h-full">
