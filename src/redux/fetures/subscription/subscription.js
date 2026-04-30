@@ -56,7 +56,7 @@ const subscription = apiSlice.injectEndpoints({
         }),
         getAllquestions: builder.query({
             query: () => ({
-                url: `/questions/question-ans`,
+                url: `/questions/question-ans?limit=80`,
                 method: "GET",
             }),
             providesTags: ["Subscription"],
