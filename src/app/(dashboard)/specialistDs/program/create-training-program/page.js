@@ -47,9 +47,9 @@ const Page = () => {
         formData.append("trailerContents", video);
         formData.append("programName", name);
         formData.append("description", description);
-        formData.append("totalSessionCount", totalSessions);
+        formData.append("totalSessionCount", totalSessions || 1);
         formData.append("price", price);
-        formData.append("durationInMonths", duration);
+        formData.append("durationInMonths", duration || 1);
 
         try {
             const response = await createTraningPrograms(formData).unwrap();
@@ -69,6 +69,7 @@ const Page = () => {
             }
 
         } catch (error) {
+            console.log(error)
             if (error?.data?.code || error?.code) {
                 toast.error(error?.data?.message);
             }
@@ -149,7 +150,7 @@ const Page = () => {
 
             {/* Description Input */}
             <div style={{ marginBottom: '20px' }}>
-                <label htmlFor="description" style={{ display: 'block', marginBottom: '8px' }}>Description *</label>
+                <label htmlFor="description" style={{ display: 'block', marginBottom: '8px' }}>Description </label>
                 <textarea
                     id="description"
                     value={description}
