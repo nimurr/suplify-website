@@ -83,7 +83,7 @@ const Page = () => {
 
             {/* Photo Upload Section */}
             <div style={{ marginBottom: '20px' }}>
-                <label htmlFor="photo" style={{ display: 'block', marginBottom: '8px' }}>Photo *</label>
+                <label htmlFor="photo" style={{ display: 'block', marginBottom: '8px' }}>Photo </label>
                 <input
                     type="file"
                     id="photo"
@@ -124,7 +124,7 @@ const Page = () => {
             </div>
 
             <div className='mb-5'>
-                <label htmlFor="photo" style={{ display: 'block', marginBottom: '8px' }}>Trailer Contents Video *</label>
+                <label htmlFor="photo" style={{ display: 'block', marginBottom: '8px' }}>Trailer Contents Video </label>
                 <input
                     type="file"
                     id="trailerContents"
