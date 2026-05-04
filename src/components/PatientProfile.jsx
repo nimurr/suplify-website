@@ -29,6 +29,8 @@ const PatientProfile = () => {
         ? fullUser?.profileImage?.imageUrl
         : url + fullUser?.profileImage?.imageUrl;
 
+    console.log(fullUser?.profileId?.externalLink)
+
 
 
     return (
@@ -62,7 +64,10 @@ const PatientProfile = () => {
                         fullUser?.role == "specialist" ?
                             <div>
                                 <p className="text-gray-600 text-center">{fullUser?.profileId?.address || "N/A"}</p>
-                                <Link href={fullUser?.profileId?.externalLink} className="my-2 underline text-blue-500">View Extarnal Booking link</Link>
+                                {
+                                    fullUser?.profileId?.externalLink &&
+                                    <Link href={fullUser?.profileId?.externalLink} className="my-2 underline text-blue-500">View Extarnal Booking link</Link>
+                                }
                             </div> : null
                     }
 

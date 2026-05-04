@@ -29,7 +29,7 @@ const OfflineSub = () => {
     {
       id: "standardPlus-static",
       name: "SUPLIFY+ (COACHING)",
-      price: "$429/ month",
+      price: "$99/ month",
       title: "Your Specialist. Your Strategy. Your Upgrade.",
       subtitle: "Your Specialist. Your Strategy. Your Upgrade.",
       subscriptionType: "standardPlus",
