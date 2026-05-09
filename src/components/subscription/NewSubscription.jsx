@@ -137,6 +137,11 @@ const NewSubscription = () => {
 
     const handleSubscribe = async (plan) => {
 
+        if(!fullUser){
+            return navigate.push('/auth/login')
+        }
+        
+
         if (fullUser?.isFormSubmitted) {
             try {
                 const res = await takeSub(plan).unwrap();
@@ -169,6 +174,10 @@ const NewSubscription = () => {
 
     const handleApplyForVise = async () => {
         // toast.success("Your application has been submitted.");
+         if(!fullUser){
+            return navigate.push('/auth/login')
+        }
+
         if (fullUser?.isFormSubmitted) {
             try {
 

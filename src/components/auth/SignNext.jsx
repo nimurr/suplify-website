@@ -30,7 +30,7 @@ export default function SignUpNext() {
     try {
 
       const res = await register(formData).unwrap();
-      // console.log(res?.data?.code);
+      console.log(res?.data);
       if (res?.code == 201) {
         // console.log(res);
         toast.success(res?.message)

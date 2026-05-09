@@ -139,7 +139,7 @@ export default function ProgramView() {
               >
                 <div className="flex justify-between w-full gap-4">
                   <img
-                    src={session.coverPhotos[0]?.attachment}
+                    src={session.coverPhotos[0]?.attachment || 'https://i.computer-bild.de/imgs/1/4/1/2/7/5/6/5/Streaming-65890e9648619c2e.jpg'}
                     alt={session.exercise}
                     className="w-20 h-16 object-cover rounded"
                   />
@@ -162,7 +162,7 @@ export default function ProgramView() {
                         // go this route edit-session
                         onClick={() => router.push(`/specialistDs/program/edit-session?sessionId=${session._TrainingSessionId}&programId=${programId}`)}
                         size="small"
-                        className="flex justify-end h-8 w-14"
+                        className="flex justify-end h-8 w-16"
                         danger
                         type="default"
                       >
@@ -182,7 +182,7 @@ export default function ProgramView() {
             <>
               <div className="cursor-pointer" onClick={() => howVideoInaModal(selectedSession.videoUrl)}>
                 <img
-                  src={selectedSession?.coverPhotos[0]?.attachment}
+                  src={selectedSession?.coverPhotos[0]?.attachment || 'https://i.computer-bild.de/imgs/1/4/1/2/7/5/6/5/Streaming-65890e9648619c2e.jpg'}
                   alt={selectedSession.tokenCount}
                   className="w-full h-40 object-cover rounded mb-4"
                 />

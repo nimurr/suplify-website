@@ -58,17 +58,17 @@ export default function CreateSession() {
       fromData.append('coverPhotos', values.photo[0].originFileObj);
     }
 
-    if (values?.video[0]?.originFileObj) {
+    if (values?.video && values?.video[0]?.originFileObj) {
       fromData.append('attachments', values.video[0].originFileObj);
     }
 
-    if (!values.video) {
-      fromData.append('external_link', values.videoLink);
-    }
+    // if (!values.video) {
+    //   fromData.append('external_link', values.videoLink);
+    // }
 
-    if (!values.video && !values.video && !videoLink) {
-      return toast.error('Add Video Link');
-    }
+    // if (!values.video && !values.video && !videoLink) {
+    //   return toast.error('Add Video Link');
+    // }
 
     try {
       const response = await createSession(fromData);
