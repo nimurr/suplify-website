@@ -20,16 +20,20 @@ export default function SelectRole() {
       router.push(`/auth/signup?role=${role}`);
     }
 
-    
+
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-gradient-to-br from-black via-black to-[#2e0a0a]">
       {/* Left Side */}
-      <div className="hidden md:flex flex-col justify-center items-center min-h-screen px-12 bg-gradient-to-br from-black via-black to-[#2e0a0a] w-1/2">
+      <div className="hidden md:flex flex-col justify-center items-center min-h-screen px-12  w-1/2">
         <div className="hidden md:flex items-center justify-center">
           <Link href={"/"}>
-            <img src="/images/logo2.png" alt="Suplify Logo" className="" />
+            <img
+              src="/images/logo.png"
+              alt="Suplify Logo"
+              className="max-w-[300px] mx-auto"
+            />
           </Link>
         </div>
       </div>
@@ -53,8 +57,8 @@ export default function SelectRole() {
             <Radio.Button
               value="patient"
               className={`!rounded-md !border !h-14 !text-left !px-4 !flex !items-center !w-full ${role === "patient"
-                  ? "!border-red-500 !text-red-600 !bg-red-50"
-                  : "!border-gray-300 !text-gray-700"
+                ? "!border-red-500 !text-red-600 !bg-red-50"
+                : "!border-gray-300 !text-gray-700"
                 }`}
             >
               <div className="flex items-center">
@@ -73,8 +77,8 @@ export default function SelectRole() {
             <Radio.Button
               value="doctor"
               className={`!rounded-md !border !h-14 !text-left !px-4 !flex !items-center !w-full ${role === "doctor"
-                  ? "!border-red-500 !text-red-600 !bg-red-50"
-                  : "!border-gray-300 !text-gray-700"
+                ? "!border-red-500 !text-red-600 !bg-red-50"
+                : "!border-gray-300 !text-gray-700"
                 }`}
             >
               <div className="flex items-center">
@@ -93,8 +97,8 @@ export default function SelectRole() {
             <Radio.Button
               value="specialist"
               className={`!rounded-md !border !h-14 !text-left !px-4 !flex !items-center !w-full ${role === "specialist"
-                  ? "!border-red-500 !text-red-600 !bg-red-50"
-                  : "!border-gray-300 !text-gray-700"
+                ? "!border-red-500 !text-red-600 !bg-red-50"
+                : "!border-gray-300 !text-gray-700"
                 }`}
             >
               <div className="flex items-center">

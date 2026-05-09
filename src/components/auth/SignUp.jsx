@@ -205,7 +205,11 @@ export default function Signup() {
     <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-black via-black to-[#2e0a0a] px-6">
       <Toaster />
       <div className="hidden md:flex items-center justify-center mr-12">
-        <img src="/images/logo2.png" alt="Suplify Logo" />
+        <img
+          src="/images/logo.png"
+          alt="Suplify Logo"
+          className="max-w-[300px] mx-auto"
+        />
       </div>
 
       <div className="md:flex md:flex-col md:p-10 md:max-w-[600px] w-full">

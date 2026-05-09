@@ -73,9 +73,9 @@ export default function Login() {
         <Link href={'/'}>
 
           <img
-            src="/images/logo2.png"
+            src="/images/logo.png"
             alt="Suplify Logo"
-            className=""
+            className="max-w-[300px] mx-auto"
           />
         </Link>
       </div>
