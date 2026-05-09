@@ -44,7 +44,7 @@ const Page = () => {
 
             if (response?.code === 200 || response?.code === 201) {
                 toast.success(response?.message || 'Answers submitted successfully!');
-                navigate.push(`${response?.data?.attributes}`);
+                navigate.push(`/dashboard/subscription`);
                 form.resetFields();
             } else {
                 toast.error(response?.message || 'Failed to submit answers');
