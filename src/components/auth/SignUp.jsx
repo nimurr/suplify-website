@@ -202,7 +202,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-black via-black to-[#2e0a0a] px-6">
+    <div className="md:min-h-screen py-5 md:py-0 flex justify-center items-center bg-gradient-to-br from-black via-black to-[#2e0a0a] md:px-6">
       <Toaster />
       <div className="hidden md:flex items-center justify-center mr-12">
         <img
