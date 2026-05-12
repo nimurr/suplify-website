@@ -92,7 +92,7 @@ export default function ForgotPassword() {
       console.log(res?.data)
       if (res?.code == 200) {
         toast.success(res?.message)
-        router.push(`/auth/sendOtp?email=${values.email}&path=${res?.data?.attributes?.resetPasswordToken}`);
+        router.push(`/auth/sendOtp?email=${values.email}&path=${res?.data?.attributes?.resetPasswordToken}?resetPassword=resetPassword`);
       }
     } catch (error) {
       console.log(error)

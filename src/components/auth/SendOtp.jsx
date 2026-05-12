@@ -17,6 +17,8 @@ const SendOtp = () => {
   const router = useRouter();
   const [email, setEmail] = useState('')
   const [path, setPath] = useState('')
+  const [resetPassword, seResetPassword] = useState('')
+
 
   useEffect(() => {
     // Extract query parameters on client-side
@@ -24,6 +26,7 @@ const SendOtp = () => {
     const params = new URLSearchParams(window.location.search);
     setEmail(params.get('email') || '');
     setPath(params.get('path') || '');
+    seResetPassword(params.get('resetPassword') || '');
 
   }, []);
 
@@ -42,12 +45,16 @@ const SendOtp = () => {
       const res = await verifyOtp(data).unwrap();
       console.log(res);
 
-      if (res?.code === 200 && !path) {
+      if (res?.code === 200 && path) {
         toast.success(res?.message);
         router.push(`/auth/login`);
       }
-      else if (res?.code === 200 && path) {
+      else if (res?.code === 200 && resetPassword) {
+        // router.push(`/auth/login`);
         router.push(`/auth/resetPassword?email=${email}`);
+      }
+      else if (res?.code === 200) {
+        router.push(`/auth/login`);
       }
       else {
         toast.error(res?.data?.message || "Something went wrong ! Please try again");
