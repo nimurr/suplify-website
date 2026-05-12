@@ -45,7 +45,7 @@ const SendOtp = () => {
       const res = await verifyOtp(data).unwrap();
       console.log(res);
 
-      if (res?.code === 200 && path) {
+      if (res?.code === 200 && path && !resetPassword) {
         toast.success(res?.message);
         router.push(`/auth/login`);
       }
