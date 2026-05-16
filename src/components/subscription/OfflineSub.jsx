@@ -35,19 +35,19 @@ const OfflineSub = () => {
       subscriptionType: "standardPlus",
       perks: [
         "Everything in Standard Membership",
-        "Weekly coaching & accountability",
-        "One private training session per week",
+        "Free 30 - minute consultation",
         "Personalized health & performance strategy",
-        "Nutrition guidance and protocol updates",
-        "Training program adjustments",
+        "Nutrition setup & guidance",
+        "Weekly coaching & accountability",
+        "Training & protocol adjustments",
         "Priority access to specialists",
-        "Free entries to webinars & seminars",
+        "Free webinar & seminar entries",
         "Preferred access to challenges & events",
         "Product giveaways",
-        "Members-only upgrades",
+        "Members - only perks & upgrades"
       ],
       idealFor:
-        "Clients who want structure, support, expert guidance, and consistent accountability.",
+        "Clients wanting structure, accountability, expert guidance, and a complete health & performance system.",
     },
     {
       id: "vise-static-plan",
