@@ -16,7 +16,7 @@ const AppFooter = () => {
             <Row gutter={[16, 24]} className="mb-2">
               {/* Logo Column */}
               <Col xs={24} sm={24} md={6} lg={6} xl={6} className="mb-4 md:mb-0">
-                <div className="flex items-center">
+                <div className="flex items-center"> 
                   <div className="  bg-red-600 flex items-center justify-center">
                     <Link href="/"><img className="md:h-40 rounded-lg md:rounded-none" src="/images/logo.png" alt="Logo" /></Link>
                   </div>
