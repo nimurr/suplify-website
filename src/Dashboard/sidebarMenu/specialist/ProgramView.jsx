@@ -158,7 +158,7 @@ export default function ProgramView() {
                     </div>
                     <div>
                       {/* make a button here  */}
-                      
+
                     </div>
                     <div>
                       <Button
@@ -215,15 +215,12 @@ export default function ProgramView() {
                 }
               </ul>
 
-              <Button
-                icon={<EditOutlined />}
-                size="small"
-                danger
-                type="default"
-                className="mt-auto !h-10 !py-2"
+              <Link
+                href={`/specialistDs/program/edit-session?sessionId=${selectedSession._TrainingSessionId}&programId=${programId}`}
+                className="text-xs mt-auto ml-2 bg-red-600 hover:bg-primary-dark text-white font-bold py-3 px-6 rounded-lg transition flex items-center gap-2 justify-center"
               >
                 Edit
-              </Button>
+              </Link>
             </>
           </div>
         )}
