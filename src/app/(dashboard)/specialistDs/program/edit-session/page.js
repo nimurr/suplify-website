@@ -1,117 +1,183 @@
 'use client'
-
-import React, { useState } from 'react';
-import { Button, Form, Input, Upload, Radio, Space, Tooltip } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, Form, Input, Upload, Radio, Tooltip, Image } from 'antd';
 import { UploadOutlined, DeleteOutlined, PlusOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import BackHeader from '@/components/customComponent/BackHeader';
-import { useCreateTrainingSessionMutation } from '@/redux/fetures/Specialist/traningProgram';
+import {
+    useCreateTrainingSessionMutation,
+    useUpdateTrainingSessionMutation,
+    useGetSessionByIdQuery,
+} from '@/redux/fetures/Specialist/traningProgram';
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'next/navigation';
 
 export default function Page() {
-    const [benefits, setBenefits] = useState([""]);
+    const [benefits, setBenefits] = useState(['']);
+    const [existingPhoto, setExistingPhoto] = useState(null);   // { url, id }
+    const [existingVideo, setExistingVideo] = useState(null);   // { url, id }
     const [form] = Form.useForm();
 
-    const addBenefit = () => {
-        setBenefits([...benefits, '']);
-    };
-
-    const removeBenefit = (index) => {
-        const newBenefits = [...benefits];
-        newBenefits.splice(index, 1);
-        setBenefits(newBenefits);
-    };
-
-    const updateBenefit = (index, value) => {
-        const newBenefits = [...benefits];
-        newBenefits[index] = value;
-        setBenefits(newBenefits);
-    };
-
+    /* ─── URL params ─────────────────────────────────────────── */
     const searchParams = useSearchParams();
     const programId = searchParams.get('programId');
     const sessionId = searchParams.get('sessionId');
-    console.log(programId, sessionId);
+    const isEditMode = Boolean(sessionId);
 
-
+    /* ─── Queries / mutations ────────────────────────────────── */
     const [createSession] = useCreateTrainingSessionMutation();
+    const [updateSession] = useUpdateTrainingSessionMutation();
+    const { data: sessionData } = useGetSessionByIdQuery(sessionId, { skip: !sessionId });
 
-    const handleSubmit = async (values) => {
-        const fromData = new FormData();
+    /* ─── Pre-populate form when session data loads ──────────── */
+    useEffect(() => {
+        const d = sessionData?.data?.attributes ?? sessionData?.data;
+        if (!d) return;
 
-        fromData.append('trainingProgramId', programId);
-        fromData.append('title', values.name);
-        fromData.append('duration', values.duration);
-        fromData.append('durationUnit', values.durationUnit);
-
-
-
-        // Append each benefit separately
-        benefits.forEach((benefit, index) => {
-            fromData.append('benefits', benefit);  // Append each benefit individually
+        // Text fields
+        form.setFieldsValue({
+            name: d.title ?? '',
+            duration: d.duration ?? '',
+            durationUnit: d.durationUnit ?? 'minutes',
+            // totalDays: d.totalDays ?? '',
+            videoLink: d.externalLink ?? d.external_link ?? '',
         });
 
-        // Handle file uploads (photo and video)
-        if (values.photo && values.photo[0]) {
-            fromData.append('coverPhotos', values.photo[0].originFileObj);
+        // Benefits
+        if (Array.isArray(d.benefits) && d.benefits.length > 0) {
+            setBenefits(d.benefits);
         }
 
-        if (values?.video[0]?.originFileObj) {
-            fromData.append('attachments', values.video[0].originFileObj);
+        // Existing cover photo
+        if (Array.isArray(d.coverPhotos) && d.coverPhotos.length > 0) {
+            setExistingPhoto({
+                url: d.coverPhotos[0].attachment,
+                id: d.coverPhotos[0]._attachmentId,
+            });
         }
 
-        if (!values.video) {
-            fromData.append('external_link', values.videoLink);
+        // Existing video attachment
+        if (Array.isArray(d.attachments) && d.attachments.length > 0) {
+            setExistingVideo({
+                url: d.attachments[0].attachment,
+                id: d.attachments[0]._attachmentId,
+            });
+        }
+    }, [sessionData, form]);
+
+    /* ─── Benefits helpers ───────────────────────────────────── */
+    const addBenefit = () => setBenefits(prev => [...prev, '']);
+    const removeBenefit = (i) => setBenefits(prev => prev.filter((_, idx) => idx !== i));
+    const updateBenefit = (i, value) => setBenefits(prev => prev.map((b, idx) => idx === i ? value : b));
+
+    /* ─── Form submit ────────────────────────────────────────── */
+    const handleSubmit = async (values) => {
+        // Validate: must have a video source
+        const hasNewVideo = values.video?.[0]?.originFileObj;
+        const hasOldVideo = Boolean(existingVideo);
+        const hasVideoLink = Boolean(values.videoLink?.trim());
+
+        // if (!hasNewVideo && !hasOldVideo && !hasVideoLink) {
+        //     return toast.error('Please upload a video or provide a video link.');
+        // }
+
+        const formData = new FormData();
+
+        if (!isEditMode) {
+            formData.append('trainingProgramId', programId);
+        }
+        formData.append('title', values.name);
+        formData.append('duration', values.duration);
+        formData.append('durationUnit', values.durationUnit);
+
+        // if (values.totalDays) {
+        //     formData.append('totalDays', values.totalDays);
+        // }
+
+        benefits.filter(Boolean).forEach(b => formData.append('benefits', b));
+
+        // New photo upload
+        if (values.photo?.[0]?.originFileObj) {
+            formData.append('coverPhotos', values.photo[0].originFileObj);
         }
 
-        if (!values.video && !values.video && !videoLink) {
-            return toast.error('Add Video Link');
+        // New video upload
+        if (hasNewVideo) {
+            formData.append('attachments', values.video[0].originFileObj);
         }
 
-
+        // Video link (only when no file)
+        if (!hasNewVideo && hasVideoLink) {
+            formData.append('external_link', values.videoLink.trim());
+        }
 
         try {
-            const response = await createSession(fromData);
-            console.log(response);
+            const response = isEditMode
+                ? await updateSession({ id: sessionId, data: formData })
+                : await createSession(formData);
+
+            console.log(response)
 
             if (response?.error?.data?.message) {
-                toast.error(response?.error?.data?.message);
+                return toast.error(response.error.data.message);
             }
 
+
             if (response?.data?.message) {
-                toast.success(response?.data?.message);
-                form.resetFields(); // Reset form fields on success
+                toast.success(response.data.message);
+                if (!isEditMode) {
+                    form.resetFields();
+                    setBenefits(['']);
+                    setExistingPhoto(null);
+                    setExistingVideo(null);
+                }
             }
         } catch (error) {
-            console.log(error);
             toast.error(error?.data?.message || 'Something went wrong!');
         }
     };
 
-    const normFile = (e) => {
-        if (Array.isArray(e)) {
-            return e;
-        }
-        return e?.fileList;
-    };
+    const normFile = (e) => (Array.isArray(e) ? e : e?.fileList);
 
+    /* ─── Render ─────────────────────────────────────────────── */
     return (
         <div>
-            <BackHeader title={"Create Session"} />
+            <BackHeader title={isEditMode ? 'Update Session' : 'Create Session'} />
 
             <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow">
-                <h2 className='text-2xl font-semibold my-5'>Create Session</h2>
                 <div className="border-t border-gray-200 pt-6">
                     <Form
                         form={form}
                         layout="vertical"
                         onFinish={handleSubmit}
-                        requiredMark={true}
+                        requiredMark
                     >
-                        <div className="">
-                            {/* Photo Upload */}
+                        {/* ── Media uploads ── */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+
+                            {/* Photo */}
                             <div>
                                 <p className="mb-2 font-medium">Photo</p>
+
+                                {/* Show existing photo when no new file chosen */}
+                                {existingPhoto && (
+                                    <div className="mb-2 relative inline-block">
+                                        <Image
+                                            src={existingPhoto.url}
+                                            alt="Current cover"
+                                            width={102}
+                                            height={102}
+                                            className="rounded object-cover border"
+                                        />
+                                        <Button
+                                            size="small"
+                                            danger
+                                            icon={<DeleteOutlined />}
+                                            className="absolute -top-2 -right-2"
+                                            onClick={() => setExistingPhoto(null)}
+                                        />
+                                    </div>
+                                )}
+
                                 <Form.Item
                                     name="photo"
                                     valuePropName="fileList"
@@ -125,16 +191,37 @@ export default function Page() {
                                     >
                                         <div className="text-center">
                                             <UploadOutlined className="text-lg" />
-                                            <div className="mt-2">Upload Photo</div>
-                                            <div className="text-xs text-gray-400">PNG, JPEG or JPG up to 10MB</div>
+                                            <div className="mt-2 text-sm">
+                                                {existingPhoto ? 'Replace Photo' : 'Upload Photo'}
+                                            </div>
+                                            <div className="text-xs text-gray-400">PNG, JPEG or JPG up to 10 MB</div>
                                         </div>
                                     </Upload>
                                 </Form.Item>
                             </div>
 
-                            {/* Video Upload */}
+                            {/* Video */}
                             <div>
                                 <p className="mb-2 font-medium">Video</p>
+
+                                {/* Show existing video preview */}
+                                {existingVideo && (
+                                    <div className="mb-2 flex items-center gap-2">
+                                        <video
+                                            src={existingVideo.url}
+                                            className="w-[102px] h-[102px] rounded border object-cover"
+                                            controls={false}
+                                            muted
+                                        />
+                                        <Button
+                                            size="small"
+                                            danger
+                                            icon={<DeleteOutlined />}
+                                            onClick={() => setExistingVideo(null)}
+                                        />
+                                    </div>
+                                )}
+
                                 <Form.Item
                                     name="video"
                                     valuePropName="fileList"
@@ -148,19 +235,22 @@ export default function Page() {
                                     >
                                         <div className="text-center">
                                             <UploadOutlined className="text-lg" />
-                                            <div className="mt-2">Upload Video</div>
-                                            <div className="text-xs text-gray-400">MP4, MOV or AVI up to 100MB</div>
+                                            <div className="mt-2 text-sm">
+                                                {existingVideo ? 'Replace Video' : 'Upload Video'}
+                                            </div>
+                                            <div className="text-xs text-gray-400">MP4, MOV or AVI up to 100 MB</div>
                                         </div>
                                     </Upload>
                                 </Form.Item>
                             </div>
                         </div>
 
+                        {/* Video Link */}
                         <Form.Item
                             label={<span className="font-medium">Video Link</span>}
                             name="videoLink"
                         >
-                            <Input placeholder="video Link" />
+                            <Input placeholder="https://youtube.com/..." />
                         </Form.Item>
 
                         {/* Session Name */}
@@ -172,41 +262,42 @@ export default function Page() {
                             <Input placeholder="Session Name" />
                         </Form.Item>
 
-                        {/* Duration */}
+                        {/* Duration + Total Days */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <Form.Item
-                                    label={<span className="font-medium">Duration</span>}
-                                    name="duration"
-                                    rules={[{ required: true, message: 'Please enter the duration' }]}
-                                >
-                                    <div className="flex">
-                                        <Input type="number" name='duration' placeholder="1" className="flex-grow" />
-                                        <Form.Item name="durationUnit" noStyle initialValue="minutes">
-                                            <Radio.Group className="ml-2 flex items-center">
-                                                <Radio.Button value="minutes">Minutes</Radio.Button>
-                                                <Radio.Button value="hours">Hours</Radio.Button> {/* Fixed from 'hour' to 'hours' */}
-                                            </Radio.Group>
-                                        </Form.Item>
-                                    </div>
-                                </Form.Item>
-                            </div>
+                            <Form.Item
+                                label={<span className="font-medium">Duration</span>}
+                                name="duration"
+                                rules={[{ required: true, message: 'Please enter the duration' }]}
+                            >
+                                <div className="flex">
+                                    <Input
+                                        type="number"
+                                        placeholder="1"
+                                        className="flex-grow"
+                                        // Forward onChange to the Form.Item correctly
+                                        onChange={(e) => form.setFieldValue('duration', e.target.value)}
+                                    />
+                                    <Form.Item name="durationUnit" noStyle initialValue="minutes">
+                                        <Radio.Group className="ml-2 flex items-center">
+                                            <Radio.Button value="minutes">Minutes</Radio.Button>
+                                            <Radio.Button value="hours">Hours</Radio.Button>
+                                        </Radio.Group>
+                                    </Form.Item>
+                                </div>
+                            </Form.Item>
 
-                            {/* Total Days */}
-                            <div>
-                                <Form.Item
-                                    label={<span className="font-medium">Total day</span>}
-                                    name="totalDays"
-                                    rules={[{ required: true, message: 'Please enter total days' }]}
-                                >
-                                    <Input placeholder="5" />
-                                </Form.Item>
-                            </div>
+                            {/* <Form.Item
+                                label={<span className="font-medium">Total Days</span>}
+                                name="totalDays"
+                                rules={[{ required: true, message: 'Please enter total days' }]}
+                            >
+                                <Input type="number" placeholder="5" />
+                            </Form.Item> */}
                         </div>
 
                         {/* Benefits */}
-                        <div className="mb-4">
-                            <p className="font-medium">
+                        <div className="mb-6">
+                            <p className="font-medium mb-2">
                                 Benefits
                                 <Tooltip title="Add benefits of this session">
                                     <InfoCircleOutlined className="ml-1 text-gray-400" />
@@ -218,7 +309,7 @@ export default function Page() {
                                     <Input
                                         value={benefit}
                                         onChange={(e) => updateBenefit(index, e.target.value)}
-                                        placeholder="Strengthens the Chest"
+                                        placeholder="e.g. Strengthens the Chest"
                                         className="flex-grow"
                                     />
                                     <Button
@@ -226,6 +317,7 @@ export default function Page() {
                                         danger
                                         icon={<DeleteOutlined />}
                                         onClick={() => removeBenefit(index)}
+                                        disabled={benefits.length === 1}
                                         className="ml-2"
                                     />
                                 </div>
@@ -241,10 +333,14 @@ export default function Page() {
                             </Button>
                         </div>
 
-                        {/* Submit Button */}
+                        {/* Submit */}
                         <Form.Item className="mt-6">
-                            <Button type="primary" htmlType="submit" className="bg-red-600 hover:bg-red-700 border-red-600 w-32">
-                                Create
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                className="bg-red-600 hover:bg-red-700 border-red-600 w-32"
+                            >
+                                {isEditMode ? 'Update' : 'Create'}
                             </Button>
                         </Form.Item>
                     </Form>
@@ -252,5 +348,4 @@ export default function Page() {
             </div>
         </div>
     );
-}
-
+};

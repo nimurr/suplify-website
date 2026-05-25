@@ -52,6 +52,13 @@ const traningProgram = apiSlice.injectEndpoints({
             }),
             providesTags: ["TrainingProgram"],
         }),
+        getSessionById: builder.query({
+            query: (id) => ({
+                url: `/training-sessions/${id}/v2`,
+                method: "GET",
+            }),
+            providesTags: ["TrainingProgram"],
+        }),
         createTrainingSession: builder.mutation({
             query: (data) => ({
                 url: `/training-sessions`,
@@ -59,7 +66,15 @@ const traningProgram = apiSlice.injectEndpoints({
                 body: data,
             }),
             invalidatesTags: ["TrainingProgram"],
-        })
+        }),
+        updateTrainingSession: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/training-sessions/${id}`,
+                method: "PUT",
+                body: data,
+            }),
+            invalidatesTags: ["TrainingProgram"],
+        }),
     }),
 })
 export const {
@@ -70,4 +85,7 @@ export const {
     useGetTrainingProgramByIdQuery,
     useDeleteTrainingProgramMutation,
     useGetAllProgramBySpecialistIdQuery,
-    useCreateTrainingSessionMutation } = traningProgram;
+    useGetSessionByIdQuery,
+    useCreateTrainingSessionMutation,
+    useUpdateTrainingSessionMutation
+} = traningProgram;
